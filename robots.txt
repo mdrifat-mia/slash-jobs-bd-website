@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mdrifat-mia.github.io/slash-jobs-v2/sitemap-index.xml
