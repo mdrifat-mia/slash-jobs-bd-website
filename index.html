@@ -433,6 +433,21 @@
   </div>
 </div>
 
+<!-- SET PASSWORD (opened from an invite or reset email link) -->
+<div id="passwordPage" class="login" style="display:none">
+  <div class="login-box">
+    <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
+    <h1 id="pwTitle">Set your password</h1>
+    <p class="lead">Choose a password you will remember. At least 8 characters.</p>
+    <form id="pwForm" onsubmit="savePassword(event)">
+      <div class="field"><label for="newPassword">New password</label><input type="password" id="newPassword" placeholder="At least 8 characters" autocomplete="new-password" required></div>
+      <div class="field"><label for="newPassword2">Repeat password</label><input type="password" id="newPassword2" placeholder="Type it again" autocomplete="new-password" required></div>
+      <div class="field-error login-error" id="pwError" role="alert"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="pwBtn">Save password</button>
+    </form>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="appPage" class="app">
   <header class="topbar">
@@ -592,6 +607,9 @@
   /* ---------- Supabase ---------- */
   const SUPABASE_URL = 'https://buwnriwmcsyfleutdvuw.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_NyhMyswcGQfhauQJFFmV7w_hEDvAxYa';   // publishable key: safe to keep in the browser
+  // Did the person arrive from an invite or password reset email? (must be read before the client clears the URL)
+  const arrivedBy = (location.hash.match(/[#&]type=(\w+)/) || [])[1] || '';
+  const needsPassword = arrivedBy === 'invite' || arrivedBy === 'recovery';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   /* ---------- Data ---------- */
@@ -718,10 +736,59 @@
     loginAs(profile.role, profile);
   }
 
-  document.getElementById('forgotLink').addEventListener('click', function (e) {
+  document.getElementById('forgotLink').addEventListener('click', async function (e) {
     e.preventDefault();
-    toast('Password reset will be added in a later step');
+    const err = document.getElementById('loginError');
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+      err.textContent = 'Type your email above first, then click Forgot password.';
+      err.classList.add('show');
+      document.getElementById('email').focus();
+      return;
+    }
+    err.classList.remove('show');
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if (error) {
+      err.textContent = error.message;
+      err.classList.add('show');
+    } else {
+      toast('If this email has access, a reset link is on its way');
+    }
   });
+
+  // Page shown after clicking an invite or reset link
+  function showSetPassword() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').classList.remove('active');
+    document.getElementById('passwordPage').style.display = '';
+    document.getElementById('pwTitle').textContent = arrivedBy === 'invite' ? 'Welcome! Set your password' : 'Set a new password';
+  }
+
+  async function savePassword(event) {
+    event.preventDefault();
+    const err = document.getElementById('pwError');
+    const btn = document.getElementById('pwBtn');
+    const p1 = document.getElementById('newPassword').value;
+    const p2 = document.getElementById('newPassword2').value;
+    err.classList.remove('show');
+    if (p1.length < 8) { err.textContent = 'Use at least 8 characters.'; err.classList.add('show'); return; }
+    if (p1 !== p2) { err.textContent = 'The two passwords do not match.'; err.classList.add('show'); return; }
+    btn.disabled = true; btn.textContent = 'Saving...';
+    try {
+      const { data, error } = await sb.auth.updateUser({ password: p1 });
+      if (error) throw error;
+      history.replaceState(null, '', location.pathname);
+      document.getElementById('passwordPage').style.display = 'none';
+      document.getElementById('pwForm').reset();
+      await enterApp(data.user);
+      toast('Password saved');
+    } catch (e) {
+      err.textContent = e && e.message ? e.message : 'Could not save the password.';
+      err.classList.add('show');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save password';
+    }
+  }
 
   function loginAs(role, profile) {
     currentUser = { role, ...ROLES[role], name: profile.name, id: profile.id };
@@ -749,8 +816,17 @@
 
   // Already signed in from earlier? Go straight to the portal.
   sb.auth.getSession().then(async ({ data }) => {
-    if (data && data.session) { try { await enterApp(data.session.user); } catch (e) {} }
+    const session = data && data.session;
+    if (needsPassword) {
+      if (session) { showSetPassword(); return; }
+      const err = document.getElementById('loginError');
+      err.textContent = 'This link has expired or was already used. Ask the owner for a new invite, or use Forgot password.';
+      err.classList.add('show');
+      return;
+    }
+    if (session) { try { await enterApp(session.user); } catch (e) {} }
   });
+  sb.auth.onAuthStateChange(event => { if (event === 'PASSWORD_RECOVERY') showSetPassword(); });
 
   /* ---------- Navigation ---------- */
   function pendingCount() { return reviewJobs.filter(j => j.status === 'pending').length; }
