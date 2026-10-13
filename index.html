@@ -651,12 +651,7 @@
     { title: 'Brand Executive',           company: 'Unilever Bangladesh', location: 'Dhaka',   link: 'https://unilever.com/careers/brand-executive-2026',   applyISO: '2026-09-30', source: 'Company website', status: 'published', by: 'Rifat',  text: '' }
   ];
 
-  const team = [
-    { name: 'Rifat',  role: 'Owner',              email: 'rifat@company.com',  joined: 'Oct 1, 2026' },
-    { name: 'Tasfia', role: 'Operations Manager', email: 'tasfia@company.com', joined: 'Oct 2, 2026' },
-    { name: 'Amirul', role: 'Admin',              email: 'amirul@company.com', joined: 'Oct 3, 2026' },
-    { name: 'Tusher', role: 'Admin',              email: 'tusher@company.com', joined: 'Oct 4, 2026' }
-  ];
+  let team = [];   // loaded from Supabase (profiles table)
 
   const activity = [
     { type: 'submitted', who: 'Amirul', title: 'Graduate Software Engineer', time: 'Today, 9:12 AM' },
@@ -675,7 +670,7 @@
     invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' }
   };
 
-  const invites = [{ email: 'new.admin@company.com', role: 'Admin' }];
+  let invites = [];   // loaded from Supabase (invites table)
 
   function nowLabel() { return 'Today, ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
 
@@ -801,6 +796,7 @@
     });
     document.getElementById('publishBtn').textContent = role === 'owner' ? 'Publish job' : 'Send for review';
     buildNav(); renderReview(); renderJobs(); renderTeam(); renderActivity();
+    loadTeam();
     showTab(currentUser.tabs[0]);
   }
 
@@ -848,7 +844,7 @@
     document.getElementById('pageTitle').textContent = TABS[tab].title;
     document.getElementById('pageSub').textContent = TABS[tab].sub;
     if (tab === 'jobs') renderJobs();
-    if (tab === 'team') renderTeam();
+    if (tab === 'team') { renderTeam(); loadTeam(); }
     window.scrollTo(0, 0);
   }
 
@@ -1551,8 +1547,8 @@ function checkDuplicate(f, excludeId) {
       const w = workloadOf(m.name);
       return `
       <tr>
-        <td><div class="person"><span class="avatar">${m.name.charAt(0)}</span>${m.name}</div></td>
-        <td><span class="role-tag">${m.role}</span></td>
+        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0))}</span>${esc(m.name)}</div></td>
+        <td><span class="role-tag">${esc(m.role)}</span></td>
         <td data-label="Sent">${w.sent}</td>
         <td data-label="Reviewed">${w.reviewed}</td>
         <td data-label="Waiting">${w.waiting}</td>
@@ -1561,10 +1557,10 @@ function checkDuplicate(f, excludeId) {
 
     document.getElementById('teamBody').innerHTML = team.map(m => `
       <tr>
-        <td><div class="person"><span class="avatar">${m.name.charAt(0)}</span>${m.name}</div></td>
-        <td><span class="role-tag">${m.role}</span></td>
-        <td class="muted">${m.email}</td>
-        <td class="muted">${m.joined}</td>
+        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0))}</span>${esc(m.name)}</div></td>
+        <td><span class="role-tag">${esc(m.role)}</span></td>
+        <td class="muted">${esc(m.email)}</td>
+        <td class="muted">${esc(m.joined)}</td>
       </tr>`).join('');
 
     document.getElementById('inviteList').innerHTML = invites.length
@@ -1577,18 +1573,54 @@ function checkDuplicate(f, excludeId) {
     renderDupReport();
   }
 
-  function sendInvite(event) {
+  const ROLE_LABEL = { owner: 'Owner', operations: 'Operations Manager', admin: 'Admin' };
+
+  // Read the real team list and pending invitations from Supabase
+  async function loadTeam() {
+    if (!currentUser) return;
+    const { data: people } = await sb.from('profiles').select('id, name, email, role, created_at').order('created_at');
+    team = (people || []).map(p => ({
+      id: p.id, name: p.name, role: ROLE_LABEL[p.role] || p.role, email: p.email,
+      joined: new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    }));
+    if (currentUser.role === 'owner' || currentUser.role === 'operations') {
+      const { data: inv } = await sb.from('invites').select('email, role').order('created_at', { ascending: false });
+      invites = (inv || []).map(i => ({ email: i.email, role: ROLE_LABEL[i.role] || i.role }));
+    } else {
+      invites = [];
+    }
+    renderTeam();
+  }
+
+  async function sendInvite(event) {
     event.preventDefault();
+    const form = event.target;
     const email = document.getElementById('inviteEmail').value.trim();
-    const role = document.getElementById('inviteRole').value;
+    const roleKey = document.getElementById('inviteRole').value === 'Admin' ? 'admin' : 'operations';
     const taken = team.some(m => m.email.toLowerCase() === email.toLowerCase())
                || invites.some(i => i.email.toLowerCase() === email.toLowerCase());
     if (taken) { toast('That email already has access or an invitation'); return; }
-    invites.unshift({ email, role });
-    addActivity('invited', `${email} as ${role}`);
-    event.target.reset();
-    renderTeam();
-    toast('Invitation sent');
+    const btn = form.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Sending...';
+    try {
+      const { data, error } = await sb.functions.invoke('invite-user', {
+        body: { email, role: roleKey, redirectTo: location.origin + location.pathname }
+      });
+      if (error) {
+        let msg = error.message;
+        try { const j = await error.context.json(); if (j && j.error) msg = j.error; } catch (_) {}
+        throw new Error(msg);
+      }
+      if (data && data.error) throw new Error(data.error);
+      addActivity('invited', `${email} as ${ROLE_LABEL[roleKey]}`);
+      form.reset();
+      await loadTeam();
+      toast('Invitation sent');
+    } catch (e) {
+      toast(e.message || 'Could not send the invitation');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send invitation';
+    }
   }
 
   /* ---------- Toast ---------- */
