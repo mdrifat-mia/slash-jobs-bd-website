@@ -116,6 +116,8 @@
   .btn-secondary { background: var(--surface); color: var(--ink); border-color: #C9D6D1; }
   .btn-secondary[disabled] { color: #8A9A94; background: #F6F8F7; cursor: not-allowed; }
 
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+
   /* APP SHELL */
   .app { display: none; min-height: 100vh; flex-direction: column; }
   .app.active { display: flex; }
@@ -573,7 +575,7 @@
         <h2 class="section-title">Workload</h2>
         <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
         <h2 class="section-title">People with access</h2>
-        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th></tr></thead><tbody id="teamBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th><th id="teamActionsTh" style="display:none"></th></tr></thead><tbody id="teamBody"></tbody></table></div>
         <h2 class="section-title">Recent activity</h2>
         <ul class="feed" id="activityFeed"></ul>
         <div data-roles="owner,operations">
@@ -671,7 +673,8 @@
     approved:  { verb: 'approved',   icon: '<path d="M5 13l4 4L19 7"/>' },
     rejected:  { verb: 'rejected',   icon: '<path d="M6 6l12 12M18 6L6 18"/>' },
     published: { verb: 'published',  icon: '<path d="M4 12l16-8-6 16-2-7-8-1z"/>' },
-    invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' }
+    invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' },
+    removed:   { verb: 'removed',    icon: '<path d="M6 6l12 12M18 6L6 18"/>' }
   };
 
   let invites = [];   // loaded from Supabase (invites table)
@@ -1552,7 +1555,14 @@ function checkDuplicate(f, excludeId) {
     return { sent: sent.length, reviewed: reviewJobs.filter(j => j.decidedBy === name).length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
+  function removeCell(m) {
+    if (!currentUser || currentUser.role !== 'owner') return '';
+    if (m.id === currentUser.id || m.role === 'Owner') return '<td></td>';
+    return `<td><button type="button" class="btn btn-outline-red btn-sm" data-remove="${esc(m.id)}" data-name="${esc(m.name)}">Remove</button></td>`;
+  }
+
   function renderTeam() {
+    document.getElementById('teamActionsTh').style.display = (currentUser && currentUser.role === 'owner') ? '' : 'none';
     document.getElementById('statWaiting').textContent = pendingCount();
     document.getElementById('statLive').textContent = liveCount();
     document.getElementById('statRejected').textContent = reviewJobs.filter(j => j.status === 'rejected').length;
@@ -1574,7 +1584,7 @@ function checkDuplicate(f, excludeId) {
         <td><div class="person"><span class="avatar">${esc(m.name.charAt(0))}</span>${esc(m.name)}</div></td>
         <td><span class="role-tag">${esc(m.role)}</span></td>
         <td class="muted">${esc(m.email)}</td>
-        <td class="muted">${esc(m.joined)}</td>
+        <td class="muted">${esc(m.joined)}</td>${removeCell(m)}
       </tr>`).join('');
 
     document.getElementById('inviteList').innerHTML = invites.length
@@ -1636,6 +1646,30 @@ function checkDuplicate(f, excludeId) {
       btn.disabled = false; btn.textContent = 'Send invitation';
     }
   }
+
+  // Owner removes a person (calls the remove-user function)
+  document.addEventListener('click', async function (e) {
+    const btn = e.target.closest('[data-remove]');
+    if (!btn || !currentUser || currentUser.role !== 'owner') return;
+    const name = btn.dataset.name || 'this person';
+    if (!confirm('Remove ' + name + '? They will lose access right away. This cannot be undone.')) return;
+    btn.disabled = true; btn.textContent = 'Removing...';
+    try {
+      const { data, error } = await sb.functions.invoke('remove-user', { body: { userId: btn.dataset.remove } });
+      if (error) {
+        let msg = error.message;
+        try { const j = await error.context.json(); if (j && j.error) msg = j.error; } catch (_) {}
+        throw new Error(msg);
+      }
+      if (data && data.error) throw new Error(data.error);
+      addActivity('removed', name);
+      toast(name + ' was removed');
+      await loadTeam();
+    } catch (err) {
+      toast(err.message || 'Could not remove this person');
+      btn.disabled = false; btn.textContent = 'Remove';
+    }
+  });
 
   /* ---------- Toast ---------- */
   let toastTimer;
