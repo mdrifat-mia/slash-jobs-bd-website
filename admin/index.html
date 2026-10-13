@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
   :root {
     --green-950: #00281E;
@@ -53,7 +53,7 @@
 
   .flag { width: 32px; height: 19px; border-radius: 3px; flex-shrink: 0; box-shadow: 0 0 0 1.5px rgba(255,255,255,.9); }
 
-  /* LOGIN, SETUP, RESET */
+  /* LOGIN */
   .login { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; padding: 20px 16px; background: var(--green-700); }
   .login-box { width: 100%; max-width: 400px; margin: auto; background: var(--surface); border-radius: 16px; padding: 26px 32px 22px; }
   .login-box .field { margin-bottom: 14px; }
@@ -66,7 +66,15 @@
   .login-row .check input[type=checkbox] { width: 13px; height: 13px; margin-top: 0; }
   .login-row a { font-size: min(11px, 3.6vw); margin-left: auto; }
   .login-row { gap: 6px; flex-wrap: nowrap; }
-  .login-box .field-error { margin: 0 0 12px; }
+  .demo { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .demo p { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .demo-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .demo-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 9px 6px; text-align: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; font-size: 13px;
+    font-weight: 600; transition: border-color .15s, background .15s;
+  }
 
   /* FORM CONTROLS */
   .field { margin-bottom: 18px; }
@@ -94,6 +102,7 @@
   .inline-check { margin-top: 10px; font-size: 13px; color: var(--muted); }
   .field-error { display: none; margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--red-700); }
   .field-error.show { display: block; }
+  .login-error { margin: -4px 0 12px; }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -106,7 +115,6 @@
   .btn-outline-red { background: var(--surface); color: var(--red-700); border-color: #F2B4BC; }
   .btn-secondary { background: var(--surface); color: var(--ink); border-color: #C9D6D1; }
   .btn-secondary[disabled] { color: #8A9A94; background: #F6F8F7; cursor: not-allowed; }
-  .btn-sm { padding: 6px 12px; font-size: 13px; }
 
   /* APP SHELL */
   .app { display: none; min-height: 100vh; flex-direction: column; }
@@ -212,7 +220,6 @@
   .person .avatar { background: var(--green-100); color: var(--green-800); width: 32px; height: 32px; }
   .role-tag { display: inline-block; padding: 3px 10px; border-radius: 6px; background: var(--green-50); color: var(--green-800); font-weight: 700; font-size: 12px; }
   .muted { color: var(--muted); }
-  .row-action { text-align: right; }
 
   /* STATS, CARD, INVITES */
   .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -226,7 +233,6 @@
   .invite-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
   .invite-item:first-child { border-top: none; }
   .invite-text { overflow-wrap: anywhere; min-width: 0; }
-  .invite-side { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
   .invite-empty { padding: 8px 0; }
   .proto-note { margin-top: 28px; color: var(--muted); font-size: 13px; }
 
@@ -306,11 +312,12 @@
   .cmp-foot { margin-top: 12px; color: var(--muted); font-size: 12.5px; }
 
   /* TOAST */
-  .toast { position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green-950); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 70; max-width: calc(100vw - 32px); text-align: center; }
+  .toast { position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green-950); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 50; max-width: calc(100vw - 32px); text-align: center; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (hover: hover) {
     .login-row a:hover, .open-link:hover { text-decoration: underline; }
+    .demo-btn:hover { border-color: var(--green-700); background: var(--green-50); }
     .btn-primary:hover:not([disabled]) { background: var(--green-800); }
     .btn-ghost:hover { background: rgba(255,255,255,.12); }
     .btn-outline-red:hover:not([disabled]) { background: var(--red-50); border-color: var(--red); }
@@ -352,7 +359,6 @@
     thead { display: none; }
     tr { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
     td { padding: 3px 0; border: none; }
-    .row-action { text-align: left; padding-top: 8px; }
     #teamBody td:nth-child(4)::before { content: "Joined "; }
     #workBody td[data-label] { display: inline-block; margin-right: 16px; font-weight: 600; }
     #workBody td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-weight: 500; }
@@ -378,6 +384,7 @@
   }
   @media (max-width: 400px) {
     .login-box { padding: 22px 16px 18px; }
+    .demo-btn { font-size: 12px; padding: 9px 2px; }
   }
   @media (max-width: 520px) {
     .login { padding: 20px 14px; }
@@ -393,6 +400,7 @@
     .login-box .lead { margin-bottom: 12px; }
     .login-box .field { margin-bottom: 10px; }
     .login-row { margin-bottom: 10px; }
+    .demo { margin-top: 12px; padding-top: 10px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -406,16 +414,8 @@
   </symbol>
 </svg>
 
-<!-- LOADING -->
-<div id="bootPage" class="login">
-  <div class="login-box">
-    <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
-    <p class="lead" id="bootNote" style="margin:0">Loading...</p>
-  </div>
-</div>
-
 <!-- LOGIN -->
-<div id="loginPage" class="login" style="display:none">
+<div id="loginPage" class="login">
   <div class="login-box">
     <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
     <h1>Sign in</h1>
@@ -423,43 +423,31 @@
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="field"><label for="email">Email</label><input type="email" id="email" placeholder="name@company.com" autocomplete="username" required></div>
       <div class="field"><label for="password">Password</label><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required></div>
-      <div class="field-error" id="loginMsg" role="alert"></div>
+      <div class="field-error login-error" id="loginError" role="alert"></div>
       <div class="login-row">
-        <label class="check" for="remember"><input type="checkbox" id="remember"> Keep me signed in</label>
-        <a href="#" onclick="forgotPassword(event)">Forgot password?</a>
+        <label class="check" for="remember"><input type="checkbox" id="remember" checked> Keep me signed in</label>
+        <a href="#" id="forgotLink">Forgot password?</a>
       </div>
       <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Sign in</button>
     </form>
   </div>
 </div>
 
-<!-- ACCOUNT SETUP (after accepting an invitation) -->
-<div id="setupPage" class="login" style="display:none">
+<!-- SET PASSWORD (opened from an invite or reset email link) -->
+<div id="passwordPage" class="login" style="display:none">
   <div class="login-box">
     <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
-    <h1>Set up your account</h1>
-    <p class="lead" id="setupLead">Add your name and choose a password.</p>
-    <form id="setupForm" onsubmit="submitSetup(event)">
-      <div class="field"><label for="setupName">Your name</label><input type="text" id="setupName" placeholder="e.g., Amirul" autocomplete="name" required></div>
-      <div class="field"><label for="setupPass">Password</label><input type="password" id="setupPass" placeholder="At least 8 characters" autocomplete="new-password" required></div>
-      <div class="field"><label for="setupPass2">Confirm password</label><input type="password" id="setupPass2" placeholder="Type it again" autocomplete="new-password" required></div>
-      <div class="field-error" id="setupError" role="alert"></div>
-      <button type="submit" class="btn btn-primary btn-block" id="setupBtn">Create my account</button>
-    </form>
-  </div>
-</div>
-
-<!-- RESET PASSWORD -->
-<div id="resetPage" class="login" style="display:none">
-  <div class="login-box">
-    <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
-    <h1>Choose a new password</h1>
-    <p class="lead">Pick a password you have not used before.</p>
-    <form id="resetForm" onsubmit="submitReset(event)">
-      <div class="field"><label for="resetPass">New password</label><input type="password" id="resetPass" placeholder="At least 8 characters" autocomplete="new-password" required></div>
-      <div class="field"><label for="resetPass2">Confirm password</label><input type="password" id="resetPass2" placeholder="Type it again" autocomplete="new-password" required></div>
-      <div class="field-error" id="resetError" role="alert"></div>
-      <button type="submit" class="btn btn-primary btn-block" id="resetBtn">Save password</button>
+    <h1 id="pwTitle">Set your password</h1>
+    <p class="lead">Choose a password you will remember. At least 8 characters.</p>
+    <form id="pwForm" onsubmit="savePassword(event)">
+      <div id="nameFields" style="display:none">
+        <div class="field"><label for="firstName">First name <span class="req">*</span></label><input type="text" id="firstName" placeholder="e.g., Tasfia" autocomplete="given-name" maxlength="40"></div>
+        <div class="field"><label for="lastName">Last name <span class="opt">(optional)</span></label><input type="text" id="lastName" placeholder="e.g., Rahman" autocomplete="family-name" maxlength="40"></div>
+      </div>
+      <div class="field"><label for="newPassword">New password</label><input type="password" id="newPassword" placeholder="At least 8 characters" autocomplete="new-password" required></div>
+      <div class="field"><label for="newPassword2">Repeat password</label><input type="password" id="newPassword2" placeholder="Type it again" autocomplete="new-password" required></div>
+      <div class="field-error login-error" id="pwError" role="alert"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="pwBtn">Save password</button>
     </form>
   </div>
 </div>
@@ -585,19 +573,19 @@
         <h2 class="section-title">Workload</h2>
         <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
         <h2 class="section-title">People with access</h2>
-        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th><th id="teamActionTh"></th></tr></thead><tbody id="teamBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th></tr></thead><tbody id="teamBody"></tbody></table></div>
         <h2 class="section-title">Recent activity</h2>
         <ul class="feed" id="activityFeed"></ul>
         <div data-roles="owner,operations">
           <h2 class="section-title">Invite a team member</h2>
           <div class="card">
-            <p class="muted card-lead">Only the owner can invite people and set their role. They get an email, open the link, and set their own name and password.</p>
+            <p class="muted card-lead">Only the owner can invite people and set their role.</p>
             <form id="inviteForm" data-roles="owner" onsubmit="sendInvite(event)">
               <div class="grid-2">
                 <div class="field"><label for="inviteEmail">Email <span class="req">*</span></label><input type="email" id="inviteEmail" placeholder="name@company.com" required></div>
-                <div class="field"><label for="inviteRole">Role</label><select id="inviteRole"><option value="admin">Admin</option><option value="operations">Operations Manager</option></select></div>
+                <div class="field"><label for="inviteRole">Role</label><select id="inviteRole"><option>Admin</option><option>Operations Manager</option></select></div>
               </div>
-              <button type="submit" class="btn btn-primary" id="inviteBtn">Send invitation</button>
+              <button type="submit" class="btn btn-primary">Send invitation</button>
             </form>
             <h3 class="card-sub">Invitations sent</h3>
             <ul class="invite-list" id="inviteList"></ul>
@@ -605,7 +593,7 @@
         </div>
       </section>
 
-      <p class="proto-note">Sign in and the team list are live. Jobs, reviews and activity on this page are still a prototype and reset on refresh.</p>
+      <p class="proto-note">Sign in is real (Supabase). Jobs, team and activity shown below are still sample data and reset on refresh. They will be connected step by step.</p>
     </main>
   </div>
 </div>
@@ -622,65 +610,18 @@
 <script>
   /* ---------- Supabase ---------- */
   const SUPABASE_URL = 'https://buwnriwmcsyfleutdvuw.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_NyhMyswcGQfhauQJFFmV7w_hEDvAxYa';   // publishable key: safe in the browser
+  const SUPABASE_KEY = 'sb_publishable_NyhMyswcGQfhauQJFFmV7w_hEDvAxYa';   // publishable key: safe to keep in the browser
+  // Did the person arrive from an invite or password reset email? (must be read before the client clears the URL)
+  const arrivedBy = (location.hash.match(/[#&]type=(\w+)/) || [])[1] || '';
+  const needsPassword = arrivedBy === 'invite' || arrivedBy === 'recovery';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const $ = id => document.getElementById(id);
-
-  // Read link results before the library cleans the address bar
-  const linkParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
-  const queryParams = new URLSearchParams(location.search || '');
-  let linkType = linkParams.get('type');                       // 'invite' or 'recovery'
-  const linkError = linkParams.get('error_description') || queryParams.get('error_description') || '';
-
-  // "Keep me signed in": remembered on this device, otherwise the session ends when the tab closes
-  function pickStore() {
-    try { return localStorage.getItem('sjbd_remember') === '0' ? sessionStorage : localStorage; } catch (e) { return localStorage; }
-  }
-  const sessionStore = {
-    getItem: k => { try { return pickStore().getItem(k); } catch (e) { return null; } },
-    setItem: (k, v) => { try { pickStore().setItem(k, v); } catch (e) {} },
-    removeItem: k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) {} }
+  /* ---------- Data ---------- */
+  const ROLES = {
+    owner:      { name: 'Rifat',  label: 'Owner',              tabs: ['submit', 'review', 'jobs', 'team'] },
+    operations: { name: 'Tasfia', label: 'Operations', tabs: ['review', 'team'] },
+    admin:      { name: 'Amirul', label: 'Admin',              tabs: ['submit', 'jobs'] }
   };
-
-  let sb = null;
-  try {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { storage: sessionStore, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' }
-    });
-  } catch (e) { sb = null; }
-
-  function siteUrl() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
-
-  function showPage(name) {
-    ['boot', 'login', 'setup', 'reset'].forEach(n => { $(n + 'Page').style.display = n === name ? '' : 'none'; });
-    $('appPage').classList.toggle('active', name === 'app');
-    window.scrollTo(0, 0);
-  }
-
-  function setMsg(id, text) {
-    const box = $(id);
-    box.textContent = text || '';
-    box.classList.toggle('show', !!text);
-  }
-
-  async function fnMessage(error) {
-    try { const b = await error.context.json(); if (b && b.error) return b.error; } catch (e) {}
-    return (error && error.message) || 'Something went wrong. Try again.';
-  }
-
-  function checkPasswords(p1, p2) {
-    if (p1.length < 8) return 'Use at least 8 characters.';
-    if (p1 !== p2) return 'The two passwords do not match.';
-    return '';
-  }
-
-  /* ---------- Roles ---------- */
-  const ROLE_META = {
-    owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'team'] },
-    operations: { label: 'Operations', tabs: ['review', 'team'] },
-    admin:      { label: 'Admin',      tabs: ['submit', 'jobs'] }
-  };
-  const ROLE_LABEL = { owner: 'Owner', operations: 'Operations Manager', admin: 'Admin' };
 
   const TABS = {
     submit: { label: 'Submit a job',      title: 'Submit a job',      sub: 'Paste the apply link, add the details and publish.', short: 'Submit', icon: '<path d="M12 5v14M5 12h14"/>' },
@@ -689,7 +630,6 @@
     team:   { label: 'Team and activity', title: 'Team and activity', sub: 'People with access to this portal.', short: 'Team', icon: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6M16 4.8a3.5 3.5 0 010 6.4M18 14.3c2.2.7 3.5 2.6 3.5 5.7"/>' }
   };
 
-  /* ---------- Prototype job data (not saved yet) ---------- */
   const reviewJobs = [
     { id: 1, link: 'https://bkash.com/careers/graduate-software-engineer', location: 'Dhaka', source: 'Company website', applyISO: '2026-11-30', title: 'Graduate Software Engineer', company: 'bKash',  style: 'Hybrid', level: 'Fresh graduate', by: '30 Nov 2026', sentBy: 'Amirul', status: 'pending', draft: '', reason: '', decidedBy: '', text: '' },
     { id: 2, link: 'https://pathao.com/careers/customer-support-executive', location: 'Dhaka', source: 'Facebook', applyISO: '2026-11-25', title: 'Customer Support Executive', company: 'Pathao', style: 'On site', level: 'Entry level', by: '25 Nov 2026', sentBy: 'Tusher', status: 'pending', draft: '', reason: '', decidedBy: '', text: '' },
@@ -715,6 +655,8 @@
     { title: 'Brand Executive',           company: 'Unilever Bangladesh', location: 'Dhaka',   link: 'https://unilever.com/careers/brand-executive-2026',   applyISO: '2026-09-30', source: 'Company website', status: 'published', by: 'Rifat',  text: '' }
   ];
 
+  let team = [];   // loaded from Supabase (profiles table)
+
   const activity = [
     { type: 'submitted', who: 'Amirul', title: 'Graduate Software Engineer', time: 'Today, 9:12 AM' },
     { type: 'published', who: 'Rifat',  title: 'Marketing Manager',          time: 'Yesterday, 4:30 PM' },
@@ -729,9 +671,10 @@
     approved:  { verb: 'approved',   icon: '<path d="M5 13l4 4L19 7"/>' },
     rejected:  { verb: 'rejected',   icon: '<path d="M6 6l12 12M18 6L6 18"/>' },
     published: { verb: 'published',  icon: '<path d="M4 12l16-8-6 16-2-7-8-1z"/>' },
-    invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' },
-    removed:   { verb: 'removed',    icon: '<path d="M6 6l12 12M18 6L6 18"/>' }
+    invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' }
   };
+
+  let invites = [];   // loaded from Supabase (invites table)
 
   function nowLabel() { return 'Today, ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
 
@@ -741,7 +684,7 @@
   }
 
   function renderActivity() {
-    $('activityFeed').innerHTML = activity.map(a => {
+    document.getElementById('activityFeed').innerHTML = activity.map(a => {
       const m = ACTIVITY_META[a.type];
       return `
       <li class="feed-item ${a.type}">
@@ -757,133 +700,149 @@
 
   let currentUser = null;
 
-  /* ---------- Auth ---------- */
+  /* ---------- Auth (real, Supabase) ---------- */
   async function handleLogin(event) {
     event.preventDefault();
-    setMsg('loginMsg', '');
-    if (!sb) { setMsg('loginMsg', 'Could not load the sign in service. Check your connection and refresh.'); return; }
-    try { localStorage.setItem('sjbd_remember', $('remember').checked ? '1' : '0'); } catch (e) {}
-    const btn = $('loginBtn');
-    btn.disabled = true; btn.textContent = 'Signing in...';
-    const { data, error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('password').value });
-    btn.disabled = false; btn.textContent = 'Sign in';
-    if (error) {
-      setMsg('loginMsg', /invalid login/i.test(error.message) ? 'Wrong email or password.' : error.message);
-      return;
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('loginError');
+    err.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      });
+      if (error) throw error;
+      await enterApp(data.user);
+    } catch (e) {
+      const msg = e && e.message ? e.message : 'Could not sign in.';
+      err.textContent = msg === 'Invalid login credentials' ? 'Wrong email or password.' : msg;
+      err.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
     }
-    await enterApp(data.session);
   }
 
-  async function forgotPassword(event) {
-    event.preventDefault();
-    setMsg('loginMsg', '');
-    const email = $('email').value.trim();
-    if (!email) { setMsg('loginMsg', 'Type your email above first, then tap Forgot password.'); $('email').focus(); return; }
-    if (!sb) return;
-    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: siteUrl() });
-    if (error) { setMsg('loginMsg', error.message); return; }
-    toast('If this email has access, a reset link is on its way.');
-  }
-
-  // Looks up the person's profile and sends them to the right screen
-  async function enterApp(session) {
-    const { data: prof, error } = await sb.from('profiles').select('id,name,email,role,status').eq('id', session.user.id).maybeSingle();
-    if (error) {
-      showPage('login');
-      setMsg('loginMsg', 'Could not load your account. Check your connection and try again.');
-      return;
-    }
-    if (!prof) {
+  // Look up the person's profile (name and role), then open the portal
+  async function enterApp(user) {
+    const { data: profile, error } = await sb.from('profiles').select('id, name, role').eq('id', user.id).single();
+    if (error || !profile || !ROLES[profile.role]) {
       await sb.auth.signOut();
-      showPage('login');
-      setMsg('loginMsg', 'This account does not have access. Contact the owner.');
-      return;
+      throw new Error('No profile found for this account. Ask the owner for access.');
     }
-    if (prof.status === 'invited') {
-      $('setupLead').textContent = 'You were invited as ' + (ROLE_LABEL[prof.role] || 'a team member') + '. Add your name and choose a password.';
-      showPage('setup');
-      return;
-    }
-    loginAs(prof);
+    loginAs(profile.role, profile);
   }
 
-  async function submitSetup(event) {
-    event.preventDefault();
-    const name = $('setupName').value.trim(), p1 = $('setupPass').value, p2 = $('setupPass2').value;
-    setMsg('setupError', '');
-    if (name.length < 2) { setMsg('setupError', 'Enter your name.'); return; }
-    const bad = checkPasswords(p1, p2);
-    if (bad) { setMsg('setupError', bad); return; }
-    const btn = $('setupBtn');
-    btn.disabled = true; btn.textContent = 'Creating...';
-    const done = () => { btn.disabled = false; btn.textContent = 'Create my account'; };
-    const up = await sb.auth.updateUser({ password: p1 });
-    if (up.error) { done(); setMsg('setupError', up.error.message); return; }
-    const rpc = await sb.rpc('complete_setup', { p_name: name });
-    if (rpc.error) { done(); setMsg('setupError', rpc.error.message); return; }
-    done();
-    linkType = null;
-    cleanUrl();
-    const { data } = await sb.auth.getSession();
-    if (data.session) await enterApp(data.session); else showPage('login');
+  document.getElementById('forgotLink').addEventListener('click', async function (e) {
+    e.preventDefault();
+    const err = document.getElementById('loginError');
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+      err.textContent = 'Type your email above first, then click Forgot password.';
+      err.classList.add('show');
+      document.getElementById('email').focus();
+      return;
+    }
+    err.classList.remove('show');
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    if (error) {
+      err.textContent = error.message;
+      err.classList.add('show');
+    } else {
+      toast('If this email has access, a reset link is on its way');
+    }
+  });
+
+  // Page shown after clicking an invite or reset link
+  function showSetPassword() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').classList.remove('active');
+    document.getElementById('passwordPage').style.display = '';
+    document.getElementById('pwTitle').textContent = arrivedBy === 'invite' ? 'Welcome! Set your password' : 'Set a new password';
+    const isInvite = arrivedBy === 'invite';
+    document.getElementById('nameFields').style.display = isInvite ? '' : 'none';
+    document.getElementById('firstName').required = isInvite;
   }
 
-  async function submitReset(event) {
+  async function savePassword(event) {
     event.preventDefault();
-    const p1 = $('resetPass').value, p2 = $('resetPass2').value;
-    setMsg('resetError', '');
-    const bad = checkPasswords(p1, p2);
-    if (bad) { setMsg('resetError', bad); return; }
-    const btn = $('resetBtn');
+    const err = document.getElementById('pwError');
+    const btn = document.getElementById('pwBtn');
+    const p1 = document.getElementById('newPassword').value;
+    const p2 = document.getElementById('newPassword2').value;
+    err.classList.remove('show');
+    const isInvite = arrivedBy === 'invite';
+    const fullName = (document.getElementById('firstName').value.trim() + ' ' + document.getElementById('lastName').value.trim()).trim();
+    if (isInvite && !document.getElementById('firstName').value.trim()) { err.textContent = 'Please enter your first name.'; err.classList.add('show'); return; }
+    if (p1.length < 8) { err.textContent = 'Use at least 8 characters.'; err.classList.add('show'); return; }
+    if (p1 !== p2) { err.textContent = 'The two passwords do not match.'; err.classList.add('show'); return; }
     btn.disabled = true; btn.textContent = 'Saving...';
-    const { error } = await sb.auth.updateUser({ password: p1 });
-    btn.disabled = false; btn.textContent = 'Save password';
-    if (error) { setMsg('resetError', error.message); return; }
-    linkType = null;
-    cleanUrl();
-    const { data } = await sb.auth.getSession();
-    toast('Password changed');
-    if (data.session) await enterApp(data.session); else showPage('login');
+    try {
+      const { data, error } = await sb.auth.updateUser({ password: p1 });
+      if (error) throw error;
+      if (isInvite) {
+        const { error: nameErr } = await sb.rpc('set_my_name', { new_name: fullName });
+        if (nameErr) throw nameErr;
+      }
+      history.replaceState(null, '', location.pathname);
+      document.getElementById('passwordPage').style.display = 'none';
+      document.getElementById('pwForm').reset();
+      await enterApp(data.user);
+      toast('Password saved');
+    } catch (e) {
+      err.textContent = e && e.message ? e.message : 'Could not save the password.';
+      err.classList.add('show');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save password';
+    }
   }
 
-  function cleanUrl() { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
-
-  function loginAs(prof) {
-    const meta = ROLE_META[prof.role];
-    if (!meta) { showPage('login'); setMsg('loginMsg', 'This account has no role. Contact the owner.'); return; }
-    currentUser = { id: prof.id, role: prof.role, name: prof.name, label: meta.label, tabs: meta.tabs };
-    showPage('app');
-    $('displayRole').textContent = currentUser.label;
-    $('displayRole').dataset.role = currentUser.role;
-    document.querySelectorAll('[data-roles]').forEach(node => {
-      node.style.display = node.dataset.roles.split(',').includes(currentUser.role) ? '' : 'none';
+  function loginAs(role, profile) {
+    currentUser = { role, ...ROLES[role], name: profile.name, id: profile.id };
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').classList.add('active');
+    document.getElementById('displayRole').textContent = currentUser.label;
+    document.getElementById('displayRole').dataset.role = role;
+    document.querySelectorAll('[data-roles]').forEach(el => {
+      el.style.display = el.dataset.roles.split(',').includes(role) ? '' : 'none';
     });
-    $('publishBtn').textContent = currentUser.role === 'owner' ? 'Publish job' : 'Send for review';
-    buildNav(); renderReview(); renderJobs(); renderTeam(); renderActivity(); loadTeam();
+    document.getElementById('publishBtn').textContent = role === 'owner' ? 'Publish job' : 'Send for review';
+    buildNav(); renderReview(); renderJobs(); renderTeam(); renderActivity();
+    loadTeam();
     showTab(currentUser.tabs[0]);
   }
 
   async function logout() {
+    await sb.auth.signOut();
     currentUser = null;
-    members = [];
-    showPage('login');
-    $('email').value = '';
-    $('password').value = '';
-    setMsg('loginMsg', '');
-    if (sb) await sb.auth.signOut();
+    document.getElementById('appPage').classList.remove('active');
+    document.getElementById('loginPage').style.display = '';
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    window.scrollTo(0, 0);
   }
 
-  if (sb) {
-    sb.auth.onAuthStateChange(evt => {
-      if (evt === 'SIGNED_OUT' && currentUser) { currentUser = null; showPage('login'); }
-    });
-  }
+  // Already signed in from earlier? Go straight to the portal.
+  sb.auth.getSession().then(async ({ data }) => {
+    const session = data && data.session;
+    if (needsPassword) {
+      if (session) { showSetPassword(); return; }
+      const err = document.getElementById('loginError');
+      err.textContent = 'This link has expired or was already used. Ask the owner for a new invite, or use Forgot password.';
+      err.classList.add('show');
+      return;
+    }
+    if (session) { try { await enterApp(session.user); } catch (e) {} }
+  });
+  sb.auth.onAuthStateChange(event => { if (event === 'PASSWORD_RECOVERY') showSetPassword(); });
 
   /* ---------- Navigation ---------- */
   function pendingCount() { return reviewJobs.filter(j => j.status === 'pending').length; }
 
   function buildNav() {
-    $('nav').innerHTML = currentUser.tabs.map(t => {
+    document.getElementById('nav').innerHTML = currentUser.tabs.map(t => {
       const count = t === 'review' ? `<span class="nav-count" id="navCount">${pendingCount()}</span>` : '';
       return `<button class="nav-item" data-tab="${t}" onclick="showTab('${t}')">
         <svg viewBox="0 0 24 24" aria-hidden="true">${TABS[t].icon}</svg><span class="nav-full">${TABS[t].label}</span><span class="nav-short">${TABS[t].short}</span>${count}</button>`;
@@ -892,25 +851,25 @@
 
   function showTab(tab) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    $('view-' + tab).classList.add('active');
+    document.getElementById('view-' + tab).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     const activeBtn = document.querySelector('.nav-item.active');
     if (activeBtn && activeBtn.scrollIntoView) activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
-    $('pageTitle').textContent = TABS[tab].title;
-    $('pageSub').textContent = TABS[tab].sub;
+    document.getElementById('pageTitle').textContent = TABS[tab].title;
+    document.getElementById('pageSub').textContent = TABS[tab].sub;
     if (tab === 'jobs') renderJobs();
     if (tab === 'team') { renderTeam(); loadTeam(); }
     window.scrollTo(0, 0);
   }
 
   /* ---------- Submit ---------- */
-  const noDeadline = $('noDeadline');
-  const applyDate = $('applyDate');
+  const noDeadline = document.getElementById('noDeadline');
+  const applyDate = document.getElementById('applyDate');
   noDeadline.addEventListener('change', function () {
     applyDate.disabled = this.checked;
-    $('applyPicker').disabled = this.checked;
-    $('calBtn').classList.toggle('off', this.checked);
-    if (this.checked) { applyDate.value = ''; $('deadlineError').classList.remove('show'); }
+    document.getElementById('applyPicker').disabled = this.checked;
+    document.getElementById('calBtn').classList.toggle('off', this.checked);
+    if (this.checked) { applyDate.value = ''; document.getElementById('deadlineError').classList.remove('show'); }
   });
   // Typing aid: slashes appear on their own, and a slash you type yourself is respected (6/12/2026 stays 6/12/2026).
   // Digits only also works: 7122026 -> 7/12/2026 (a day starting 4-9 has one digit, 32+ is not a day, 13+ is not a month).
@@ -933,14 +892,14 @@
     return segs.join('/');
   }
   applyDate.addEventListener('input', function () {
-    $('deadlineError').classList.remove('show');
+    document.getElementById('deadlineError').classList.remove('show');
     const v = this.value;
     if (/^[\d\/\-. ]*$/.test(v) && !/^\d{4}\D\d{1,2}\D\d{1,2}$/.test(v.trim())) this.value = typeDate(v);
   });
 
   // Calendar: an invisible date box sits on top of the calendar icon, so the browser's own picker opens on click or tap.
   // The chosen day is written into the text box as dd/mm/yyyy.
-  const picker = $('applyPicker');
+  const picker = document.getElementById('applyPicker');
   const syncPicker = () => { picker.value = parseDMY(applyDate.value) || ''; };   // open on the date already typed
   ['pointerdown', 'focus'].forEach(ev => picker.addEventListener(ev, syncPicker));
   picker.addEventListener('click', function () {
@@ -950,7 +909,7 @@
     if (!picker.value) return;
     const [y, m, d] = picker.value.split('-');
     applyDate.value = d + '/' + m + '/' + y;
-    $('deadlineError').classList.remove('show');
+    document.getElementById('deadlineError').classList.remove('show');
     applyDate.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
@@ -1235,7 +1194,7 @@ function checkDuplicate(f, excludeId) {
   }
 
   function renderDupReport() {
-    const box = $('dupReport');
+    const box = document.getElementById('dupReport');
     if (!box) return;
     const total = dupLog.length;
     if (!total) { box.innerHTML = '<p class="muted">No duplicate attempts yet.</p>'; return; }
@@ -1416,14 +1375,14 @@ function checkDuplicate(f, excludeId) {
   runDupCheck();
 
   function validateApplyByField(dateInputId, checkboxId) {
-    const raw = $(dateInputId).value.trim();
-    const ok = parseDMY(raw) || $(checkboxId).checked;
-    const err = $('deadlineError');
+    const raw = document.getElementById(dateInputId).value.trim();
+    const ok = parseDMY(raw) || document.getElementById(checkboxId).checked;
+    const err = document.getElementById('deadlineError');
     err.textContent = raw && !parseDMY(raw)
       ? 'Enter a real date like 25/11/2026, or tick "No deadline shown".'
       : 'Add the Apply by date, or tick "No deadline shown".';
     err.classList.toggle('show', !ok);
-    if (!ok) $(dateInputId).focus();
+    if (!ok) document.getElementById(dateInputId).focus();
     return !!ok;
   }
 
@@ -1463,15 +1422,15 @@ function checkDuplicate(f, excludeId) {
     addActivity(isOwner ? 'published' : 'submitted', title);
     event.target.reset();
     applyDate.disabled = false;
-    $('applyPicker').disabled = false;
-    $('calBtn').classList.remove('off');
+    document.getElementById('applyPicker').disabled = false;
+    document.getElementById('calBtn').classList.remove('off');
     runDupCheck();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   /* ---------- Review queue ---------- */
   function esc(t) {
-    return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   function reviewMeta(j) {
@@ -1523,15 +1482,15 @@ function checkDuplicate(f, excludeId) {
 
   function renderReview() {
     const n = pendingCount();
-    $('queueHeading').textContent = n === 0 ? 'All caught up' : `${n} waiting`;
-    $('reviewList').innerHTML = reviewJobs.length
+    document.getElementById('queueHeading').textContent = n === 0 ? 'All caught up' : `${n} waiting`;
+    document.getElementById('reviewList').innerHTML = reviewJobs.length
       ? reviewJobs.map(reviewCard).join('')
       : '<div class="empty"><strong>Nothing to review</strong>New submissions will appear here.</div>';
-    const badge = $('navCount');
+    const badge = document.getElementById('navCount');
     if (badge) { badge.textContent = n; badge.classList.toggle('zero', n === 0); }
   }
 
-  const reviewList = $('reviewList');
+  const reviewList = document.getElementById('reviewList');
 
   reviewList.addEventListener('input', function (e) {
     const ta = e.target.closest('textarea');
@@ -1562,7 +1521,7 @@ function checkDuplicate(f, excludeId) {
     renderReview();
   });
 
-  /* ---------- My jobs ---------- */
+  /* ---------- My jobs and team ---------- */
   function renderJobs() {
     const rows = (myJobs[currentUser.role] || []).slice();
     if (currentUser.role === 'admin') {
@@ -1574,7 +1533,7 @@ function checkDuplicate(f, excludeId) {
         reason: j.status === 'rejected' ? j.reason : '', by: j.decidedBy
       }));
     }
-    $('jobList').innerHTML = rows.length
+    document.getElementById('jobList').innerHTML = rows.length
       ? rows.map(j => `
         <div class="job-row">
           <div><h3>${esc(j.title)}</h3><p>${esc(j.meta)}</p></div>
@@ -1593,133 +1552,100 @@ function checkDuplicate(f, excludeId) {
     return { sent: sent.length, reviewed: reviewJobs.filter(j => j.decidedBy === name).length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
-  /* ---------- Team (live from the database) ---------- */
-  let members = [];
-
-  async function loadTeam() {
-    if (!sb || !currentUser || !currentUser.tabs.includes('team')) return;
-    const { data, error } = await sb.from('profiles').select('id,name,email,role,status,created_at').order('created_at', { ascending: true });
-    if (error) { toast('Could not load the team'); return; }
-    members = data || [];
-    renderTeam();
-  }
-
-  function joinedLabel(iso) {
-    return iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-  }
-
   function renderTeam() {
-    if (!currentUser) return;
-    const isOwner = currentUser.role === 'owner';
-    const active = members.filter(m => m.status === 'active');
-    const invited = members.filter(m => m.status === 'invited');
+    document.getElementById('statWaiting').textContent = pendingCount();
+    document.getElementById('statLive').textContent = liveCount();
+    document.getElementById('statRejected').textContent = reviewJobs.filter(j => j.status === 'rejected').length;
 
-    $('statWaiting').textContent = pendingCount();
-    $('statLive').textContent = liveCount();
-    $('statRejected').textContent = reviewJobs.filter(j => j.status === 'rejected').length;
-
-    $('workBody').innerHTML = active.map(m => {
+    document.getElementById('workBody').innerHTML = team.map(m => {
       const w = workloadOf(m.name);
       return `
       <tr>
-        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0).toUpperCase())}</span>${esc(m.name)}</div></td>
-        <td><span class="role-tag">${esc(ROLE_LABEL[m.role] || m.role)}</span></td>
+        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0))}</span>${esc(m.name)}</div></td>
+        <td><span class="role-tag">${esc(m.role)}</span></td>
         <td data-label="Sent">${w.sent}</td>
         <td data-label="Reviewed">${w.reviewed}</td>
         <td data-label="Waiting">${w.waiting}</td>
       </tr>`;
     }).join('');
 
-    $('teamActionTh').textContent = isOwner ? 'Action' : '';
-    $('teamBody').innerHTML = active.map(m => `
+    document.getElementById('teamBody').innerHTML = team.map(m => `
       <tr>
-        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0).toUpperCase())}</span>${esc(m.name)}</div></td>
-        <td><span class="role-tag">${esc(ROLE_LABEL[m.role] || m.role)}</span></td>
+        <td><div class="person"><span class="avatar">${esc(m.name.charAt(0))}</span>${esc(m.name)}</div></td>
+        <td><span class="role-tag">${esc(m.role)}</span></td>
         <td class="muted">${esc(m.email)}</td>
-        <td class="muted">${esc(joinedLabel(m.created_at))}</td>
-        ${isOwner ? `<td class="row-action">${m.id === currentUser.id ? '<span class="muted">You</span>' : `<button type="button" class="btn btn-outline-red btn-sm" data-act="remove" data-id="${esc(m.id)}" data-label="${esc(m.name)}">Remove</button>`}</td>` : ''}
+        <td class="muted">${esc(m.joined)}</td>
       </tr>`).join('');
 
-    $('inviteList').innerHTML = invited.length
-      ? invited.map(i => `
+    document.getElementById('inviteList').innerHTML = invites.length
+      ? invites.map(i => `
         <li class="invite-item">
-          <span class="invite-text">${esc(i.email)} as ${esc(ROLE_LABEL[i.role] || i.role)}</span>
-          <span class="invite-side">
-            <span class="badge badge-pending">Waiting to accept</span>
-            ${isOwner ? `<button type="button" class="btn btn-outline-red btn-sm" data-act="cancel" data-id="${esc(i.id)}" data-label="${esc(i.email)}">Cancel invite</button>` : ''}
-          </span>
+          <span class="invite-text">${esc(i.email)} as ${esc(i.role)}</span>
+          <span class="badge badge-pending">Waiting to accept</span>
         </li>`).join('')
-      : '<li class="invite-empty muted">No pending invitations.</li>';
+      : '<li class="invite-empty muted">No invitations yet.</li>';
     renderDupReport();
+  }
+
+  const ROLE_LABEL = { owner: 'Owner', operations: 'Operations Manager', admin: 'Admin' };
+
+  // Read the real team list and pending invitations from Supabase
+  async function loadTeam() {
+    if (!currentUser) return;
+    const { data: people } = await sb.from('profiles').select('id, name, email, role, created_at').order('created_at');
+    team = (people || []).map(p => ({
+      id: p.id, name: p.name, role: ROLE_LABEL[p.role] || p.role, email: p.email,
+      joined: new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    }));
+    if (currentUser.role === 'owner' || currentUser.role === 'operations') {
+      const { data: inv } = await sb.from('invites').select('email, role').order('created_at', { ascending: false });
+      invites = (inv || []).map(i => ({ email: i.email, role: ROLE_LABEL[i.role] || i.role }));
+    } else {
+      invites = [];
+    }
+    renderTeam();
   }
 
   async function sendInvite(event) {
     event.preventDefault();
     const form = event.target;
-    const email = $('inviteEmail').value.trim().toLowerCase();
-    const role = $('inviteRole').value;
-    const btn = $('inviteBtn');
+    const email = document.getElementById('inviteEmail').value.trim();
+    const roleKey = document.getElementById('inviteRole').value === 'Admin' ? 'admin' : 'operations';
+    const taken = team.some(m => m.email.toLowerCase() === email.toLowerCase())
+               || invites.some(i => i.email.toLowerCase() === email.toLowerCase());
+    if (taken) { toast('That email already has access or an invitation'); return; }
+    const btn = form.querySelector('button[type=submit]');
     btn.disabled = true; btn.textContent = 'Sending...';
-    const { data, error } = await sb.functions.invoke('invite-member', { body: { email, role, redirectTo: siteUrl() } });
-    btn.disabled = false; btn.textContent = 'Send invitation';
-    if (error) { toast(await fnMessage(error)); return; }
-    if (data && data.error) { toast(data.error); return; }
-    addActivity('invited', email + ' as ' + (ROLE_LABEL[role] || role));
-    form.reset();
-    await loadTeam();
-    toast('Invitation sent');
-  }
-
-  // Remove a member or cancel an invitation (owner only; the server checks this again)
-  document.addEventListener('click', async function (e) {
-    const btn = e.target.closest('[data-act]');
-    if (!btn || !currentUser || currentUser.role !== 'owner') return;
-    const cancel = btn.dataset.act === 'cancel';
-    const label = btn.dataset.label;
-    const ok = confirm(cancel ? 'Cancel the invitation for ' + label + '?' : 'Remove ' + label + '? They will lose access right away.');
-    if (!ok) return;
-    btn.disabled = true;
-    const { data, error } = await sb.functions.invoke('remove-member', { body: { id: btn.dataset.id } });
-    if (error || (data && data.error)) {
-      btn.disabled = false;
-      toast(error ? await fnMessage(error) : data.error);
-      return;
+    try {
+      const { data, error } = await sb.functions.invoke('invite-user', {
+        body: { email, role: roleKey, redirectTo: location.origin + location.pathname }
+      });
+      if (error) {
+        let msg = error.message;
+        try { const j = await error.context.json(); if (j && j.error) msg = j.error; } catch (_) {}
+        throw new Error(msg);
+      }
+      if (data && data.error) throw new Error(data.error);
+      addActivity('invited', `${email} as ${ROLE_LABEL[roleKey]}`);
+      form.reset();
+      await loadTeam();
+      toast('Invitation sent');
+    } catch (e) {
+      toast(e.message || 'Could not send the invitation');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Send invitation';
     }
-    addActivity('removed', label);
-    await loadTeam();
-    toast(cancel ? 'Invitation cancelled' : 'Member removed');
-  });
+  }
 
   /* ---------- Toast ---------- */
   let toastTimer;
   function toast(msg) {
-    const t = $('toast');
+    const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
-
-  /* ---------- Start ---------- */
-  (async function boot() {
-    if (!sb) {
-      $('bootNote').textContent = 'Could not load the sign in service. Check your connection and refresh the page.';
-      return;
-    }
-    const { data } = await sb.auth.getSession();
-    const session = data && data.session;
-    if (linkError) {
-      cleanUrl();
-      showPage('login');
-      setMsg('loginMsg', /expired|invalid/i.test(linkError)
-        ? 'This link has expired or was already used. Ask the owner to send a new invitation, or use Forgot password.'
-        : linkError);
-      return;
-    }
-    if (session && linkType === 'recovery') { showPage('reset'); return; }
-    if (session) { await enterApp(session); return; }
-    showPage('login');
-  })();
 </script>
 </body>
 </html>
