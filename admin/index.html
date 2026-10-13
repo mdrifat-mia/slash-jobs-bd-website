@@ -117,6 +117,7 @@
   .btn-secondary[disabled] { color: #8A9A94; background: #F6F8F7; cursor: not-allowed; }
 
   .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .invite-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
   /* APP SHELL */
   .app { display: none; min-height: 100vh; flex-direction: column; }
@@ -440,7 +441,7 @@
   <div class="login-box">
     <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD</div>
     <h1 id="pwTitle">Set your password</h1>
-    <p class="lead">Choose a password you will remember. At least 8 characters.</p>
+    <p class="lead" id="pwLead">Choose a password you will remember. At least 8 characters.</p>
     <form id="pwForm" onsubmit="savePassword(event)">
       <div id="nameFields" style="display:none">
         <div class="field"><label for="firstName">First name <span class="req">*</span></label><input type="text" id="firstName" placeholder="e.g., Atif" autocomplete="given-name" maxlength="40"></div>
@@ -581,7 +582,7 @@
         <div data-roles="owner,operations">
           <h2 class="section-title">Invite a team member</h2>
           <div class="card">
-            <p class="muted card-lead">Only the owner can invite people and set their role.</p>
+            <p class="muted card-lead">Pick a role and get a private link. Send the link to the person yourself (WhatsApp, Messenger or email). It works for 7 days, and no account exists until they open it and set up their name and password.</p>
             <form id="inviteForm" data-roles="owner" onsubmit="sendInvite(event)">
               <div class="grid-2">
                 <div class="field"><label for="inviteEmail">Email <span class="req">*</span></label><input type="email" id="inviteEmail" placeholder="name@company.com" required></div>
@@ -589,7 +590,15 @@
               </div>
               <button type="submit" class="btn btn-primary">Send invitation</button>
             </form>
-            <h3 class="card-sub">Invitations sent</h3>
+            <div id="inviteLinkBox" class="dup-box dup-note" hidden>
+              <strong id="inviteLinkTitle">Invitation ready</strong>
+              <p class="muted" style="margin:6px 0 10px">Copy this link and send it to the person. It works for 7 days. For safety it is shown only now. If you lose it, press "New link" below.</p>
+              <div class="link-row">
+                <div class="field"><input type="text" id="inviteLinkInput" readonly aria-label="Invitation link"></div>
+                <button type="button" class="btn btn-primary" id="copyInviteBtn">Copy link</button>
+              </div>
+            </div>
+            <h3 class="card-sub">Waiting to accept</h3>
             <ul class="invite-list" id="inviteList"></ul>
           </div>
         </div>
@@ -615,7 +624,8 @@
   const SUPABASE_KEY = 'sb_publishable_NyhMyswcGQfhauQJFFmV7w_hEDvAxYa';   // publishable key: safe to keep in the browser
   // Did the person arrive from an invite or password reset email? (must be read before the client clears the URL)
   const arrivedBy = (location.hash.match(/[#&]type=(\w+)/) || [])[1] || '';
-  const needsPassword = arrivedBy === 'invite' || arrivedBy === 'recovery';
+  const needsPassword = arrivedBy === 'recovery';
+  let inviteToken = (location.hash.match(/[#&]invite=([0-9a-f]{20,})/i) || [])[1] || '';   // our own private invitation link
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   /* ---------- Data ---------- */
@@ -674,7 +684,8 @@
     rejected:  { verb: 'rejected',   icon: '<path d="M6 6l12 12M18 6L6 18"/>' },
     published: { verb: 'published',  icon: '<path d="M4 12l16-8-6 16-2-7-8-1z"/>' },
     invited:   { verb: 'invited',    icon: '<path d="M3 7l9 6 9-6M3 7h18v10H3z"/>' },
-    removed:   { verb: 'removed',    icon: '<path d="M6 6l12 12M18 6L6 18"/>' }
+    removed:   { verb: 'removed',    icon: '<path d="M6 6l12 12M18 6L6 18"/>' },
+    cancelled: { verb: 'cancelled the invitation for', icon: '<path d="M6 6l12 12M18 6L6 18"/>' }
   };
 
   let invites = [];   // loaded from Supabase (invites table)
@@ -763,8 +774,8 @@
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('appPage').classList.remove('active');
     document.getElementById('passwordPage').style.display = '';
-    document.getElementById('pwTitle').textContent = arrivedBy === 'invite' ? 'Welcome! Set your password' : 'Set a new password';
-    const isInvite = arrivedBy === 'invite';
+    document.getElementById('pwTitle').textContent = (inviteToken || arrivedBy === 'invite') ? 'Welcome! Set up your account' : 'Set a new password';
+    const isInvite = !!inviteToken || arrivedBy === 'invite';
     document.getElementById('nameFields').style.display = isInvite ? '' : 'none';
     document.getElementById('firstName').required = isInvite;
   }
@@ -776,13 +787,28 @@
     const p1 = document.getElementById('newPassword').value;
     const p2 = document.getElementById('newPassword2').value;
     err.classList.remove('show');
-    const isInvite = arrivedBy === 'invite';
+    const isInvite = !!inviteToken || arrivedBy === 'invite';
     const fullName = (document.getElementById('firstName').value.trim() + ' ' + document.getElementById('lastName').value.trim()).trim();
     if (isInvite && !document.getElementById('firstName').value.trim()) { err.textContent = 'Please enter your first name.'; err.classList.add('show'); return; }
     if (p1.length < 8) { err.textContent = 'Use at least 8 characters.'; err.classList.add('show'); return; }
     if (p1 !== p2) { err.textContent = 'The two passwords do not match.'; err.classList.add('show'); return; }
     btn.disabled = true; btn.textContent = 'Saving...';
     try {
+      if (inviteToken) {
+        // Our own invitation: the account is created only now
+        const { data: made, error: mErr } = await sb.functions.invoke('accept-invite', { body: { token: inviteToken, name: fullName, password: p1 } });
+        if (mErr) throw new Error(await fnErrorMessage(mErr));
+        if (made && made.error) throw new Error(made.error);
+        const { data: signed, error: sErr } = await sb.auth.signInWithPassword({ email: made.email, password: p1 });
+        if (sErr) throw sErr;
+        inviteToken = '';
+        history.replaceState(null, '', location.pathname);
+        document.getElementById('passwordPage').style.display = 'none';
+        document.getElementById('pwForm').reset();
+        await enterApp(signed.user);
+        toast('Welcome! Your account is ready');
+        return;
+      }
       const { data, error } = await sb.auth.updateUser({ password: p1 });
       if (error) throw error;
       if (isInvite) {
@@ -827,8 +853,34 @@
     window.scrollTo(0, 0);
   }
 
+  async function fnErrorMessage(error) {
+    let msg = error.message;
+    try { const j = await error.context.json(); if (j && j.error) msg = j.error; } catch (_) {}
+    return msg;
+  }
+
+  // Someone opened an invitation link: check it, then show the "set up your account" page
+  async function startInviteFlow() {
+    const { data, error } = await sb.functions.invoke('accept-invite', { body: { action: 'check', token: inviteToken } });
+    let msg = '';
+    if (error) msg = await fnErrorMessage(error); else if (data && data.error) msg = data.error;
+    if (msg) {
+      const err = document.getElementById('loginError');
+      err.textContent = msg;
+      err.classList.add('show');
+      inviteToken = '';
+      history.replaceState(null, '', location.pathname);
+      return;
+    }
+    const roleName = data.role === 'operations' ? 'Operations Manager' : 'Admin';
+    document.getElementById('pwLead').textContent = 'You were invited as ' + roleName + ' (' + data.email + '). Add your name and choose a password.';
+    showSetPassword();
+  }
+  if (inviteToken) startInviteFlow();
+
   // Already signed in from earlier? Go straight to the portal.
   sb.auth.getSession().then(async ({ data }) => {
+    if (inviteToken) return;
     const session = data && data.session;
     if (needsPassword) {
       if (session) { showSetPassword(); return; }
@@ -1587,13 +1639,25 @@ function checkDuplicate(f, excludeId) {
         <td class="muted">${esc(m.joined)}</td>${removeCell(m)}
       </tr>`).join('');
 
+    const isOwnerView = currentUser && currentUser.role === 'owner';
     document.getElementById('inviteList').innerHTML = invites.length
-      ? invites.map(i => `
+      ? invites.map(i => {
+          const sentDays = Math.max(0, Math.floor((Date.now() - new Date(i.created_at)) / 864e5));
+          const left = i.expires_at ? Math.ceil((new Date(i.expires_at) - Date.now()) / 864e5) : null;
+          const sent = sentDays === 0 ? 'Sent today' : 'Sent ' + sentDays + ' day' + (sentDays > 1 ? 's' : '') + ' ago';
+          const expiry = left === null ? '' : left <= 0 ? 'link expired' : 'link works for ' + left + ' more day' + (left > 1 ? 's' : '');
+          const expired = left !== null && left <= 0;
+          return `
         <li class="invite-item">
-          <span class="invite-text">${esc(i.email)} as ${esc(i.role)}</span>
-          <span class="badge badge-pending">Waiting to accept</span>
-        </li>`).join('')
-      : '<li class="invite-empty muted">No invitations yet.</li>';
+          <span class="invite-text">${esc(i.email)} as ${esc(i.role)}<br><span class="muted">${esc(sent)}${expiry ? ', ' + esc(expiry) : ''}</span></span>
+          <span class="invite-actions">
+            <span class="badge ${expired ? 'badge-rejected' : 'badge-pending'}">${expired ? 'Expired' : 'Waiting to accept'}</span>
+            ${isOwnerView ? `<button type="button" class="btn btn-secondary btn-sm" data-newlink="${esc(i.email)}" data-rolekey="${esc(i.roleKey)}">New link</button>
+            <button type="button" class="btn btn-outline-red btn-sm" data-cancel="${esc(i.email)}">Cancel</button>` : ''}
+          </span>
+        </li>`;
+        }).join('')
+      : '<li class="invite-empty muted">Nobody is waiting. Invitations you send will show here until the person accepts.</li>';
     renderDupReport();
   }
 
@@ -1608,12 +1672,28 @@ function checkDuplicate(f, excludeId) {
       joined: new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     }));
     if (currentUser.role === 'owner' || currentUser.role === 'operations') {
-      const { data: inv } = await sb.from('invites').select('email, role').order('created_at', { ascending: false });
-      invites = (inv || []).map(i => ({ email: i.email, role: ROLE_LABEL[i.role] || i.role }));
+      const { data: inv } = await sb.from('invites').select('email, role, created_at, expires_at').order('created_at', { ascending: false });
+      invites = (inv || []).map(i => ({ email: i.email, roleKey: i.role, role: ROLE_LABEL[i.role] || i.role, created_at: i.created_at, expires_at: i.expires_at }));
     } else {
       invites = [];
     }
     renderTeam();
+  }
+
+  function inviteLinkFor(token) { return location.origin + location.pathname + '#invite=' + token; }
+
+  async function requestInvite(email, roleKey) {
+    const { data, error } = await sb.functions.invoke('invite-user', { body: { email, role: roleKey } });
+    if (error) throw new Error(await fnErrorMessage(error));
+    if (data && data.error) throw new Error(data.error);
+    return data;
+  }
+
+  function showInviteLink(email, token) {
+    el('inviteLinkTitle').textContent = 'Invitation ready for ' + email;
+    el('inviteLinkInput').value = inviteLinkFor(token);
+    el('inviteLinkBox').hidden = false;
+    el('inviteLinkBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   async function sendInvite(event) {
@@ -1621,31 +1701,58 @@ function checkDuplicate(f, excludeId) {
     const form = event.target;
     const email = document.getElementById('inviteEmail').value.trim();
     const roleKey = document.getElementById('inviteRole').value === 'Admin' ? 'admin' : 'operations';
-    const taken = team.some(m => m.email.toLowerCase() === email.toLowerCase())
-               || invites.some(i => i.email.toLowerCase() === email.toLowerCase());
-    if (taken) { toast('That email already has access or an invitation'); return; }
+    if (team.some(m => m.email.toLowerCase() === email.toLowerCase())) { toast('That email already has access'); return; }
+    if (invites.some(i => i.email.toLowerCase() === email.toLowerCase())) { toast('Already invited. Use "New link" or "Cancel" in the list below'); return; }
     const btn = form.querySelector('button[type=submit]');
-    btn.disabled = true; btn.textContent = 'Sending...';
+    btn.disabled = true; btn.textContent = 'Preparing...';
     try {
-      const { data, error } = await sb.functions.invoke('invite-user', {
-        body: { email, role: roleKey, redirectTo: location.origin + location.pathname }
-      });
-      if (error) {
-        let msg = error.message;
-        try { const j = await error.context.json(); if (j && j.error) msg = j.error; } catch (_) {}
-        throw new Error(msg);
-      }
-      if (data && data.error) throw new Error(data.error);
+      const data = await requestInvite(email, roleKey);
       addActivity('invited', `${email} as ${ROLE_LABEL[roleKey]}`);
       form.reset();
+      showInviteLink(email, data.token);
       await loadTeam();
-      toast('Invitation sent');
+      toast('Invitation ready. Copy the link and send it');
     } catch (e) {
-      toast(e.message || 'Could not send the invitation');
+      toast(e.message || 'Could not create the invitation');
     } finally {
       btn.disabled = false; btn.textContent = 'Send invitation';
     }
   }
+
+  // Copy link, New link, Cancel
+  document.addEventListener('click', async function (e) {
+    if (e.target.closest('#copyInviteBtn')) {
+      const input = el('inviteLinkInput');
+      input.select();
+      try { await navigator.clipboard.writeText(input.value); } catch (_) { document.execCommand('copy'); }
+      toast('Link copied');
+      return;
+    }
+    const nl = e.target.closest('[data-newlink]');
+    const cn = e.target.closest('[data-cancel]');
+    if (!(nl || cn) || !currentUser || currentUser.role !== 'owner') return;
+    const btn = nl || cn;
+    const email = nl ? nl.dataset.newlink : cn.dataset.cancel;
+    if (cn && !confirm('Cancel the invitation for ' + email + '? Their link will stop working.')) return;
+    btn.disabled = true;
+    try {
+      if (nl) {
+        const data = await requestInvite(email, nl.dataset.rolekey);
+        showInviteLink(email, data.token);
+        toast('New link ready. The old link no longer works');
+      } else {
+        const { error } = await sb.from('invites').delete().eq('email', email);
+        if (error) throw error;
+        addActivity('cancelled', email);
+        el('inviteLinkBox').hidden = true;
+        toast('Invitation cancelled');
+      }
+      await loadTeam();
+    } catch (err) {
+      toast(err.message || 'Something went wrong');
+      btn.disabled = false;
+    }
+  });
 
   // Owner removes a person (calls the remove-user function)
   document.addEventListener('click', async function (e) {
