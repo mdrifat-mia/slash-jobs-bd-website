@@ -1644,7 +1644,7 @@ function checkDuplicate(f, excludeId) {
       ? invites.map(i => {
           const sentDays = Math.max(0, Math.floor((Date.now() - new Date(i.created_at)) / 864e5));
           const left = i.expires_at ? Math.ceil((new Date(i.expires_at) - Date.now()) / 864e5) : null;
-          const sent = sentDays === 0 ? 'Sent today' : 'Sent ' + sentDays + ' day' + (sentDays > 1 ? 's' : '') + ' ago';
+          const sent = sentDays === 0 ? 'Link created today' : 'Link created ' + sentDays + ' day' + (sentDays > 1 ? 's' : '') + ' ago';
           const expiry = left === null ? '' : left <= 0 ? 'link expired' : 'link works for ' + left + ' more day' + (left > 1 ? 's' : '');
           const expired = left !== null && left <= 0;
           return `
