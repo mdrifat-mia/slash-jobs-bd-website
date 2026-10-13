@@ -440,6 +440,10 @@
     <h1 id="pwTitle">Set your password</h1>
     <p class="lead">Choose a password you will remember. At least 8 characters.</p>
     <form id="pwForm" onsubmit="savePassword(event)">
+      <div id="nameFields" style="display:none">
+        <div class="field"><label for="firstName">First name <span class="req">*</span></label><input type="text" id="firstName" placeholder="e.g., Tasfia" autocomplete="given-name" maxlength="40"></div>
+        <div class="field"><label for="lastName">Last name <span class="opt">(optional)</span></label><input type="text" id="lastName" placeholder="e.g., Rahman" autocomplete="family-name" maxlength="40"></div>
+      </div>
       <div class="field"><label for="newPassword">New password</label><input type="password" id="newPassword" placeholder="At least 8 characters" autocomplete="new-password" required></div>
       <div class="field"><label for="newPassword2">Repeat password</label><input type="password" id="newPassword2" placeholder="Type it again" autocomplete="new-password" required></div>
       <div class="field-error login-error" id="pwError" role="alert"></div>
@@ -757,6 +761,9 @@
     document.getElementById('appPage').classList.remove('active');
     document.getElementById('passwordPage').style.display = '';
     document.getElementById('pwTitle').textContent = arrivedBy === 'invite' ? 'Welcome! Set your password' : 'Set a new password';
+    const isInvite = arrivedBy === 'invite';
+    document.getElementById('nameFields').style.display = isInvite ? '' : 'none';
+    document.getElementById('firstName').required = isInvite;
   }
 
   async function savePassword(event) {
@@ -766,12 +773,19 @@
     const p1 = document.getElementById('newPassword').value;
     const p2 = document.getElementById('newPassword2').value;
     err.classList.remove('show');
+    const isInvite = arrivedBy === 'invite';
+    const fullName = (document.getElementById('firstName').value.trim() + ' ' + document.getElementById('lastName').value.trim()).trim();
+    if (isInvite && !document.getElementById('firstName').value.trim()) { err.textContent = 'Please enter your first name.'; err.classList.add('show'); return; }
     if (p1.length < 8) { err.textContent = 'Use at least 8 characters.'; err.classList.add('show'); return; }
     if (p1 !== p2) { err.textContent = 'The two passwords do not match.'; err.classList.add('show'); return; }
     btn.disabled = true; btn.textContent = 'Saving...';
     try {
       const { data, error } = await sb.auth.updateUser({ password: p1 });
       if (error) throw error;
+      if (isInvite) {
+        const { error: nameErr } = await sb.rpc('set_my_name', { new_name: fullName });
+        if (nameErr) throw nameErr;
+      }
       history.replaceState(null, '', location.pathname);
       document.getElementById('passwordPage').style.display = 'none';
       document.getElementById('pwForm').reset();
