@@ -208,7 +208,7 @@
   .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
   .badge-pending   { background: var(--amber-bg); color: var(--amber); }
-  .badge-published, .badge-approved { background: var(--green-100); color: var(--green-800); }
+  .badge-published, .badge-approved, .badge-live { background: var(--green-100); color: var(--green-800); }
   .badge-rejected  { background: var(--red-50); color: var(--red-700); }
   .job-list { display: grid; gap: 10px; }
   .job-row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -642,34 +642,43 @@
     team:   { label: 'Team and activity', title: 'Team and activity', sub: 'People with access to this portal.', short: 'Team', icon: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6M16 4.8a3.5 3.5 0 010 6.4M18 14.3c2.2.7 3.5 2.6 3.5 5.7"/>' }
   };
 
-  let reviewJobs = [];   // jobs that are pending, approved or rejected (loaded from Supabase)
-  let knownJobs = [];    // jobs that were published directly by the owner (loaded from Supabase)
+  let jobRows = [];      // jobs this person may see (owner and operations: all, admin: only their own)
+  let reviewJobs = [];   // the review queue: waiting jobs, plus jobs someone else already decided
+  let registry = [];     // every job, with only the facts needed to spot duplicates
 
   // One row of the jobs table -> the shape the page uses
   function rowToJob(r) {
+    const when = (r.no_deadline || !r.apply_by) ? 'No deadline' : formatDate(r.apply_by);
     return {
-      id: r.id, createdBy: r.sent_by,
+      id: r.id, createdBy: r.created_by, reviewedBy: r.reviewed_by || null,
       link: r.apply_link || '', title: r.title, company: r.company, location: r.location || '',
       source: r.source || '', applyISO: r.apply_by || '', style: r.work_style, level: r.level,
-      applyBy: r.apply_by ? formatDate(r.apply_by) : 'No deadline',
-      by: r.apply_by ? formatDate(r.apply_by) : 'No deadline',
-      sentBy: (r.sender && r.sender.name) || 'Former member',
-      decidedBy: (r.decider && r.decider.name) || '',
+      applyBy: when, by: when,
+      sentBy: r.created_by_name || 'Former member',
+      decidedBy: r.reviewed_by_name || '',
       status: r.status, reason: r.reject_reason || '', draft: '',
-      text: [r.do_list, r.need_list, r.about].filter(Boolean).join(' ').trim(), pay: r.pay || ''
+      text: [r.duties, r.requirements, r.about].filter(Boolean).join(' ').trim(), pay: r.pay || ''
     };
   }
 
   async function loadJobs() {
     if (!currentUser) return;
-    const { data, error } = await sb.from('jobs')
-      .select('*, sender:profiles!jobs_sent_by_fkey(name), decider:profiles!jobs_decided_by_fkey(name)')
-      .order('created_at', { ascending: true });
-    if (error) { toast('Could not load jobs: ' + error.message); return; }
+    const [jobsRes, regRes] = await Promise.all([
+      sb.from('jobs').select('*').order('created_at', { ascending: true }),
+      sb.rpc('job_registry')
+    ]);
+    if (jobsRes.error) { toast('Could not load jobs: ' + jobsRes.error.message); return; }
+    if (regRes.error) toast('Could not load the duplicate list: ' + regRes.error.message);
     const drafts = new Map(reviewJobs.map(j => [j.id, j.draft]));
-    const rows = (data || []).map(rowToJob);
-    reviewJobs = rows.filter(j => j.status !== 'published').map(j => ({ ...j, draft: drafts.get(j.id) || '' }));
-    knownJobs = rows.filter(j => j.status === 'published').map(j => ({ ...j, by: j.sentBy }));
+    jobRows = (jobsRes.data || []).map(rowToJob);
+    reviewJobs = jobRows
+      .filter(j => j.status === 'pending' || (j.reviewedBy && j.reviewedBy !== j.createdBy))
+      .map(j => ({ ...j, draft: drafts.get(j.id) || '' }));
+    registry = (regRes.data || []).map(r => ({
+      id: r.id, fromReview: true, by: r.created_by_name || 'Former member', status: r.status,
+      title: r.title, company: r.company, location: r.location || '', link: r.apply_link || '',
+      applyISO: r.apply_by || '', source: '', text: r.body || '', pay: r.pay || ''
+    }));
     renderReview(); renderJobs(); renderTeam(); runDupCheck();
   }
 
@@ -979,20 +988,11 @@
   /* ---------- Duplicate checks ---------- */
   const el = id => document.getElementById(id);
 
-  const STATUS_LABEL = { published: 'Live now', approved: 'Live now', pending: 'Pending review', rejected: 'Rejected' };
+  const STATUS_LABEL = { live: 'Live now', published: 'Live now', approved: 'Live now', pending: 'Pending review', rejected: 'Rejected' };
   function statusLabel(s) { return STATUS_LABEL[s] || s; }
 
-  // Every job the portal knows about: live jobs plus everything in the review queue
-  function jobRegistry() {
-    return [
-      ...knownJobs,
-      ...reviewJobs.map(j => ({
-        id: j.id, fromReview: true, by: j.sentBy, status: j.status,
-        title: j.title, company: j.company, location: j.location || '',
-        link: j.link || '', applyISO: j.applyISO || '', source: j.source || '', text: j.text || '', pay: j.pay || ''
-      }))
-    ];
-  }
+  // Every job the portal knows about (loaded from the database)
+  function jobRegistry() { return registry; }
 
 /* ---------- 1. Links ---------- */
 const TRACKING = /^(utm_|fbclid|gclid|mc_|ref$|ref_|source$|src$|trk|trackingid|campaign)/;
@@ -1470,18 +1470,18 @@ function checkDuplicate(f, excludeId) {
 
     const row = {
       apply_link: f.link,
-      link_key: jobKey(f.link) || normUrl(f.link),
+      link_norm: jobKey(f.link) || normUrl(f.link),
       title: f.title, company: f.company, location: f.location,
       work_style: el('workStyle').value, level: el('level').value,
       pay: f.pay || null, source: el('source').value,
-      apply_by: f.applyISO || null,
-      posted_date: isOwner ? (el('postedDate').value || null) : null,
+      apply_by: noDeadline.checked ? null : (f.applyISO || null),
+      no_deadline: noDeadline.checked,
+      employer_posted: isOwner ? (el('postedDate').value || null) : null,
       about: el('about').value.trim() || null,
-      do_list: el('doList').value.trim(), need_list: el('needList').value.trim(),
+      duties: el('doList').value.trim(), requirements: el('needList').value.trim(),
       suits: el('suits').value.trim() || null,
       before_apply: isOwner ? (el('beforeApply').value.trim() || null) : null,
-      status: isOwner ? 'published' : 'pending',
-      sent_by: currentUser.id
+      status: isOwner ? 'live' : 'pending'
     };
     const { error } = await sb.from('jobs').insert(row);
     btn.textContent = btnLabel;
@@ -1522,10 +1522,10 @@ function checkDuplicate(f, excludeId) {
   }
 
   function reviewCard(j) {
-    const badge = { pending: ['badge-pending', 'Pending'], approved: ['badge-approved', 'Approved'], rejected: ['badge-rejected', 'Rejected'] }[j.status];
+    const badge = { pending: ['badge-pending', 'Pending'], live: ['badge-approved', 'Live'], rejected: ['badge-rejected', 'Rejected'] }[j.status];
     let bottom;
-    if (j.status === 'approved') {
-      bottom = '<div class="decision-result">Approved. This job will go live.</div>';
+    if (j.status === 'live') {
+      bottom = '<div class="decision-result">Approved. This job is live.</div>';
     } else if (j.status === 'rejected') {
       bottom = `<div class="decision-result">Rejected. Sent back to ${esc(j.sentBy)}.<div class="result-reason">${esc(j.reason)}</div></div>`;
     } else {
@@ -1537,7 +1537,7 @@ function checkDuplicate(f, excludeId) {
         </div>`;
     }
     return `
-    <article class="review-card ${j.status}" data-id="${j.id}">
+    <article class="review-card ${j.status === 'live' ? 'approved' : j.status}" data-id="${j.id}">
       <div class="review-top">
         <div><h3>${esc(j.title)}</h3><div class="company">${esc(j.company)}</div></div>
         <span class="badge ${badge[0]}">${badge[1]}</span>
@@ -1570,7 +1570,7 @@ function checkDuplicate(f, excludeId) {
     const ta = e.target.closest('textarea');
     if (!ta) return;
     const card = ta.closest('.review-card');
-    const job = reviewJobs.find(j => j.id === Number(card.dataset.id));
+    const job = reviewJobs.find(j => String(j.id) === card.dataset.id);
     job.draft = ta.value;
     card.querySelector('[data-action="reject"]').disabled = !ta.value.trim();
   });
@@ -1579,14 +1579,14 @@ function checkDuplicate(f, excludeId) {
     const btn = e.target.closest('[data-action]');
     if (!btn || btn.disabled) return;
     const card = btn.closest('.review-card');
-    const job = reviewJobs.find(j => j.id === Number(card.dataset.id));
+    const job = reviewJobs.find(j => String(j.id) === card.dataset.id);
     if (!job) return;
     const rejecting = btn.dataset.action === 'reject';
     if (rejecting && !job.draft.trim()) return;
     card.querySelectorAll('button').forEach(b => { b.disabled = true; });
     const change = rejecting
-      ? { status: 'rejected', reject_reason: job.draft.trim(), decided_by: currentUser.id }
-      : { status: 'approved', decided_by: currentUser.id };
+      ? { status: 'rejected', reject_reason: job.draft.trim() }
+      : { status: 'live' };
     const { data, error } = await sb.from('jobs').update(change).eq('id', job.id).eq('status', 'pending').select('id');
     if (error) { toast('Could not save: ' + error.message); await loadJobs(); return; }
     if (!data || !data.length) { toast('Someone else already decided this job'); await loadJobs(); return; }
@@ -1598,25 +1598,24 @@ function checkDuplicate(f, excludeId) {
   /* ---------- My jobs and team ---------- */
   function renderJobs() {
     if (!currentUser) return;
-    const mine = [...reviewJobs, ...knownJobs].filter(j => j.createdBy === currentUser.id).sort((a, b) => b.id - a.id);
-    const label = { pending: 'Pending review', approved: 'Approved', rejected: 'Rejected', published: 'Published' };
+    const mine = jobRows.filter(j => j.createdBy === currentUser.id).reverse();
+    const label = { pending: 'Pending review', live: 'Live', rejected: 'Rejected' };
     document.getElementById('jobList').innerHTML = mine.length
       ? mine.map(j => `
         <div class="job-row">
           <div><h3>${esc(j.title)}</h3><p>${esc(j.company)}, ${esc(j.location)}. Apply by ${esc(j.applyBy)}</p></div>
-          <span class="badge badge-${j.status}">${label[j.status] || esc(j.status)}</span>
+          <span class="badge badge-${esc(j.status)}">${esc(label[j.status] || j.status)}</span>
           ${j.status === 'rejected' && j.reason ? `<div class="job-reason"><span>Reason from ${esc(j.decidedBy || 'the reviewer')}</span><p>${esc(j.reason)}</p></div>` : ''}
         </div>`).join('')
       : '<div class="empty"><strong>No jobs yet</strong>Jobs you submit will show up here.</div>';
   }
 
-  function liveCount() {
-    return knownJobs.filter(j => j.status === 'published').length + reviewJobs.filter(j => j.status === 'approved').length;
-  }
+  function liveCount() { return registry.filter(j => j.status === 'live').length; }
 
   function workloadOf(name) {
-    const sent = reviewJobs.filter(j => j.sentBy === name);
-    return { sent: sent.length, reviewed: reviewJobs.filter(j => j.decidedBy === name).length, waiting: sent.filter(j => j.status === 'pending').length };
+    const sent = jobRows.filter(j => j.sentBy === name);
+    const reviewed = jobRows.filter(j => j.decidedBy === name && j.reviewedBy && j.reviewedBy !== j.createdBy);
+    return { sent: sent.length, reviewed: reviewed.length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
   function removeCell(m) {
@@ -1629,7 +1628,7 @@ function checkDuplicate(f, excludeId) {
     document.getElementById('teamActionsTh').style.display = (currentUser && currentUser.role === 'owner') ? '' : 'none';
     document.getElementById('statWaiting').textContent = pendingCount();
     document.getElementById('statLive').textContent = liveCount();
-    document.getElementById('statRejected').textContent = reviewJobs.filter(j => j.status === 'rejected').length;
+    document.getElementById('statRejected').textContent = registry.filter(j => j.status === 'rejected').length;
 
     document.getElementById('workBody').innerHTML = team.map(m => {
       const w = workloadOf(m.name);
