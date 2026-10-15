@@ -283,3 +283,7 @@ section.why-slash .feature p {
     letter-spacing: -.01em !important;
   }
 }
+
+/* Align the About Slash Jobs BD description cleanly */
+.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{text-align:left!important;text-align-last:left!important;line-height:1.75!important;max-width:360px;margin-left:0;margin-right:auto;}
+@media(max-width:768px){.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{max-width:100%;}}
