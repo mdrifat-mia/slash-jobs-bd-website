@@ -270,3 +270,16 @@ section.why-slash .feature p {
     letter-spacing: -.01em !important;
   }
 }
+
+
+/* Compact footer disclaimer on mobile */
+@media (max-width: 640px) {
+  .footer-bottom p:last-child {
+    font-size: .65rem !important;
+    line-height: 1.45 !important;
+    text-align: left !important;
+    text-align-last: left !important;
+    white-space: normal !important;
+    letter-spacing: -.01em !important;
+  }
+}
