@@ -709,6 +709,7 @@
       applyISO: r.apply_by || '', by: r.apply_by ? formatDate(r.apply_by) : 'No deadline',
       text: [r.duties, r.requirements, r.about].filter(Boolean).join(' '),
       status: r.status, reason: r.reject_reason || '',
+      department: r.department || '', jobRef: r.job_ref || '', ageLimit: r.age_limit || '',
       createdBy: r.created_by, sentBy: r.created_by_name || 'A team member',
       reviewedBy: r.reviewed_by, decidedBy: r.reviewed_by_name || '',
       createdAt: r.created_at, reviewedAt: r.reviewed_at, publishedAt: r.published_at,
@@ -1629,6 +1630,9 @@ function checkDuplicate(f, excludeId) {
           <button type="button" class="btn btn-outline-red" data-action="reject" ${j.draft.trim() ? '' : 'disabled'}>Reject</button>
         </div>`;
     }
+    // Optional details: shown only when the admin filled them in
+    const extraFacts = [['Department', j.department], ['Job ID', j.jobRef], ['Age limit', j.ageLimit]]
+      .filter(x => x[1]).map(x => `<div><dt>${x[0]}</dt><dd>${esc(x[1])}</dd></div>`).join('');
     // The apply link opens in a new tab. Anything that is not http or https is never turned into a link.
     const linkHtml = isHttpUrl(j.link)
       ? `<a href="${esc(j.link.trim())}" target="_blank" rel="noopener noreferrer" class="open-link">Open apply link <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a>`
@@ -1645,6 +1649,7 @@ function checkDuplicate(f, excludeId) {
         <div><dt>Level</dt><dd>${esc(j.level)}</dd></div>
         <div><dt>Apply by</dt><dd>${esc(j.by)}</dd></div>
         <div><dt>Sent by</dt><dd>${esc(j.sentBy)}</dd></div>
+        ${extraFacts}
       </dl>
       ${linkHtml}
       ${bottom}
