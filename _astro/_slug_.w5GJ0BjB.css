@@ -232,3 +232,28 @@ section.why-slash .feature p {
     box-shadow: 0 14px 30px rgba(37, 99, 235, .16) !important;
   }
 }
+
+
+/* Premium black theme preview for the four Why Slash Jobs BD cards */
+section.why-slash .feature {
+  background: linear-gradient(145deg, #18181B 0%, #09090B 58%, #1F2937 100%) !important;
+  border: 1px solid #3F3F46 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .20) !important;
+}
+section.why-slash .feature::before {
+  background: linear-gradient(90deg, #A1A1AA, #E5E7EB) !important;
+  height: 4px !important;
+}
+section.why-slash .feature h3 {
+  color: #FAFAFA !important;
+}
+section.why-slash .feature p {
+  color: #D4D4D8 !important;
+}
+@media (hover: hover) and (min-width: 769px) {
+  section.why-slash .feature:hover {
+    background: linear-gradient(145deg, #27272A 0%, #111113 58%, #334155 100%) !important;
+    border-color: #71717A !important;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, .28) !important;
+  }
+}
