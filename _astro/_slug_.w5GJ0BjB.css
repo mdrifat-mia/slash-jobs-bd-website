@@ -5,3 +5,98 @@ footer[data-astro-cid-sz7xmlte]{background-color:#0F172A;color:#FFFFFF}
 footer[data-astro-cid-sz7xmlte] .footer-section h3[data-astro-cid-sz7xmlte]{color:#FFFFFF}
 footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte],footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:visited{color:#CBD5E1}
 footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover,footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:focus-visible{color:#38BDF8;text-decoration:underline}
+
+
+/* Slash Jobs BD mobile responsive layout safeguards */
+@media (max-width: 640px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+  img, video, iframe, svg {
+    max-width: 100%;
+  }
+  img, video {
+    height: auto;
+  }
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  nav {
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  .nav-links {
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: .5rem 1rem;
+    margin-left: 0;
+  }
+  .nav-links li {
+    margin-bottom: 0;
+  }
+  main {
+    padding: 1.25rem 0;
+  }
+  .hero {
+    padding: 1.5rem 1rem;
+    margin-bottom: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.4rem, 6vw, 1.8rem);
+    overflow-wrap: anywhere;
+  }
+  .search-container {
+    width: 100%;
+    max-width: 100%;
+  }
+  .search-container input,
+  .search-container button {
+    width: 100%;
+    max-width: 100%;
+  }
+  .jobs-grid,
+  .features-grid,
+  .footer-content {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .job-card,
+  .card,
+  .feature,
+  .why-slash {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .job-card-header,
+  .job-meta,
+  .job-footer,
+  .job-details,
+  .section-header {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  p, li, a, h1, h2, h3, h4, h5, h6, .meta-value {
+    overflow-wrap: anywhere;
+  }
+  table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  input, select, textarea, button, .btn {
+    max-width: 100%;
+  }
+}
