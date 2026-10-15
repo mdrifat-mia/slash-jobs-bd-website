@@ -100,3 +100,12 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover,footer[data-ast
     max-width: 100%;
   }
 }
+
+
+/* Keep the footer disclaimer on one line on desktop; allow wrapping on small screens */
+@media (min-width: 769px) {
+  .footer-bottom p:last-child {
+    white-space: nowrap;
+    font-size: .78rem;
+  }
+}
