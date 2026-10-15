@@ -340,29 +340,3 @@ a.logo::after {
   vertical-align: middle;
 }
 
-
-/* Compact brand tagline beneath the Slash Jobs BD wordmark */
-a.logo {
-  align-items: center;
-  gap: .55rem;
-}
-a.logo span {
-  display: inline-block;
-  line-height: 1.05;
-}
-a.logo span::after {
-  content: "JOBS • INTERNSHIPS • CAREERS";
-  display: block;
-  margin-top: .28rem;
-  color: #526176;
-  font-size: .48rem;
-  font-weight: 600;
-  letter-spacing: 1.05px;
-  line-height: 1.2;
-}
-@media (max-width: 480px) {
-  a.logo { gap: .35rem; font-size: 1.2rem; }
-  a.logo::before { width: 27px; height: 27px; flex-basis: 27px; }
-  a.logo::after { width: 23px; height: 15px; flex-basis: 23px; }
-  a.logo span::after { font-size: .39rem; letter-spacing: .7px; }
-}
