@@ -60,12 +60,10 @@
   .login-box .wordmark { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; margin-bottom: 18px; }
   .login-box h1 { font-size: 24px; letter-spacing: -0.02em; font-weight: 800; }
   .login-box .lead { color: var(--muted); margin: 4px 0 18px; }
-  .login-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .login-row a { color: var(--green-700); font-weight: 600; font-size: 13px; text-decoration: none; white-space: nowrap; }
-  .login-row .check { white-space: nowrap; font-size: min(11px, 3.6vw); gap: 6px; align-items: center; }
-  .login-row .check input[type=checkbox] { width: 13px; height: 13px; margin-top: 0; }
-  .login-row a { font-size: min(11px, 3.6vw); margin-left: auto; }
-  .login-row { gap: 6px; flex-wrap: nowrap; }
+  .login-row { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .login-row a { color: var(--green-700); font-weight: 600; font-size: 13px; text-decoration: none; white-space: nowrap; margin-left: auto; }
+  .login-row .check { white-space: nowrap; font-size: 13px; gap: 6px; align-items: center; }
+  .login-row .check input[type=checkbox] { width: 14px; height: 14px; margin-top: 0; }
   .login-box .field-error { margin: 0 0 12px; }
 
   /* FORM CONTROLS */
@@ -122,12 +120,12 @@
   .who-info { text-align: right; line-height: 1.25; }
   .who-info strong { display: block; font-size: 14px; }
   .who-info span { font-size: 12px; opacity: .8; }
-  .role-eyebrow { --dot: #0B7D5F; --glow: rgba(11,125,95,.20); --tint: #E4F3EC; --edge: #BFDFD0; display: flex; width: fit-content; margin-left: auto; align-items: center; gap: 4px; font-size: 8px; font-weight: 600; letter-spacing: .02em; color: var(--txt, var(--ink)); background: linear-gradient(135deg, #FFFFFF 0%, var(--tint) 100%); border: 1px solid var(--edge); border-radius: 999px; padding: 0 6px 0 4px; margin-top: -16px; margin-bottom: 21px; box-shadow: 0 1px 2px rgba(24,35,31,.06), 0 6px 14px -6px var(--glow), inset 0 1px 0 #fff; }
+  .role-eyebrow { --dot: #0B7D5F; --glow: rgba(11,125,95,.20); --tint: #E4F3EC; --edge: #BFDFD0; display: flex; width: fit-content; margin: 0 0 12px auto; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .02em; line-height: 1.4; color: var(--txt, var(--ink)); background: linear-gradient(135deg, #FFFFFF 0%, var(--tint) 100%); border: 1px solid var(--edge); border-radius: 999px; padding: 2px 10px 2px 8px; box-shadow: 0 1px 2px rgba(24,35,31,.06), 0 6px 14px -6px var(--glow), inset 0 1px 0 #fff; }
   .role-eyebrow[data-role="owner"] { --dot: #E0A526; --glow: rgba(224,165,38,.32); --tint: #FFF3D1; --edge: #EFD9A0; }
   .role-eyebrow[data-role="operations"] { --dot: #2F6FE8; --glow: rgba(47,111,232,.42); --tint: #CFE0FF; --edge: #93B4F2; --txt: #17387D; }
   .role-eyebrow[data-role="admin"] { --dot: #0B9B6E; --glow: rgba(11,155,110,.42); --tint: #C8EDDC; --edge: #86CDAE; --txt: #05482F; }
-  .role-eyebrow::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 0 1.5px var(--glow); animation: rolePulse 2.6s ease-in-out infinite; }
-  @keyframes rolePulse { 0%, 100% { box-shadow: 0 0 0 1.5px var(--glow); } 50% { box-shadow: 0 0 0 2.5px transparent; } }
+  .role-eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 0 2px var(--glow); animation: rolePulse 2.6s ease-in-out infinite; }
+  @keyframes rolePulse { 0%, 100% { box-shadow: 0 0 0 2px var(--glow); } 50% { box-shadow: 0 0 0 4px transparent; } }
   @media (prefers-reduced-motion: reduce) { .role-eyebrow::before { animation: none; } }
   .avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--green-700); font-weight: 800; font-size: 13px; flex-shrink: 0; }
 
@@ -146,6 +144,7 @@
   .page-head { margin-bottom: 24px; }
   .page-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
   .page-head p { color: var(--muted); margin-top: 6px; font-size: 15px; }
+  .page-head p.role-eyebrow { color: var(--txt, var(--ink)); margin-top: 0; font-size: 11px; }
   .view { display: none; }
   .view.active { display: block; }
 
@@ -178,6 +177,7 @@
   .facts dd { font-weight: 600; margin-top: 2px; }
   .open-link { display: inline-flex; align-items: center; gap: 6px; color: var(--green-700); font-weight: 700; text-decoration: none; }
   .open-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .open-link-bad { color: var(--red-700); font-weight: 600; }
   .decision { display: flex; gap: 12px; margin-top: 16px; }
   .decision .btn { flex: 1; padding: 11px 18px; }
   .decision-result { margin-top: 16px; padding: 12px 14px; border-radius: 10px; font-weight: 600; }
@@ -229,7 +229,6 @@
   .invite-text { overflow-wrap: anywhere; min-width: 0; }
   .invite-side { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
   .invite-empty { padding: 8px 0; }
-  .proto-note { margin-top: 28px; color: var(--muted); font-size: 13px; }
 
   /* DUPLICATE CHECKS */
   .dup-box { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; }
@@ -608,8 +607,6 @@
           </div>
         </div>
       </section>
-
-      <p class="proto-note">Sign in, team, jobs and reviews are live and saved. The duplicate report is still a prototype and resets on refresh.</p>
     </main>
   </div>
 </div>
@@ -678,6 +675,11 @@
     return '';
   }
 
+  // Only real web links are allowed. Blocks javascript:, data: and other schemes.
+  function isHttpUrl(u) {
+    try { const x = new URL(String(u).trim()); return x.protocol === 'http:' || x.protocol === 'https:'; } catch (e) { return false; }
+  }
+
   /* ---------- Roles ---------- */
   const ROLE_META = {
     owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'team'] },
@@ -697,7 +699,7 @@
   let jobs = [];              // every job this person is allowed to see
   let reviewJobs = [];        // pending jobs first, then the latest decided ones
   const drafts = {};          // rejection reasons being typed, kept while the list redraws
-  const localActivity = [];   // invitations and removals made in this session
+  let dbActivity = [];        // invitations and removals, saved in the activity table
 
   function mapJob(r) {
     return {
@@ -738,7 +740,7 @@
     renderReview(); renderJobs(); renderTeam(); renderActivity(); runDupCheck();
   }
 
-  /* ---------- Activity (built from the jobs, plus invitations made now) ---------- */
+  /* ---------- Activity (jobs make their own events; invitations and removals are saved in the activity table) ---------- */
   const ACTIVITY_META = {
     submitted: { verb: 'submitted',  icon: '<path d="M12 5v14M5 12h14"/>' },
     approved:  { verb: 'approved',   icon: '<path d="M5 13l4 4L19 7"/>' },
@@ -760,8 +762,27 @@
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + t;
   }
 
-  function addActivity(type, title, note) {
-    localActivity.unshift({ type, who: currentUser.name, title, ts: Date.now(), note: note || '' });
+  // Turns a user id into a name (uses the team list, or the signed-in person)
+  function nameOf(id) {
+    if (currentUser && id === currentUser.id) return currentUser.name;
+    const m = members.find(x => x.id === id);
+    return m ? m.name : 'A team member';
+  }
+
+  async function loadActivity() {
+    if (!sb || !currentUser) return;
+    const { data, error } = await sb.from('activity').select('type,actor,title,note,created_at').order('created_at', { ascending: false }).limit(30);
+    if (error) { console.error(error); return; }
+    dbActivity = (data || []).filter(a => ACTIVITY_META[a.type]).map(a => ({
+      type: a.type, who: nameOf(a.actor), title: a.title || '', note: a.note || '', ts: Date.parse(a.created_at)
+    }));
+  }
+
+  async function addActivity(type, title, note) {
+    if (!sb || !currentUser) return;
+    const { error } = await sb.from('activity').insert({ type, actor: currentUser.id, title, note: note || null });
+    if (error) { console.error(error); return; }
+    await loadActivity();
     renderActivity();
   }
 
@@ -777,7 +798,7 @@
       if (j.status === 'live') ev.push({ type: 'approved', who: j.decidedBy || 'A reviewer', title: j.title, ts: at(j.reviewedAt || j.publishedAt) });
       if (j.status === 'rejected') ev.push({ type: 'rejected', who: j.decidedBy || 'A reviewer', title: j.title, note: j.reason, ts: at(j.reviewedAt) });
     });
-    localActivity.forEach(a => ev.push(a));
+    dbActivity.forEach(a => ev.push(a));
     return ev.sort((a, b) => b.ts - a.ts).slice(0, 30);
   }
 
@@ -797,7 +818,7 @@
     }).join('') : '<li class="feed-item"><div class="feed-body muted">No activity yet.</div></li>';
   }
 
-    let currentUser = null;
+  let currentUser = null;
 
   /* ---------- Auth ---------- */
   async function handleLogin(event) {
@@ -905,13 +926,28 @@
     });
     $('publishBtn').textContent = currentUser.role === 'owner' ? 'Publish job' : 'Send for review';
     buildNav(); renderAllJobViews(); loadJobs(); loadTeam();
-    showTab(currentUser.tabs[0]);
+    showTab(currentUser.tabs[0], true);   // true = data is already loading above, do not load it twice
+  }
+
+  // Wipes everything this person saw, so the next person on the same device starts clean
+  function clearSession() {
+    currentUser = null;
+    members = [];
+    jobs = []; reviewJobs = []; dbActivity = []; dupLog = [];
+    Object.keys(drafts).forEach(k => delete drafts[k]);
+    Object.keys(reviewCmp).forEach(k => delete reviewCmp[k]);
+    loggedBlocks.clear();
+    closeCompare();
+    $('jobForm').reset();
+    $('inviteForm').reset();
+    applyDate.disabled = false;
+    $('applyPicker').disabled = false;
+    $('calBtn').classList.remove('off');
+    runDupCheck();
   }
 
   async function logout() {
-    currentUser = null;
-    members = [];
-    jobs = []; reviewJobs = []; localActivity.length = 0;
+    clearSession();
     showPage('login');
     $('email').value = '';
     $('password').value = '';
@@ -921,7 +957,7 @@
 
   if (sb) {
     sb.auth.onAuthStateChange(evt => {
-      if (evt === 'SIGNED_OUT' && currentUser) { currentUser = null; showPage('login'); }
+      if (evt === 'SIGNED_OUT' && currentUser) { clearSession(); showPage('login'); }
     });
   }
 
@@ -936,7 +972,7 @@
     }).join('');
   }
 
-  function showTab(tab) {
+  function showTab(tab, skipLoad) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     $('view-' + tab).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -944,8 +980,10 @@
     if (activeBtn && activeBtn.scrollIntoView) activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
     $('pageTitle').textContent = TABS[tab].title;
     $('pageSub').textContent = TABS[tab].sub;
-    if (tab !== 'submit') loadJobs();
-    if (tab === 'team') loadTeam();
+    if (!skipLoad) {
+      if (tab !== 'submit') loadJobs();
+      if (tab === 'team') loadTeam();
+    }
     window.scrollTo(0, 0);
   }
 
@@ -998,6 +1036,12 @@
     applyDate.value = d + '/' + m + '/' + y;
     $('deadlineError').classList.remove('show');
     applyDate.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // The apply link must be a real web link (http or https)
+  $('applyLink').addEventListener('input', function () {
+    const v = this.value.trim();
+    this.setCustomValidity(!v || isHttpUrl(v) ? '' : 'The link must start with http:// or https://');
   });
 
   /* ---------- Duplicate checks ---------- */
@@ -1264,12 +1308,31 @@ function checkDuplicate(f, excludeId) {
 
 
   /* ---------- Duplicate report (owner) ---------- */
-  // Sample rows so the report is not empty in this prototype. The real version reads these from the database.
-  const dupLog = [];   // filled while the page is open; saving it to the database comes later
-  const loggedBlocks = new Set();   // one count per person and link
+  // Every attempt is saved in the duplicate_log table. Only the owner can read it back.
+  let dupLog = [];
+  const loggedBlocks = new Set();   // one count per person and link, per sign in
 
-  function logDup(kind, f, hit) {
-    dupLog.unshift({ kind, who: currentUser.name, title: f.title || '', matchTitle: hit.job.title, matchCompany: hit.job.company, time: nowLabel() });
+  async function logDup(kind, f, hit) {
+    if (!sb || !currentUser) return;
+    const { error } = await sb.from('duplicate_log').insert({
+      kind, actor: currentUser.id, title: f.title || null,
+      match_title: hit.job.title, match_company: hit.job.company
+    });
+    if (error) { console.error(error); return; }
+    if (currentUser && currentUser.role === 'owner') { await loadDupLog(); renderDupReport(); }
+  }
+
+  async function loadDupLog() {
+    if (!sb || !currentUser || currentUser.role !== 'owner') return;
+    const { data, error } = await sb.from('duplicate_log')
+      .select('kind,actor,title,match_title,match_company,created_at')
+      .order('created_at', { ascending: false }).limit(200);
+    if (error) { console.error(error); return; }
+    dupLog = (data || []).map(d => ({
+      kind: d.kind, who: nameOf(d.actor), title: d.title || '',
+      matchTitle: d.match_title || '', matchCompany: d.match_company || '',
+      time: timeLabel(Date.parse(d.created_at))
+    }));
   }
 
   function renderDupReport() {
@@ -1302,7 +1365,7 @@ function checkDuplicate(f, excludeId) {
   }
 
   /* ---------- Compare popup ---------- */
-  let cmpForm = null, cmpWarn = [], cmpNotes = [];
+  let cmpForm = null, cmpWarn = [], cmpNotes = [], cmpLastFocus = null;
   const reviewCmp = {};
 
   function cmpMark(kind) {
@@ -1338,10 +1401,17 @@ function checkDuplicate(f, excludeId) {
       `<div class="cmp-row head"><div></div><div>${esc(aLabel)}</div><div>In portal</div><div></div></div>` +
       rows.join('') +
       `<p class="cmp-foot">Job in the portal: sent by ${esc(b.by || 'unknown')}. Status: ${esc(statusLabel(b.status))}.${isExpired(b) ? ' Its deadline has passed.' : ''}</p>`;
+    cmpLastFocus = document.activeElement;
     el('cmpModal').hidden = false;
     el('cmpClose').focus();
   }
-  function closeCompare() { el('cmpModal').hidden = true; }
+  function closeCompare() {
+    if (el('cmpModal').hidden) return;
+    el('cmpModal').hidden = true;
+    // Put the focus back where it was before the popup opened
+    if (cmpLastFocus && document.contains(cmpLastFocus) && cmpLastFocus.focus) { try { cmpLastFocus.focus(); } catch (e) {} }
+    cmpLastFocus = null;
+  }
 
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('[data-cmp], [data-cmp-note], [data-cmp-review]');
@@ -1361,7 +1431,11 @@ function checkDuplicate(f, excludeId) {
     if (e.target.closest('[data-goto-dup]')) { el('dupWarn').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     if (e.target === el('cmpModal') || e.target.closest('#cmpClose')) closeCompare();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCompare(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeCompare();
+    // The popup has one focusable button, so Tab keeps the focus on it instead of leaving the popup
+    if (e.key === 'Tab' && !el('cmpModal').hidden) { e.preventDefault(); el('cmpClose').focus(); }
+  });
 
   // Apply by is a plain text box: dd/mm/yyyy. Typing adds the slashes, pasting works (25/11/2026, 25-11-2026, 25.11.2026, 2026-11-25).
   function parseDMY(s) {
@@ -1467,8 +1541,13 @@ function checkDuplicate(f, excludeId) {
 
   async function submitJob(event) {
     event.preventDefault();
-    if (!validateApplyByField('applyDate', 'noDeadline')) return;
     const f = formValues();
+    if (!isHttpUrl(f.link)) {
+      toast('The apply link must start with http:// or https://');
+      el('applyLink').focus();
+      return;
+    }
+    if (!validateApplyByField('applyDate', 'noDeadline')) return;
     const dup = checkDuplicate(f);
     if (dup.block) { runDupCheck(); toast('This apply link is already in the portal'); return; }
     if (dup.warn.length && !el('dupConfirm').checked) {
@@ -1549,6 +1628,10 @@ function checkDuplicate(f, excludeId) {
           <button type="button" class="btn btn-outline-red" data-action="reject" ${j.draft.trim() ? '' : 'disabled'}>Reject</button>
         </div>`;
     }
+    // The apply link opens in a new tab. Anything that is not http or https is never turned into a link.
+    const linkHtml = isHttpUrl(j.link)
+      ? `<a href="${esc(j.link.trim())}" target="_blank" rel="noopener noreferrer" class="open-link">Open apply link <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a>`
+      : '<span class="open-link-bad">The apply link is not a valid web address.</span>';
     return `
     <article class="review-card ${st}" data-id="${j.id}">
       <div class="review-top">
@@ -1562,7 +1645,7 @@ function checkDuplicate(f, excludeId) {
         <div><dt>Apply by</dt><dd>${esc(j.by)}</dd></div>
         <div><dt>Sent by</dt><dd>${esc(j.sentBy)}</dd></div>
       </dl>
-      <a href="#" class="open-link">Open apply link <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a>
+      ${linkHtml}
       ${bottom}
     </article>`;
   }
@@ -1651,7 +1734,10 @@ function checkDuplicate(f, excludeId) {
     const { data, error } = await sb.from('profiles').select('id,name,email,role,status,created_at').order('created_at', { ascending: true });
     if (error) { toast('Could not load the team'); return; }
     members = data || [];
+    // Names are needed to show who did what, so these load after the team list
+    await Promise.all([loadActivity(), loadDupLog()]);
     renderTeam();
+    renderActivity();
   }
 
   function joinedLabel(iso) {
@@ -1714,10 +1800,10 @@ function checkDuplicate(f, excludeId) {
     btn.disabled = false; btn.textContent = 'Send invitation';
     if (error) { toast(await fnMessage(error)); return; }
     if (data && data.error) { toast(data.error); return; }
-    addActivity('invited', email + ' as ' + (ROLE_LABEL[role] || role));
     form.reset();
-    await loadTeam();
     toast('Invitation sent');
+    await addActivity('invited', email + ' as ' + (ROLE_LABEL[role] || role));
+    await loadTeam();
   }
 
   // Remove a member or cancel an invitation (owner only; the server checks this again)
@@ -1735,9 +1821,9 @@ function checkDuplicate(f, excludeId) {
       toast(error ? await fnMessage(error) : data.error);
       return;
     }
-    addActivity('removed', label);
-    await loadTeam();
     toast(cancel ? 'Invitation cancelled' : 'Member removed');
+    await addActivity('removed', label);
+    await loadTeam();
   });
 
   /* ---------- Toast ---------- */
