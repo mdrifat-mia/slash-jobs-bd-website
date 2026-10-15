@@ -517,7 +517,6 @@
                 <div class="field"><label for="workStyle">Work style <span class="req">*</span></label><select id="workStyle"><option>Remote</option><option>Hybrid</option><option>On site</option></select></div>
                 <div class="field"><label for="level">Level <span class="req">*</span></label><select id="level"><option>Fresh graduate</option><option>Entry level</option><option>Experienced</option></select></div>
                 <div class="field"><label for="pay">Pay <span class="opt">(optional)</span></label><input type="text" id="pay" placeholder="e.g., 30,000 - 50,000 BDT"></div>
-                <div class="field"><label for="source">Source <span class="req">*</span></label><select id="source"><option>Company website</option><option>BDJobs</option><option>Facebook</option><option>LinkedIn</option><option>Other</option></select></div>
                 <div class="field">
                   <label for="applyDate">Apply by <span class="req">*</span></label>
                   <div class="date-wrap">
@@ -530,7 +529,10 @@
                   <label class="check inline-check" for="noDeadline"><input type="checkbox" id="noDeadline"> No deadline shown</label>
                   <div class="field-error" id="deadlineError">Add the Apply by date, or tick "No deadline shown".</div>
                 </div>
-                <div class="field" data-roles="owner"><label for="postedDate">Employer posted date <span class="opt">(optional)</span></label><input type="date" id="postedDate"></div>
+                <div class="field"><label for="postedDate">Employer posted date <span class="opt">(optional)</span></label><input type="date" id="postedDate"></div>
+                <div class="field"><label for="department">Department <span class="opt">(optional)</span></label><input type="text" id="department" placeholder="e.g., Sales" maxlength="120"></div>
+                <div class="field"><label for="jobRef">Job reference / ID <span class="opt">(optional)</span></label><input type="text" id="jobRef" placeholder="e.g., REQ-2026-045" maxlength="120"></div>
+                <div class="field"><label for="ageLimit">Age limit <span class="opt">(optional)</span></label><input type="text" id="ageLimit" placeholder="e.g., 22 - 30 years" maxlength="120"></div>
               </div>
             </div>
           </div>
@@ -544,7 +546,6 @@
                 <div class="field"><label for="needList">What you need <span class="req">*</span> <span class="opt">One per line</span></label><textarea id="needList" placeholder="Requirement 1&#10;Requirement 2&#10;Requirement 3" required></textarea></div>
               </div>
               <div class="field"><label for="suits">Who it suits <span class="opt">(optional)</span></label><textarea id="suits" placeholder="Ideal candidate profile..."></textarea></div>
-              <div class="field" data-roles="owner"><label for="beforeApply">Before you apply <span class="opt">(optional)</span></label><textarea id="beforeApply" placeholder="Any important notes for applicants..."></textarea></div>
             </div>
           </div>
 
@@ -552,7 +553,7 @@
             <div class="panel-head"><div class="step-dot">4</div><div><h2>Check and send</h2><p>Confirm all three before you publish.</p></div></div>
             <div class="panel-body">
               <div class="field"><label class="check"><input type="checkbox" required><span>The link opens the original application page <span class="req">*</span></span></label></div>
-              <div class="field"><label class="check"><input type="checkbox" required><span>The text is written in our own words, not copied <span class="req">*</span></span></label></div>
+              <div class="field"><label class="check"><input type="checkbox" required><span>The text is written in my own words, not copied <span class="req">*</span></span></label></div>
               <div class="field"><label class="check"><input type="checkbox" required><span>The job is new and still open <span class="req">*</span></span></label></div>
             </div>
           </div>
@@ -1563,11 +1564,11 @@ function checkDuplicate(f, excludeId) {
       apply_link: f.link, link_norm: normUrl(f.link),
       title: f.title, company: f.company, location: f.location,
       work_style: el('workStyle').value, level: el('level').value,
-      pay: f.pay || null, source: el('source').value,
+      pay: f.pay || null, department: val('department') || null, job_ref: val('jobRef') || null, age_limit: val('ageLimit') || null,
       apply_by: f.applyISO || null, no_deadline: noDeadline.checked,
-      employer_posted: isOwner && el('postedDate').value ? el('postedDate').value : null,
+      employer_posted: el('postedDate').value || null,
       about: val('about') || null, duties: val('doList'), requirements: val('needList'),
-      suits: val('suits') || null, before_apply: isOwner ? (val('beforeApply') || null) : null,
+      suits: val('suits') || null,
       status: isOwner ? 'live' : 'pending'
     };
 
@@ -1599,7 +1600,7 @@ function checkDuplicate(f, excludeId) {
   }
 
   function reviewMeta(j) {
-    const bits = [j.location, j.source ? 'Source: ' + j.source : ''].filter(Boolean).map(esc).join(' · ');
+    const bits = [j.location].filter(Boolean).map(esc).join(' · ');
     let tag = '';
     if (j.status === 'pending') {
       const r = checkDuplicate({ link: j.link, title: j.title, company: j.company, location: j.location, applyISO: j.applyISO, text: j.text, pay: j.pay }, j.id);
