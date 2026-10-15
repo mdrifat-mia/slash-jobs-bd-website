@@ -207,3 +207,28 @@ section.why-slash .feature p {
     padding: 1.2rem !important;
   }
 }
+
+
+/* Premium blue-tinted feature cards: stronger contrast, less white */
+section.why-slash .feature {
+  background: linear-gradient(145deg, #DBEAFE 0%, #E0F2FE 55%, #CFFAFE 100%) !important;
+  border: 1px solid #93C5FD !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, .10) !important;
+}
+section.why-slash .feature::before {
+  background: linear-gradient(90deg, #1D4ED8, #0891B2) !important;
+  height: 4px !important;
+}
+section.why-slash .feature h3 {
+  color: #0B1F44 !important;
+}
+section.why-slash .feature p {
+  color: #334155 !important;
+}
+@media (hover: hover) and (min-width: 769px) {
+  section.why-slash .feature:hover {
+    background: linear-gradient(145deg, #BFDBFE 0%, #BAE6FD 55%, #A5F3FC 100%) !important;
+    border-color: #60A5FA !important;
+    box-shadow: 0 14px 30px rgba(37, 99, 235, .16) !important;
+  }
+}
