@@ -308,3 +308,21 @@ section.why-slash .feature p {
     row-gap: 2rem !important;
   }
 }
+
+/* Bangladesh flag beside the site wordmark, matching the admin portal */
+a.logo {
+  display: inline-flex !important;
+  align-items: center;
+  gap: .45rem;
+  white-space: nowrap;
+}
+a.logo::before {
+  content: "";
+  display: inline-block;
+  width: 25px;
+  height: 15px;
+  flex: 0 0 25px;
+  border-radius: 2px;
+  background: radial-gradient(circle at 45% 50%, #F42A41 0 24%, transparent 26%), #006A4E;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.12);
+}
