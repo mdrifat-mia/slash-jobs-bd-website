@@ -284,6 +284,5 @@ section.why-slash .feature p {
   }
 }
 
-/* Align the About Slash Jobs BD description cleanly */
-.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{text-align:left!important;text-align-last:left!important;line-height:1.75!important;max-width:360px;margin-left:0;margin-right:auto;}
-@media(max-width:768px){.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{max-width:100%;}}
+/* Align About description while preserving the original font size */
+.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{font-size:.9rem!important;text-align:justify!important;text-align-last:left!important;line-height:1.75!important;max-width:none!important;letter-spacing:normal!important;}
