@@ -286,3 +286,26 @@ section.why-slash .feature p {
 
 /* Align About description while preserving the original font size */
 .footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{font-size:.9rem!important;text-align:justify!important;text-align-last:left!important;line-height:1.75!important;max-width:none!important;letter-spacing:normal!important;}
+
+/* Give the footer About column its own space and separate the link columns */
+@media (min-width: 769px) {
+  .footer-content[data-astro-cid-sz7xmlte] {
+    grid-template-columns: minmax(280px, 1.55fr) repeat(4, minmax(120px, 1fr)) !important;
+    column-gap: 2.5rem !important;
+    align-items: start;
+  }
+  .footer-content[data-astro-cid-sz7xmlte] > .footer-section[data-astro-cid-sz7xmlte]:first-child {
+    min-width: 0;
+    padding-right: .5rem;
+  }
+  .footer-content[data-astro-cid-sz7xmlte] > .footer-section[data-astro-cid-sz7xmlte]:not(:first-child) {
+    min-width: 0;
+  }
+}
+@media (min-width: 769px) and (max-width: 1050px) {
+  .footer-content[data-astro-cid-sz7xmlte] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    column-gap: 2rem !important;
+    row-gap: 2rem !important;
+  }
+}
