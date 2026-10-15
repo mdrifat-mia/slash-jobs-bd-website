@@ -322,5 +322,5 @@ a.logo::before {
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
-  background: url("/slash-jobs-bd-website/logo-mark.svg") center / contain no-repeat;
+  background: url("/slash-jobs-bd-website/logo-mark.svg?v=2") center / contain no-repeat;
 }
