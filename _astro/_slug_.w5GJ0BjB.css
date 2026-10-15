@@ -324,3 +324,18 @@ a.logo::before {
   flex: 0 0 30px;
   background: url("/slash-jobs-bd-website/logo-mark.svg?v=2") center / contain no-repeat;
 }
+
+
+/* Place the Bangladesh flag beside the BD wordmark, not behind the logo */
+a.logo::after {
+  content: "";
+  display: inline-block;
+  width: 27px;
+  height: 18px;
+  flex: 0 0 27px;
+  margin-left: .15rem;
+  border-radius: 2px;
+  background: radial-gradient(circle at 42% 50%, #F42A41 0 4.5px, transparent 4.8px), #006A4E;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, .12);
+  vertical-align: middle;
+}
