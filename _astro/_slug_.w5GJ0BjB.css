@@ -109,3 +109,13 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover,footer[data-ast
     font-size: .78rem;
   }
 }
+
+
+/* Align wrapped disclaimer lines neatly on mobile */
+@media (max-width: 768px) {
+  .footer-bottom p:last-child {
+    text-align: justify;
+    text-align-last: justify;
+    line-height: 1.6;
+  }
+}
