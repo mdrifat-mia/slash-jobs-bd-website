@@ -119,3 +119,91 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover,footer[data-ast
     line-height: 1.6;
   }
 }
+
+
+/* Premium styling for the Why Slash Jobs BD section */
+section.why-slash {
+  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%) !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 20px !important;
+  padding: clamp(1.5rem, 4vw, 3rem) !important;
+  margin-top: 3rem !important;
+  margin-bottom: 3rem !important;
+}
+section.why-slash > h2 {
+  color: #0F172A !important;
+  text-align: center !important;
+  font-size: clamp(1.65rem, 3vw, 2.15rem) !important;
+  font-weight: 750 !important;
+  letter-spacing: -0.035em !important;
+  margin-bottom: .65rem !important;
+}
+section.why-slash > .why-slash-subtitle {
+  color: #64748B !important;
+  text-align: center !important;
+  font-size: 1rem !important;
+  line-height: 1.7 !important;
+  margin: 0 auto 2rem !important;
+  max-width: 38rem !important;
+}
+section.why-slash .features-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 1rem !important;
+}
+section.why-slash .feature {
+  position: relative !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  padding: 1.4rem 1.25rem !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, .045) !important;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease !important;
+}
+section.why-slash .feature::before {
+  content: "" !important;
+  display: block !important;
+  width: 2.25rem !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: #2563EB !important;
+  margin-bottom: 1.1rem !important;
+}
+section.why-slash .feature h3 {
+  color: #0F172A !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+  margin: 0 0 .65rem !important;
+}
+section.why-slash .feature p {
+  color: #475569 !important;
+  font-size: .92rem !important;
+  line-height: 1.75 !important;
+  margin: 0 !important;
+}
+@media (hover: hover) and (min-width: 769px) {
+  section.why-slash .feature:hover {
+    transform: translateY(-3px) !important;
+    border-color: #BFDBFE !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .09) !important;
+  }
+}
+@media (max-width: 1024px) {
+  section.why-slash .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 640px) {
+  section.why-slash {
+    border-radius: 16px !important;
+    padding: 1.25rem !important;
+  }
+  section.why-slash .features-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: .85rem !important;
+  }
+  section.why-slash .feature {
+    padding: 1.2rem !important;
+  }
+}
