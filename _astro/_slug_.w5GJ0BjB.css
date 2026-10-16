@@ -270,3 +270,6 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
 /* Give the footer columns enough room on desktop so the About text never crowds Categories. */
 @media (min-width: 769px){.footer-content[data-astro-cid-sz7xmlte]{grid-template-columns:minmax(260px,1.4fr) repeat(4,minmax(0,1fr));gap:1.5rem}}
 @media (min-width: 769px) and (max-width: 1000px){.footer-content[data-astro-cid-sz7xmlte]{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}}
+
+/* Align the About Slash Jobs BD footer paragraph evenly on both sides. */
+.footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{text-align:justify;text-justify:inter-word}
