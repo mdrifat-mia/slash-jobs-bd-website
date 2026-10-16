@@ -393,3 +393,16 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
     text-align: left !important;
   }
 }
+
+
+/* Justify the mobile footer disclaimer so paragraph edges align on both sides. */
+@media (max-width: 768px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] {
+    text-align: justify !important;
+    text-justify: inter-word;
+  }
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] strong,
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span {
+    text-align: inherit !important;
+  }
+}
