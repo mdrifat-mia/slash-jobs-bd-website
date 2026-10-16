@@ -326,22 +326,31 @@ a.logo::before {
 }
 
 
-/* Keep the Bangladesh flag at the far right of the header navigation */
+/* Keep the Bangladesh flag at the far right of the top header row on mobile */
+nav {
+  position: relative;
+}
 .nav-links::after {
+  content: none !important;
+}
+nav::after {
   content: "";
   display: inline-block;
-  align-self: center;
   width: 27px;
   height: 18px;
   flex: 0 0 27px;
-  margin-left: .25rem;
   border-radius: 2px;
   background: radial-gradient(circle at 42% 50%, #F42A41 0 4.5px, transparent 4.8px), #006A4E;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, .12);
 }
 @media (max-width: 768px) {
-  .nav-links::after {
-    margin-left: .25rem;
+  nav::after {
+    position: absolute;
+    top: 1.25rem;
+    right: 0;
+    margin: 0;
+  }
+  a.logo {
+    max-width: calc(100% - 42px);
   }
 }
-
