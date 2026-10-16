@@ -272,3 +272,12 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
 
 /* Increase only the gap between About and Categories; preserve typography and grid sizing. */
 @media (min-width: 769px){.footer-content[data-astro-cid-sz7xmlte]>.footer-section[data-astro-cid-sz7xmlte]:nth-child(n+2){transform:translateX(28px)}}
+
+
+/* Responsive footer disclaimer: one line on desktop, three aligned lines on mobile. */
+.footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] { max-width: none; white-space: nowrap; text-align: center; }
+.footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span { display: inline; }
+@media (max-width: 768px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] { white-space: normal; text-align: center; }
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span { display: block; }
+}
