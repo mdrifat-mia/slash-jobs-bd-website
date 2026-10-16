@@ -358,3 +358,16 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
     text-align: inherit;
   }
 }
+
+
+/* Final mobile override: the disclaimer label remains inline with the same paragraph. */
+@media (max-width: 768px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] strong {
+    display: inline !important;
+    margin: 0;
+    padding: 0;
+  }
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span {
+    display: inline !important;
+  }
+}
