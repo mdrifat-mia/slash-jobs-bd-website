@@ -428,3 +428,18 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
   box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
   transform: translateY(-2px);
 }
+
+
+/* Trial: dark navy footer background; preserve existing footer layout. */
+footer[data-astro-cid-sz7xmlte] {
+  background-color: #0F172A !important;
+}
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte] {
+  color: #CBD5E1 !important;
+}
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover {
+  color: #38BDF8 !important;
+}
+footer[data-astro-cid-sz7xmlte] h3[data-astro-cid-sz7xmlte] {
+  color: #FFFFFF !important;
+}
