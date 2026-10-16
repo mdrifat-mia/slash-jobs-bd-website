@@ -266,3 +266,7 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
 .logo-mark-image[data-astro-cid-3ef6ksr2] { display:block; width:34px; height:34px; flex:0 0 34px; margin-right:.4rem; }
 .logo[data-astro-cid-3ef6ksr2] > span[data-astro-cid-3ef6ksr2] { margin-left:.28em; }
 @media (max-width:640px) { .logo-mark-image[data-astro-cid-3ef6ksr2] { width:30px; height:30px; flex-basis:30px; margin-right:.3rem; } }
+
+/* Give the footer columns enough room on desktop so the About text never crowds Categories. */
+@media (min-width: 769px){.footer-content[data-astro-cid-sz7xmlte]{grid-template-columns:minmax(260px,1.4fr) repeat(4,minmax(0,1fr));gap:1.5rem}}
+@media (min-width: 769px) and (max-width: 1000px){.footer-content[data-astro-cid-sz7xmlte]{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}}
