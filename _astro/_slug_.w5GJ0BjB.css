@@ -344,3 +344,29 @@ a.logo::before {
     margin-left: .25rem;
   }
 }
+
+
+/* Mobile-only Bangladesh flag placement: top-right beside the logo */
+@media (max-width: 768px) {
+  nav {
+    position: relative;
+  }
+  .nav-links::after {
+    content: none !important;
+  }
+  nav::after {
+    content: "";
+    position: absolute;
+    top: 1.25rem;
+    right: 0;
+    display: inline-block;
+    width: 27px;
+    height: 18px;
+    border-radius: 2px;
+    background: radial-gradient(circle at 42% 50%, #F42A41 0 4.5px, transparent 4.8px), #006A4E;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, .12);
+  }
+  a.logo {
+    max-width: calc(100% - 40px);
+  }
+}
