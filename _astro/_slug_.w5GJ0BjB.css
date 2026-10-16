@@ -270,5 +270,5 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
 /* Align the About Slash Jobs BD footer paragraph evenly on both sides. */
 .footer-section[data-astro-cid-sz7xmlte]:first-child p[data-astro-cid-sz7xmlte]{text-align:justify;text-justify:inter-word}
 
-/* Move only the footer link columns slightly right of About; preserve typography and grid sizing. */
-@media (min-width: 769px){.footer-content[data-astro-cid-sz7xmlte]>.footer-section[data-astro-cid-sz7xmlte]:nth-child(n+2){transform:translateX(12px)}}
+/* Increase only the gap between About and Categories; preserve typography and grid sizing. */
+@media (min-width: 769px){.footer-content[data-astro-cid-sz7xmlte]>.footer-section[data-astro-cid-sz7xmlte]:nth-child(n+2){transform:translateX(28px)}}
