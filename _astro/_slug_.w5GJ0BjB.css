@@ -253,9 +253,9 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
 }
 
 
-/* Add explicit spacing between the wordmark parts on phone screens. */
+/* Force visible separation between Slash and Jobs BD in the mobile wordmark. */
 @media (max-width: 640px) {
-  header nav[data-astro-cid-3ef6ksr2] > .logo[data-astro-cid-3ef6ksr2] {
-    gap: .28em !important;
+  header nav[data-astro-cid-3ef6ksr2] > .logo[data-astro-cid-3ef6ksr2] > span[data-astro-cid-3ef6ksr2] {
+    margin-left: .28em !important;
   }
 }
