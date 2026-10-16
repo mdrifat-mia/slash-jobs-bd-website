@@ -383,3 +383,13 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
     text-align: center !important;
   }
 }
+
+
+/* Restore the requested left alignment for the mobile disclaimer. */
+@media (max-width: 768px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte],
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] strong,
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span {
+    text-align: left !important;
+  }
+}
