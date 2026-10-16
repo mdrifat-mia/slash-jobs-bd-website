@@ -1577,6 +1577,7 @@ function checkDuplicate(f, excludeId) {
     btn.disabled = true; btn.textContent = 'Saving...';
     const { error } = await sb.from('jobs').insert(row);
     btn.textContent = label;
+    btn.disabled = false;
     if (error) {
       console.error(error);
       runDupCheck();
