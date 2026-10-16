@@ -300,3 +300,21 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
   .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span:first-of-type { display: inline; }
   .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] span:not(:first-of-type) { display: block; }
 }
+
+
+/* Keep the full desktop disclaimer within the footer width on one line. */
+@media (min-width: 769px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
