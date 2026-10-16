@@ -406,3 +406,25 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #fffff
     text-align: inherit !important;
   }
 }
+
+
+/* Premium black treatment for the four homepage feature cards. */
+.why-slash[data-astro-cid-j7pv25f6] > .features-grid[data-astro-cid-j7pv25f6] > .feature[data-astro-cid-j7pv25f6] {
+  background: linear-gradient(145deg, #171717 0%, #090909 100%) !important;
+  border: 1px solid #3a3a3a !important;
+  color: #ffffff !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .12);
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.why-slash[data-astro-cid-j7pv25f6] > .features-grid[data-astro-cid-j7pv25f6] > .feature[data-astro-cid-j7pv25f6] h3[data-astro-cid-j7pv25f6] {
+  color: #ffffff !important;
+}
+.why-slash[data-astro-cid-j7pv25f6] > .features-grid[data-astro-cid-j7pv25f6] > .feature[data-astro-cid-j7pv25f6] p[data-astro-cid-j7pv25f6] {
+  color: #c4c4c4 !important;
+}
+.why-slash[data-astro-cid-j7pv25f6] > .features-grid[data-astro-cid-j7pv25f6] > .feature[data-astro-cid-j7pv25f6]:hover {
+  border-color: #666666 !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+  transform: translateY(-2px);
+}
