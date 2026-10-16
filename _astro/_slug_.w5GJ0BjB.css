@@ -39,3 +39,37 @@ header[data-astro-cid-3ef6ksr2]{background:var(--white);border-bottom:1px solid 
     box-shadow: 0 0 0 1px rgba(15, 23, 42, .12) !important;
   }
 }
+/* Definitive phone-only header flag placement: keep it at the far right of the logo row. */
+@media only screen and (max-width: 640px) {
+  header nav[data-astro-cid-3ef6ksr2] {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 1rem 0 !important;
+    padding-right: 2.25rem !important;
+  }
+  header nav[data-astro-cid-3ef6ksr2] > .logo[data-astro-cid-3ef6ksr2] {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+  header nav[data-astro-cid-3ef6ksr2] > .nav-links[data-astro-cid-3ef6ksr2]::after {
+    content: none !important;
+    display: none !important;
+  }
+  header nav[data-astro-cid-3ef6ksr2]::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
+    width: 27px !important;
+    height: 18px !important;
+    min-width: 27px !important;
+    border-radius: 2px !important;
+    background: radial-gradient(circle at 42% 50%, #F42A41 0 4.5px, transparent 4.8px), #006A4E !important;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, .12) !important;
+    z-index: 2 !important;
+  }
+}
