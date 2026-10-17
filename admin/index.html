@@ -1090,7 +1090,7 @@
     });
     restoringJobDraft = false;
     noDeadline.dispatchEvent(new Event('change', { bubbles: true }));
-    runDupCheck();
+    // Duplicate-check state is initialized later; the normal form setup runs it after declarations.
     toast('Your unsent job draft was restored');
   }
   $('jobForm').addEventListener('input', saveJobDraft);
