@@ -61,55 +61,46 @@
 }
 </style>
 <style id="slash-compact-job-cards">
-/* Compact, scan-friendly job listings inspired by major job boards */
-.job-card[data-astro-cid-thris56x]{
-  background:#fff!important;border:1px solid #dfe5ed!important;border-radius:10px!important;
-  box-shadow:0 1px 3px rgba(16,42,67,.045)!important;padding:14px 16px!important;
-  gap:0!important;transition:border-color .16s ease,box-shadow .16s ease!important;overflow:hidden!important
-}
+/* Compact job-board listing: scannable hierarchy, inline metadata, low card height */
+.job-card[data-astro-cid-thris56x]{box-sizing:border-box;background:#fff!important;border:1px solid #e0e6ee!important;border-radius:9px!important;padding:12px 14px!important;box-shadow:0 1px 3px rgba(16,42,67,.04)!important;gap:0!important;overflow:hidden!important;transition:border-color .16s ease,box-shadow .16s ease!important}
 .job-card[data-astro-cid-thris56x]:before{display:none!important}
-.job-card[data-astro-cid-thris56x]:hover{transform:none!important;border-color:#9bbce4!important;box-shadow:0 3px 10px rgba(16,42,67,.075)!important}
-.job-card-header[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:10px!important;margin:0 0 5px!important;padding:0!important}
-.job-card-header[data-astro-cid-thris56x]>div{min-width:0!important;flex:1}
-.job-title[data-astro-cid-thris56x]{font-size:1rem!important;line-height:1.35!important;letter-spacing:-.01em!important;font-weight:750!important;color:#174ea6!important;margin:0 0 2px!important}
-.job-company[data-astro-cid-thris56x]{font-size:.85rem!important;line-height:1.35!important;font-weight:600!important;color:#3f5268!important}
-.badge[data-astro-cid-thris56x]{font-size:.65rem!important;padding:3px 6px!important;border-radius:5px!important}
-.job-summary[data-astro-cid-thris56x]{font-size:.81rem!important;line-height:1.45!important;color:#5c6878!important;margin:5px 0 8px!important;padding:0!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;flex-grow:0!important}
-.job-meta[data-astro-cid-thris56x]{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:5px 12px!important;margin:0 0 9px!important;padding:0!important}
-.meta-item[data-astro-cid-thris56x],.deadline-meta[data-astro-cid-thris56x]{
-  display:inline-flex!important;flex-direction:row!important;align-items:baseline!important;justify-content:flex-start!important;
-  gap:4px!important;width:auto!important;min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;
-  background:transparent!important;border:0!important;border-radius:0!important;padding:0!important
-}
-.meta-label[data-astro-cid-thris56x]{font-size:.72rem!important;line-height:1.35!important;letter-spacing:0!important;text-transform:none!important;font-weight:500!important;color:#778394!important;white-space:nowrap}
-.meta-value[data-astro-cid-thris56x],.deadline-date[data-astro-cid-thris56x]{font-size:.75rem!important;line-height:1.35!important;font-weight:650!important;color:#34465b!important}
-.deadline-status[data-astro-cid-thris56x]{font-size:.7rem!important;line-height:1.3!important;font-weight:600!important;white-space:normal!important}
+.job-card[data-astro-cid-thris56x]:hover{transform:none!important;border-color:#a8c5e8!important;box-shadow:0 3px 9px rgba(16,42,67,.07)!important}
+.job-card-header[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:8px!important;margin:0 0 4px!important;padding:0!important}
+.job-card-header[data-astro-cid-thris56x]>div{flex:1;min-width:0!important}
+.job-title[data-astro-cid-thris56x]{font-size:.98rem!important;line-height:1.32!important;letter-spacing:-.01em!important;font-weight:750!important;color:#1756a9!important;margin:0 0 2px!important;overflow-wrap:anywhere}
+.job-company[data-astro-cid-thris56x]{font-size:.83rem!important;line-height:1.35!important;font-weight:600!important;color:#46596e!important;margin:0!important}
+.badge[data-astro-cid-thris56x]{flex-shrink:0!important;font-size:.63rem!important;line-height:1.2!important;padding:3px 5px!important;border-radius:4px!important}
+.job-summary[data-astro-cid-thris56x]{font-size:.79rem!important;line-height:1.42!important;color:#657184!important;margin:4px 0 7px!important;padding:0!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;flex-grow:0!important}
+.job-meta[data-astro-cid-thris56x]{display:flex!important;flex-flow:row wrap!important;align-items:center!important;gap:4px 11px!important;margin:0 0 7px!important;padding:0!important}
+.meta-item[data-astro-cid-thris56x],.deadline-meta[data-astro-cid-thris56x]{display:inline-flex!important;flex-direction:row!important;align-items:baseline!important;gap:3px!important;width:auto!important;min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important}
+.meta-label[data-astro-cid-thris56x]{font-size:.69rem!important;line-height:1.35!important;letter-spacing:0!important;text-transform:none!important;font-weight:500!important;color:#7a8695!important;white-space:nowrap}
+.meta-value[data-astro-cid-thris56x],.deadline-date[data-astro-cid-thris56x]{font-size:.72rem!important;line-height:1.35!important;font-weight:650!important;color:#34465b!important;overflow-wrap:anywhere!important}
+.deadline-status[data-astro-cid-thris56x]{font-size:.67rem!important;line-height:1.3!important;font-weight:600!important;white-space:normal!important}
 .deadline-dot[data-astro-cid-thris56x]{width:5px!important;height:5px!important;box-shadow:none!important}
 .deadline-soon[data-astro-cid-thris56x],.deadline-past[data-astro-cid-thris56x],.deadline-normal[data-astro-cid-thris56x],.deadline-missing[data-astro-cid-thris56x]{background:transparent!important;border-color:transparent!important}
 .deadline-soon[data-astro-cid-thris56x] .deadline-status[data-astro-cid-thris56x]{color:#a65b08!important}
 .deadline-past[data-astro-cid-thris56x] .deadline-status[data-astro-cid-thris56x]{color:#b42318!important}
-.job-footer[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0!important;padding:8px 0 0!important;border-top:1px solid #edf0f4!important}
-.job-details[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;min-width:0!important}
-.salary-badge[data-astro-cid-thris56x]{display:inline-block!important;background:#f2f6fc!important;color:#34465b!important;border:0!important;border-radius:5px!important;padding:4px 7px!important;font-size:.73rem!important;line-height:1.35!important;font-weight:700!important}
-.job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;white-space:nowrap!important;background:#1769d2!important;color:#fff!important;border:1px solid #1769d2!important;border-radius:6px!important;box-shadow:none!important;padding:7px 11px!important;font-size:.76rem!important;line-height:1.2!important;font-weight:700!important;text-decoration:none!important}
+.job-footer[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:0!important;padding:7px 0 0!important;border-top:1px solid #edf0f4!important}
+.job-details[data-astro-cid-thris56x]{display:flex!important;flex-direction:row!important;align-items:center!important;gap:6px!important;min-width:0!important}
+.salary-badge[data-astro-cid-thris56x]{display:inline-block!important;max-width:100%!important;background:#f1f5fa!important;color:#35485d!important;border:0!important;border-radius:4px!important;padding:4px 6px!important;font-size:.7rem!important;line-height:1.3!important;font-weight:700!important;overflow-wrap:anywhere!important}
+.job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;white-space:nowrap!important;background:#1769d2!important;color:#fff!important;border:1px solid #1769d2!important;border-radius:5px!important;box-shadow:none!important;padding:6px 9px!important;font-size:.73rem!important;line-height:1.2!important;font-weight:700!important;text-decoration:none!important}
 .job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]:hover{background:#1055b0!important;border-color:#1055b0!important}
 @media(max-width:640px){
- .job-card[data-astro-cid-thris56x]{padding:12px!important;border-radius:9px!important}
- .job-title[data-astro-cid-thris56x]{font-size:.96rem!important}
- .job-company[data-astro-cid-thris56x]{font-size:.82rem!important}
- .job-summary[data-astro-cid-thris56x]{font-size:.79rem!important;margin:5px 0 7px!important}
- .job-meta[data-astro-cid-thris56x]{gap:5px 10px!important;margin-bottom:8px!important}
- .meta-label[data-astro-cid-thris56x],.meta-value[data-astro-cid-thris56x],.deadline-date[data-astro-cid-thris56x]{font-size:.71rem!important}
- .deadline-status[data-astro-cid-thris56x]{font-size:.67rem!important}
- .job-footer[data-astro-cid-thris56x]{padding-top:7px!important}
- .salary-badge[data-astro-cid-thris56x]{font-size:.7rem!important;padding:4px 6px!important}
- .job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]{font-size:.73rem!important;padding:7px 9px!important}
+ .job-card[data-astro-cid-thris56x]{padding:11px!important;border-radius:8px!important}
+ .job-title[data-astro-cid-thris56x]{font-size:.93rem!important}
+ .job-company[data-astro-cid-thris56x]{font-size:.8rem!important}
+ .job-summary[data-astro-cid-thris56x]{font-size:.77rem!important;margin:4px 0 6px!important}
+ .job-meta[data-astro-cid-thris56x]{gap:4px 9px!important;margin-bottom:7px!important}
+ .meta-label[data-astro-cid-thris56x],.meta-value[data-astro-cid-thris56x],.deadline-date[data-astro-cid-thris56x]{font-size:.69rem!important}
+ .deadline-status[data-astro-cid-thris56x]{font-size:.65rem!important}
+ .job-footer[data-astro-cid-thris56x]{padding-top:6px!important}
+ .salary-badge[data-astro-cid-thris56x]{font-size:.68rem!important;padding:4px 5px!important}
+ .job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]{font-size:.71rem!important;padding:6px 8px!important}
 }
-@media(max-width:360px){
- .job-card-header[data-astro-cid-thris56x]{gap:6px!important}
+@media(max-width:350px){
+ .job-card-header[data-astro-cid-thris56x]{gap:5px!important}
  .badge[data-astro-cid-thris56x]{white-space:normal!important}
  .job-footer[data-astro-cid-thris56x]{align-items:flex-start!important}
- .job-footer[data-astro-cid-thris56x]>a[data-astro-cid-thris56x]{padding:7px 8px!important}
 }
 @media(prefers-reduced-motion:reduce){.job-card[data-astro-cid-thris56x]{transition:none!important}}
 </style></head> <body> <header data-astro-cid-3ef6ksr2> <div class="container" data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <a href="/slash-jobs-bd-website/" class="logo" data-astro-cid-3ef6ksr2><img src="/slash-jobs-bd-website/logo-mark.svg" alt="" class="logo-mark-image" data-astro-cid-3ef6ksr2>Slash <span data-astro-cid-3ef6ksr2>Jobs BD</span></a> <button type="button" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-expanded="false" data-astro-cid-3ef6ksr2>☰</button> <ul class="nav-links" data-astro-cid-3ef6ksr2> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/" data-astro-cid-3ef6ksr2>Home</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/jobs/" class="active" data-astro-cid-3ef6ksr2>Jobs</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/categories/" data-astro-cid-3ef6ksr2>Categories</a></li>  <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/locations/" data-astro-cid-3ef6ksr2>Locations</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/about/" data-astro-cid-3ef6ksr2>About</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/contact/" data-astro-cid-3ef6ksr2>Contact</a></li> </ul> <span class="country-flag" role="img" aria-label="Bangladesh flag" title="Bangladesh">🇧🇩</span> </nav> </div> </header>
