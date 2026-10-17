@@ -9,24 +9,33 @@
 .jd-head h1{max-width:780px;font-size:clamp(1.65rem,3.2vw,2.35rem);line-height:1.2;letter-spacing:-.035em;margin:.15rem 0 .55rem;color:var(--navy-blue);text-wrap:balance}
 .jd-company{display:flex;align-items:center;gap:.65rem;font-size:1.08rem;font-weight:650;color:#36516f;margin:0 0 1.5rem}
 .jd-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;padding:0;border:0;margin:0 0 1.35rem}
-.jd-meta div{display:flex;flex-direction:column;justify-content:center;min-width:0;gap:.4rem;padding:.9rem 1rem;background:rgba(255,255,255,.88);border:1px solid #e4ebf4;border-radius:12px;font-size:.92rem}
+.jd-meta div{display:flex;flex-direction:column;justify-content:center;min-width:0;gap:.4rem;padding:.9rem 1rem;background:#f2f7ff;border:1px solid #dce9fb;border-radius:12px;font-size:.92rem;transition:transform .18s ease,box-shadow .18s ease}
+.jd-meta div:nth-child(2){background:#f2fbf7;border-color:#d5f0e2}
+.jd-meta div:nth-child(3){background:#f7f3ff;border-color:#e8ddff}
+.jd-meta div:nth-child(4){background:#effbf9;border-color:#ccefe8}
+.jd-meta div:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(16,42,67,.07)}
 .jd-meta span{color:#64748b;font-size:.7rem;font-weight:750;letter-spacing:.075em;text-transform:uppercase;margin:0}
 .jd-meta strong{color:#172f4b;font-weight:650;line-height:1.4;overflow-wrap:anywhere}
-.jd-apply{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding-top:1.2rem;border-top:1px solid #e1e9f3}
-.jd-apply .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.85rem 1.35rem;border-radius:10px;font-weight:700;text-decoration:none;box-shadow:0 5px 14px rgba(0,102,204,.18);transition:transform .2s,box-shadow .2s,background .2s}
-.jd-apply .btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,102,204,.23)}
+.jd-apply{display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;padding-top:1.2rem;border-top:1px solid #e1e9f3}
+.jd-apply .btn{display:inline-flex;align-items:center;justify-content:center;min-height:49px;padding:.85rem 1.45rem;border-radius:11px;font-weight:750;text-decoration:none;background:linear-gradient(135deg,#0875e1 0%,#0757bd 100%);color:#fff;border:1px solid #0757bd;box-shadow:0 6px 16px rgba(0,102,204,.24);transition:transform .2s,box-shadow .2s,background .2s}
+.jd-apply .btn:hover{transform:translateY(-2px);background:linear-gradient(135deg,#0867c7 0%,#064ba4 100%);box-shadow:0 10px 22px rgba(0,102,204,.28)}
 .jd-apply .btn:focus-visible,.jd-back:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
-.jd-deadline{display:inline-flex;align-items:center;gap:.4rem;font-size:.9rem;font-weight:650;color:#52657b}
-.jd-deadline.urgent{color:#b45309}
-.jd-closed{background:#fff1f0;color:#a52822;border:1px solid #ffd6d2;padding:.85rem 1rem;border-radius:10px;font-weight:650;line-height:1.5}
-.jd-section{position:relative;background:var(--white);border:1px solid #e3eaf3;border-radius:15px;padding:1.55rem 1.75rem;margin-bottom:1rem;box-shadow:0 3px 14px rgba(16,42,67,.035)}
+.jd-deadline{display:inline-flex;align-items:center;gap:.45rem;font-size:.88rem;font-weight:750;color:#167044;background:#eaf9ef;border:1px solid #bce8ca;border-radius:999px;padding:.62rem .9rem;line-height:1.25}
+.jd-deadline:before{content:"✓";display:inline-flex;align-items:center;justify-content:center;width:1.2rem;height:1.2rem;border-radius:50%;background:#c9f0d5;color:#17663d;font-size:.78rem;font-weight:900}
+.jd-deadline.urgent{color:#92510a;background:#fff7e6;border-color:#f5d79b}
+.jd-deadline.urgent:before{content:"!";background:#ffebbd;color:#92510a}
+.jd-apply .jd-deadline:not(.urgent){box-shadow:0 2px 5px rgba(22,112,68,.04)}
+.jd-closed{background:linear-gradient(135deg,#fff1f0,#fff7f6);color:#a52822;border:1px solid #ffd0cb;padding:.85rem 1rem;border-radius:11px;font-weight:700;line-height:1.5}
+.jd-section{position:relative;background:var(--white);border:1px solid #e3eaf3;border-radius:15px;padding:1.55rem 1.75rem;margin-bottom:1rem;box-shadow:0 3px 14px rgba(16,42,67,.035);overflow:hidden}
+.jd-section:nth-of-type(odd){background:linear-gradient(115deg,#fff 0%,#fbfdff 100%)}
+.jd-section:nth-of-type(even){background:linear-gradient(115deg,#fff 0%,#f8fbff 100%)}
 .jd-section h2{display:flex;align-items:center;gap:.65rem;font-size:1.16rem;line-height:1.35;letter-spacing:-.015em;margin:0 0 1rem;color:var(--navy-blue)}
-.jd-section h2:before{content:"";width:4px;height:1.2em;flex:0 0 4px;border-radius:4px;background:#1672d4}
+.jd-section h2:before{content:"";width:4px;height:1.2em;flex:0 0 4px;border-radius:4px;background:linear-gradient(180deg,#1682ee,#0757bd);box-shadow:0 0 0 3px #e9f3ff}
 .jd-section p{margin:0;color:#334155;line-height:1.8;white-space:pre-line;overflow-wrap:anywhere}
 .jd-section ul{margin:0;padding-left:1.25rem;color:#334155;line-height:1.8}
 .jd-section li{padding-left:.2rem;margin:.35rem 0}
 .jd-section li::marker{color:#1672d4}
-.jd-note{position:relative;font-size:.87rem;color:#52657b;background:#f5f8fc;border:1px solid #e4ebf4;border-radius:12px;padding:1rem 1.1rem;margin-top:1.5rem;line-height:1.75}
+.jd-note{position:relative;font-size:.87rem;color:#405670;background:linear-gradient(120deg,#eff6ff 0%,#f4fbff 100%);border:1px solid #d5e6fa;border-left:4px solid #1672d4;border-radius:12px;padding:1rem 1.1rem;margin-top:1.5rem;line-height:1.75}
 .jd-msg{text-align:center;padding:3.5rem 1.25rem;color:#52657b;background:#f7faff;border:1px dashed #cad8e8;border-radius:15px;line-height:1.6}
 @media(max-width:760px){.jd{margin:1.4rem auto 3rem}.jd-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.jd-meta div{padding:.8rem}.jd-section{padding:1.3rem 1.2rem}}
 @media(max-width:480px){.jd{padding:0}.jd-head{border-radius:14px;padding:1.3rem 1rem 1.15rem}.jd-head h1{font-size:1.55rem;line-height:1.25}.jd-company{font-size:1rem;margin-bottom:1.15rem}.jd-meta{gap:.55rem}.jd-meta div{padding:.75rem .7rem}.jd-meta span{font-size:.65rem}.jd-meta strong{font-size:.88rem}.jd-apply{align-items:stretch;gap:.75rem}.jd-apply .btn{width:100%;min-height:50px;padding:.85rem 1rem}.jd-deadline{font-size:.85rem}.jd-section{border-radius:12px;padding:1.15rem 1rem}.jd-section h2{font-size:1.08rem;margin-bottom:.8rem}.jd-section p,.jd-section ul{font-size:.95rem;line-height:1.75}.jd-note{font-size:.82rem;padding:.9rem}}
