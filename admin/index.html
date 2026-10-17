@@ -596,6 +596,7 @@
           <div class="table-wrap"><table><thead><tr><th>Job</th><th>Uploaded date &amp; time (BD)</th><th>Status</th><th>Uploaded by</th><th>Main website post</th><th>Application link</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
         </div>
         <h2 class="section-title">Recent activity</h2>
+        <p class="muted card-lead">Review decisions, team invitations, and removals. Job submissions and duplicate-check alerts are shown in their own sections.</p>
         <ul class="feed" id="activityFeed"></ul>
         <div data-roles="owner,operations">
           <h2 class="section-title">Invite a team member</h2>
@@ -806,15 +807,19 @@
   function activityEvents() {
     const ev = [];
     const at = x => (x ? Date.parse(x) : 0);
+
+    // Keep this as an audit feed, not a second list of job submissions.
+    // Submissions and duplicate-check alerts are shown in their own sections.
     jobs.forEach(j => {
-      if (j.status === 'live' && j.reviewedBy && j.reviewedBy === j.createdBy) {
-        ev.push({ type: 'published', who: j.sentBy, title: j.title, ts: at(j.publishedAt || j.createdAt) });
-        return;
+      if (j.status === 'live' && j.reviewedBy && j.reviewedBy !== j.createdBy) {
+        ev.push({ type: 'approved', who: j.decidedBy || 'A reviewer', title: j.title, ts: at(j.reviewedAt || j.publishedAt) });
       }
-      ev.push({ type: 'submitted', who: j.sentBy, title: j.title, ts: at(j.createdAt) });
-      if (j.status === 'live') ev.push({ type: 'approved', who: j.decidedBy || 'A reviewer', title: j.title, ts: at(j.reviewedAt || j.publishedAt) });
-      if (j.status === 'rejected') ev.push({ type: 'rejected', who: j.decidedBy || 'A reviewer', title: j.title, note: j.reason, ts: at(j.reviewedAt) });
+      if (j.status === 'rejected') {
+        ev.push({ type: 'rejected', who: j.decidedBy || 'A reviewer', title: j.title, note: j.reason, ts: at(j.reviewedAt) });
+      }
     });
+
+    // Explicit saved events such as team invitations and job removals remain here.
     dbActivity.forEach(a => ev.push(a));
     return ev.sort((a, b) => b.ts - a.ts).slice(0, 30);
   }
