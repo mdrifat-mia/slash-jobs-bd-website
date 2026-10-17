@@ -73,3 +73,40 @@ footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:focus-visible {
 @media (max-width: 640px) {
   .footer-content[data-astro-cid-sz7xmlte] { grid-template-columns: 1fr; gap: 1.5rem; }
 }
+
+
+/* Final correction: match homepage's true near-black footer and keep the disclaimer fully visible. */
+footer[data-astro-cid-sz7xmlte] {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+}
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte] {
+  color: #CBD5E1 !important;
+}
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover,
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:focus-visible {
+  color: #38BDF8 !important;
+}
+footer[data-astro-cid-sz7xmlte] h3[data-astro-cid-sz7xmlte] {
+  color: #FFFFFF !important;
+}
+.footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: .5rem auto 0 !important;
+  padding: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-align: center !important;
+  font-size: .72rem !important;
+  line-height: 1.6 !important;
+}
+@media (max-width: 768px) {
+  .footer-bottom[data-astro-cid-sz7xmlte] p.footer-disclaimer[data-astro-cid-sz7xmlte] {
+    text-align: justify !important;
+    text-justify: inter-word;
+  }
+}
