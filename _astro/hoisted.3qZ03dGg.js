@@ -1,0 +1,1 @@
+import"./hoisted.B15RZC_Y.js";const t=document.getElementById("filterForm"),s=t?.querySelectorAll("input, select");s?.forEach(e=>{e.id!=="search"&&e.addEventListener("change",()=>{t.submit()})});const r=t?.querySelector("#search");r&&r.addEventListener("keypress",e=>{e.key==="Enter"&&t.submit()});
