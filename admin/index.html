@@ -622,6 +622,16 @@
 </div>
 
 <script>
+  // Surface startup JavaScript errors on the loading screen so they can be diagnosed without DevTools.
+  window.addEventListener('error', function (event) {
+    const note = document.getElementById('bootNote');
+    if (note) {
+      const detail = event && event.message ? event.message : 'Unknown JavaScript error';
+      note.textContent = 'Admin startup error: ' + detail + (event && event.lineno ? ' (line ' + event.lineno + ')' : '') + '. Please refresh and report this message.';
+    }
+  });
+</script>
+<script>
   /* ---------- Supabase ---------- */
   const SUPABASE_URL = 'https://buwnriwmcsyfleutdvuw.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_NyhMyswcGQfhauQJFFmV7w_hEDvAxYa';   // publishable key: safe in the browser
