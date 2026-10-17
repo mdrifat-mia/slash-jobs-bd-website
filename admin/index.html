@@ -590,6 +590,11 @@
         <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
         <h2 class="section-title">People with access</h2>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th><th id="teamActionTh"></th></tr></thead><tbody id="teamBody"></tbody></table></div>
+        <div data-roles="owner,operations">
+          <h2 class="section-title">Manage uploaded jobs</h2>
+          <p class="muted card-lead">Owner and Operations can permanently remove an uploaded job. Each removal is recorded in Recent activity.</p>
+          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Status</th><th>Uploaded by</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
+        </div>
         <h2 class="section-title">Recent activity</h2>
         <ul class="feed" id="activityFeed"></ul>
         <div data-roles="owner,operations">
@@ -1813,8 +1818,48 @@ function checkDuplicate(f, excludeId) {
     return iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
   }
 
+  function renderManageJobs() {
+    const body = $('manageJobsBody');
+    if (!body || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
+    body.innerHTML = jobs.length ? jobs.map(j => `<tr>
+      <td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div></td>
+      <td>${esc(statusLabel(j.status))}</td>
+      <td>${esc(j.sentBy)}</td>
+      <td><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></td>
+    </tr>`).join('') : '<tr><td colspan="4" class="muted">No uploaded jobs found.</td></tr>';
+  }
+
+  const manageJobsBody = $('manageJobsBody');
+  if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
+    const btn = event.target.closest('[data-delete-job]');
+    if (!btn || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
+    const jobId = btn.dataset.deleteJob;
+    const title = btn.dataset.jobTitle || 'this job';
+    const company = btn.dataset.jobCompany || '';
+    if (!confirm(`Permanently remove "${title}"${company ? ' at ' + company : ''} from the portal? This cannot be undone.`)) return;
+    btn.disabled = true;
+    btn.textContent = 'Removing…';
+    const { data, error } = await sb.from('jobs').delete().eq('id', jobId).select('id');
+    if (error) {
+      console.error(error);
+      toast(error.message || 'Could not remove this job. Check database permissions.');
+      btn.disabled = false;
+      btn.textContent = 'Remove job';
+      return;
+    }
+    if (!data || !data.length) {
+      toast('Job was not removed. Your role may not have delete permission.');
+      await loadJobs();
+      return;
+    }
+    await addActivity('removed', title, `Job deleted from portal${company ? ' · ' + company : ''} by ${currentUser.name}.`);
+    toast('Job removed and activity recorded');
+    await loadJobs();
+  });
+
   function renderTeam() {
     if (!currentUser) return;
+    renderManageJobs();
     const isOwner = currentUser.role === 'owner';
     const active = members.filter(m => m.status === 'active');
     const invited = members.filter(m => m.status === 'invited');
