@@ -593,7 +593,7 @@
         <div data-roles="owner,operations">
           <h2 class="section-title">Manage uploaded jobs</h2>
           <p class="muted card-lead">Owner and Operations can permanently remove an uploaded job. Each removal is recorded in Recent activity.</p>
-          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Status</th><th>Uploaded by</th><th>Job link</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Uploaded date &amp; time (BD)</th><th>Status</th><th>Uploaded by</th><th>Main website post</th><th>Application link</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
         </div>
         <h2 class="section-title">Recent activity</h2>
         <ul class="feed" id="activityFeed"></ul>
@@ -1818,19 +1818,33 @@ function checkDuplicate(f, excludeId) {
     return iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
   }
 
+  function manageJobDateTime(iso) {
+    if (!iso) return '<span class="muted">Date/time unavailable</span>';
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '<span class="muted">Date/time unavailable</span>';
+    return esc(new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Dhaka', day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true
+    }).format(date)) + ' (BD)';
+  }
+
   function renderManageJobs() {
     const body = $('manageJobsBody');
     if (!body || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
     body.innerHTML = jobs.length ? jobs.map(j => {
       const jobUrl = /^https?:\/\//i.test(String(j.link || '').trim()) ? String(j.link).trim() : '';
+      // The database currently stores the application URL, not an individual Slash Jobs BD post URL.
+      // Do not label the application URL as the website post.
       return `<tr>
-        <td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div></td>
+        <td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div><div class="muted">ID: ${esc(j.id)}</div></td>
+        <td>${manageJobDateTime(j.createdAt)}</td>
         <td>${esc(statusLabel(j.status))}</td>
         <td>${esc(j.sentBy)}</td>
-        <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">View job ↗</a>` : '<span class="muted">No link saved</span>'}</td>
+        <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div class="muted">Individual post URL not saved</div></td>
+        <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">Apply link ↗</a>` : '<span class="muted">No application link saved</span>'}</td>
         <td><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></td>
       </tr>`;
-    }).join('') : '<tr><td colspan="5" class="muted">No uploaded jobs found.</td></tr>';
+    }).join('') : '<tr><td colspan="7" class="muted">No uploaded jobs found.</td></tr>';
   }
 
   const manageJobsBody = $('manageJobsBody');
