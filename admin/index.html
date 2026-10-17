@@ -1061,6 +1061,42 @@
     this.setCustomValidity(!v || isHttpUrl(v) ? '' : 'The link must start with http:// or https://');
   });
 
+  // Keep the job submission draft on this device so refreshes or accidental navigation
+  // do not erase work. Draft is cleared only after a successful database insert.
+  const JOB_DRAFT_KEY = 'sjbd_job_submission_draft_v1';
+  let restoringJobDraft = false;
+  function saveJobDraft() {
+    if (restoringJobDraft) return;
+    const form = $('jobForm');
+    if (!form) return;
+    const draft = {};
+    Array.from(form.elements).forEach(field => {
+      if (!field.id || field.type === 'submit' || field.type === 'button' || field.type === 'reset') return;
+      draft[field.id] = field.type === 'checkbox' ? field.checked : field.value;
+    });
+    try { localStorage.setItem(JOB_DRAFT_KEY, JSON.stringify(draft)); } catch (e) {}
+  }
+  function restoreJobDraft() {
+    let draft;
+    try { draft = JSON.parse(localStorage.getItem(JOB_DRAFT_KEY) || 'null'); } catch (e) { draft = null; }
+    if (!draft || typeof draft !== 'object') return;
+    restoringJobDraft = true;
+    const form = $('jobForm');
+    Object.keys(draft).forEach(id => {
+      const field = $(id);
+      if (!field || !form.contains(field)) return;
+      if (field.type === 'checkbox') field.checked = !!draft[id];
+      else field.value = draft[id] == null ? '' : String(draft[id]);
+    });
+    restoringJobDraft = false;
+    noDeadline.dispatchEvent(new Event('change', { bubbles: true }));
+    runDupCheck();
+    toast('Your unsent job draft was restored');
+  }
+  $('jobForm').addEventListener('input', saveJobDraft);
+  $('jobForm').addEventListener('change', saveJobDraft);
+  restoreJobDraft();
+
   /* ---------- Duplicate checks ---------- */
   const el = id => document.getElementById(id);
 
@@ -1602,6 +1638,7 @@ function checkDuplicate(f, excludeId) {
 
     if (dup.warn.length) logDup('marked', f, dup.warn[0]);   // sent after ticking "this is a different job"
     toast(isOwner ? 'Job published' : 'Sent for review');
+    try { localStorage.removeItem(JOB_DRAFT_KEY); } catch (e) {}
     $('jobForm').reset();
     applyDate.disabled = false;
     $('applyPicker').disabled = false;
