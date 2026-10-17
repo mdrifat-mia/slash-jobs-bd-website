@@ -529,7 +529,7 @@
                   <label class="check inline-check" for="noDeadline"><input type="checkbox" id="noDeadline"> No deadline shown</label>
                   <div class="field-error" id="deadlineError">Add the Apply by date, or tick "No deadline shown".</div>
                 </div>
-                <div class="field"><label for="postedDate">Employer posted date <span class="opt">(optional)</span></label><input type="date" id="postedDate"></div>
+                <div class="field"><label for="postedDate">Employer posted date <span class="opt">(optional)</span></label><div class="date-wrap"><input type="text" id="postedDate" inputmode="numeric" placeholder="dd/mm/yyyy" autocomplete="off" maxlength="10"><span class="cal-btn" id="postedCalBtn" title="Pick from calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><input type="date" id="postedPicker" class="cal-native" aria-label="Pick employer posted date from calendar"></span></div></div>
                 <div class="field"><label for="department">Department <span class="opt">(optional)</span></label><input type="text" id="department" placeholder="e.g., Sales" maxlength="120"></div>
                 <div class="field"><label for="jobRef">Job reference / ID <span class="opt">(optional)</span></label><input type="text" id="jobRef" placeholder="e.g., REQ-2026-045" maxlength="120"></div>
                 <div class="field"><label for="ageLimit">Age limit <span class="opt">(optional)</span></label><input type="text" id="ageLimit" placeholder="e.g., 22 - 30 years" maxlength="120"></div>
@@ -1038,6 +1038,21 @@
     applyDate.value = d + '/' + m + '/' + y;
     $('deadlineError').classList.remove('show');
     applyDate.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // Employer posted date supports typing/pasting (dd/mm/yyyy or yyyy-mm-dd) and calendar selection.
+  const postedDate = $('postedDate');
+  const postedPicker = $('postedPicker');
+  postedDate.addEventListener('input', function () {
+    const v = this.value;
+    if (/^[\d\/\-. ]*$/.test(v) && !/^\d{4}\D\d{1,2}\D\d{1,2}$/.test(v.trim())) this.value = typeDate(v);
+  });
+  const syncPostedPicker = () => { postedPicker.value = parseDMY(postedDate.value) || ''; };
+  ['pointerdown', 'focus'].forEach(ev => postedPicker.addEventListener(ev, syncPostedPicker));
+  postedPicker.addEventListener('change', function () {
+    if (!this.value) return;
+    const [y, m, d] = this.value.split('-');
+    postedDate.value = d + '/' + m + '/' + y;
   });
 
   // The apply link must be a real web link (http or https)
@@ -1567,7 +1582,7 @@ function checkDuplicate(f, excludeId) {
       work_style: el('workStyle').value, level: el('level').value || null,
       pay: f.pay || null, department: val('department') || null, job_ref: val('jobRef') || null, age_limit: val('ageLimit') || null,
       apply_by: f.applyISO || null, no_deadline: noDeadline.checked,
-      employer_posted: el('postedDate').value || null,
+      employer_posted: parseDMY(el('postedDate').value) || null,
       about: val('about') || null, duties: val('doList'), requirements: val('needList'),
       suits: val('suits') || null,
       status: isOwner ? 'live' : 'pending'
