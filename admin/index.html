@@ -593,7 +593,7 @@
         <div data-roles="owner,operations">
           <h2 class="section-title">Manage uploaded jobs</h2>
           <p class="muted card-lead">Owner and Operations can permanently remove an uploaded job. Each removal is recorded in Recent activity.</p>
-          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Status</th><th>Uploaded by</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Status</th><th>Uploaded by</th><th>Job link</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
         </div>
         <h2 class="section-title">Recent activity</h2>
         <ul class="feed" id="activityFeed"></ul>
@@ -1821,12 +1821,16 @@ function checkDuplicate(f, excludeId) {
   function renderManageJobs() {
     const body = $('manageJobsBody');
     if (!body || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
-    body.innerHTML = jobs.length ? jobs.map(j => `<tr>
-      <td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div></td>
-      <td>${esc(statusLabel(j.status))}</td>
-      <td>${esc(j.sentBy)}</td>
-      <td><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></td>
-    </tr>`).join('') : '<tr><td colspan="4" class="muted">No uploaded jobs found.</td></tr>';
+    body.innerHTML = jobs.length ? jobs.map(j => {
+      const jobUrl = /^https?:\/\//i.test(String(j.link || '').trim()) ? String(j.link).trim() : '';
+      return `<tr>
+        <td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div></td>
+        <td>${esc(statusLabel(j.status))}</td>
+        <td>${esc(j.sentBy)}</td>
+        <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">View job ↗</a>` : '<span class="muted">No link saved</span>'}</td>
+        <td><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5" class="muted">No uploaded jobs found.</td></tr>';
   }
 
   const manageJobsBody = $('manageJobsBody');
