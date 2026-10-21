@@ -616,10 +616,6 @@
         <div class="profile-modal">
           <div class="profile-modal-head"><div><p class="profile-menu-heading">ACCOUNT PREFERENCES</p><h2 id="profileSettingsTitle">Profile settings</h2><p>Manage your name, photo and account security.</p></div><button type="button" class="profile-modal-close" aria-label="Close" onclick="closeProfileSettings()">×</button></div>
           <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
-            <div class="profile-photo-row">
-              <div id="profilePhotoPreview" class="profile-photo-preview"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg></div>
-              <div class="profile-photo-fields"><label for="profilePhotoUrl">Profile photo URL</label><input id="profilePhotoUrl" type="url" placeholder="https://example.com/photo.jpg"><p class="profile-settings-hint">Use a direct image link (JPG, PNG or WebP).</p></div>
-            </div>
             <div class="profile-settings-grid">
               <div class="field"><label for="profileDisplayName">Display name</label><input id="profileDisplayName" type="text" maxlength="120" required></div>
               <div class="field"><label for="profileEmail">Email address</label><input id="profileEmail" type="email" readonly></div>
@@ -1180,63 +1176,32 @@
     if (trashItem) trashItem.style.display = ['owner', 'operations'].includes(currentUser.role) ? '' : 'none';
   }
 
-  let profilePhotoUrl = '';
   function openProfileSettings() {
     if (!currentUser) return;
     $('profileDisplayName').value = currentUser.name || '';
     $('profileEmail').value = currentUser.email || '';
     $('profileRole').value = currentUser.label || currentUser.role || '';
-    $('profilePhotoUrl').value = profilePhotoUrl || '';
     $('profileSettingsError').hidden = true;
     $('profileSettingsModal').hidden = false;
-    renderProfilePhoto();
   }
   function closeProfileSettings() { $('profileSettingsModal').hidden = true; }
-  function renderProfilePhoto() {
-    const preview = $('profilePhotoPreview');
-    const url = $('profilePhotoUrl').value.trim();
-    if (url) {
-      preview.innerHTML = '';
-      const img = document.createElement('img');
-      img.alt = 'Profile photo preview';
-      img.src = url;
-      img.onerror = () => { preview.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg>'; };
-      preview.appendChild(img);
-    } else {
-      preview.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg>';
-    }
-  }
-  $('profilePhotoUrl').addEventListener('input', renderProfilePhoto);
   async function saveProfileSettings(event) {
     event.preventDefault();
     if (!currentUser) return;
     const name = $('profileDisplayName').value.trim();
-    const photo = $('profilePhotoUrl').value.trim();
     const err = $('profileSettingsError');
     const btn = $('saveProfileSettingsBtn');
     err.hidden = true;
     if (!name || name.length > 120) { err.textContent = 'Enter a display name (up to 120 characters).'; err.hidden = false; return; }
-    if (photo && !/^https?:\/\//i.test(photo)) { err.textContent = 'Enter a valid photo URL starting with https:// or http://.'; err.hidden = false; return; }
     btn.disabled = true; btn.textContent = 'Saving...';
     const { error } = await sb.from('profiles').update({ name }).eq('id', currentUser.id);
     if (error) {
       err.textContent = 'Could not save your name. Your account permissions may not allow profile edits: ' + error.message;
       err.hidden = false; btn.disabled = false; btn.textContent = 'Save changes'; return;
     }
-    const authUpdate = await sb.auth.updateUser({ data: { avatar_url: photo || null } });
-    if (authUpdate.error) {
-      err.textContent = 'Name saved, but photo preference could not be saved: ' + authUpdate.error.message;
-      err.hidden = false; btn.disabled = false; btn.textContent = 'Save changes'; return;
-    }
-    profilePhotoUrl = photo;
     currentUser.name = name;
     const triggerLabel = document.querySelector('.profile-trigger-label');
     if (triggerLabel) triggerLabel.textContent = name;
-    const avatar = document.querySelector('.profile-avatar');
-    if (avatar) {
-      avatar.innerHTML = photo ? '' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg>';
-      if (photo) { const img=document.createElement('img'); img.src=photo; img.alt=''; img.style.cssText='width:30px;height:30px;border-radius:50%;object-fit:cover'; avatar.appendChild(img); }
-    }
     $('profileSettingsModal').hidden = true;
     btn.disabled = false; btn.textContent = 'Save changes';
     toast('Profile settings saved');
