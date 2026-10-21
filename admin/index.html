@@ -869,6 +869,8 @@
   }
 
   let currentUser = null;
+  let editingJobId = null;
+  let editingJobStatus = null;
 
   /* ---------- Auth ---------- */
   async function handleLogin(event) {
@@ -1649,13 +1651,11 @@ function checkDuplicate(f, excludeId) {
       return;
     }
     if (!validateApplyByField('applyDate', 'noDeadline')) return;
-    const dup = checkDuplicate(f);
-    if (dup.block) { runDupCheck(); toast('This apply link is already in the portal'); return; }
-    if (dup.warn.length && !el('dupConfirm').checked) {
-      runDupCheck();
-      toast('Tick the duplicate check first');
-      el('dupWarn').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
+    const dup = checkDuplicate(f, editingJobId || undefined);
+    if (!editingJobId && dup.block) { runDupCheck(); toast('This apply link is already in the portal'); return; }
+    if (!editingJobId && dup.warn.length && !el('dupConfirm').checked) {
+      runDupCheck(); toast('Tick the duplicate check first');
+      el('dupWarn').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
     }
 
     const isOwner = currentUser.role === 'owner';
@@ -1669,12 +1669,13 @@ function checkDuplicate(f, excludeId) {
       employer_posted: parseDMY(el('postedDate').value) || null,
       about: val('about') || null, duties: val('doList'), requirements: val('needList'),
       suits: val('suits') || null,
-      status: isOwner ? 'live' : 'pending'
+      status: editingJobId ? editingJobStatus : (isOwner ? 'live' : 'pending')
     };
 
     const btn = $('publishBtn'), label = btn.textContent;
     btn.disabled = true; btn.textContent = 'Saving...';
-    const { error } = await sb.from('jobs').insert(row);
+    const saveQuery = editingJobId ? sb.from('jobs').update(row).eq('id', editingJobId) : sb.from('jobs').insert(row);
+    const { error } = await saveQuery;
     btn.textContent = label;
     btn.disabled = false;
     if (error) {
@@ -1684,10 +1685,15 @@ function checkDuplicate(f, excludeId) {
       return;
     }
 
-    if (dup.warn.length) logDup('marked', f, dup.warn[0]);   // sent after ticking "this is a different job"
-    toast(isOwner ? 'Job published' : 'Sent for review');
+    const wasEditing = !!editingJobId;
+    if (!wasEditing && dup.warn.length) logDup('marked', f, dup.warn[0]);
+    editingJobId = null; editingJobStatus = null;
+    toast(wasEditing ? 'Job updated successfully' : (isOwner ? 'Job published' : 'Sent for review'));
     try { localStorage.removeItem(JOB_DRAFT_KEY); } catch (e) {}
     $('jobForm').reset();
+    $('publishBtn').textContent = currentUser.role === 'owner' ? 'Publish job' : 'Send for review';
+    $('submitHint').textContent = 'Fields marked * are required.';
+    $('applyPicker').value = ''; $('postedPicker').value = '';
     applyDate.disabled = false;
     $('applyPicker').disabled = false;
     $('calBtn').classList.remove('off');
@@ -1875,13 +1881,35 @@ function checkDuplicate(f, excludeId) {
         <td>${esc(j.sentBy)}</td>
         <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div class="muted">Individual post URL not saved</div></td>
         <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">Apply link ↗</a>` : '<span class="muted">No application link saved</span>'}</td>
-        <td><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></td>
+        <td><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-secondary btn-sm" data-edit-job="${esc(j.id)}">Edit job</button><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
       </tr>`;
     }).join('') : '<tr><td colspan="7" class="muted">No uploaded jobs found.</td></tr>';
   }
 
   const manageJobsBody = $('manageJobsBody');
   if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
+    const editBtn = event.target.closest('[data-edit-job]');
+    if (editBtn) {
+      if (!currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
+      editBtn.disabled = true; editBtn.textContent = 'Loading…';
+      const { data: job, error } = await sb.from('jobs').select('*').eq('id', editBtn.dataset.editJob).single();
+      editBtn.disabled = false; editBtn.textContent = 'Edit job';
+      if (error || !job) { toast(error?.message || 'Could not load this job to edit'); return; }
+      editingJobId = job.id; editingJobStatus = job.status;
+      $('applyLink').value = job.apply_link || '';
+      $('jobTitle').value = job.title || ''; $('company').value = job.company || ''; $('location').value = job.location || '';
+      $('workStyle').value = job.work_style || ''; $('level').value = job.level || ''; $('pay').value = job.pay || '';
+      $('applyDate').value = job.apply_by ? formatDate(job.apply_by) : '';
+      $('noDeadline').checked = !!job.no_deadline; $('applyDate').disabled = !!job.no_deadline;
+      $('applyPicker').disabled = !!job.no_deadline; $('calBtn').classList.toggle('off', !!job.no_deadline); $('applyPicker').value = job.apply_by || '';
+      $('postedDate').value = job.employer_posted ? formatDate(job.employer_posted) : ''; $('postedPicker').value = job.employer_posted || '';
+      $('department').value = job.department || ''; $('jobRef').value = job.job_ref || ''; $('ageLimit').value = job.age_limit || '';
+      $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
+      $('publishBtn').textContent = 'Save changes'; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
+      $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
+      showTab('submit'); $('jobTitle').focus(); toast('Job loaded into the form. Make your corrections and save.');
+      return;
+    }
     const btn = event.target.closest('[data-delete-job]');
     if (!btn || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
     const jobId = btn.dataset.deleteJob;
