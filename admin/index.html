@@ -135,14 +135,18 @@
   @media (min-width: 901px) {
     .table-wrap:has(#manageJobsBody) { overflow-x: auto; border-color: #DCE4EC; box-shadow: 0 8px 24px rgba(15, 23, 42, .045); }
     table:has(#manageJobsBody) { width: 100%; min-width: 940px; table-layout: fixed; }
-    table:has(#manageJobsBody) th { padding: 13px 12px; font-size: 11px; letter-spacing: .035em; text-transform: uppercase; white-space: nowrap; }
-    table:has(#manageJobsBody) td { padding: 15px 12px; vertical-align: top; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
-    table:has(#manageJobsBody) th:nth-child(1), table:has(#manageJobsBody) td:nth-child(1) { width: 26%; }
-    table:has(#manageJobsBody) th:nth-child(2), table:has(#manageJobsBody) td:nth-child(2) { width: 15%; }
-    table:has(#manageJobsBody) th:nth-child(3), table:has(#manageJobsBody) td:nth-child(3) { width: 10%; }
-    table:has(#manageJobsBody) th:nth-child(4), table:has(#manageJobsBody) td:nth-child(4) { width: 12%; }
+    table:has(#manageJobsBody) th { padding: 13px 10px; font-size: 10px; letter-spacing: .025em; text-transform: uppercase; white-space: normal; line-height: 1.35; vertical-align: bottom; }
+    table:has(#manageJobsBody) td { padding: 15px 10px; vertical-align: top; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+    table:has(#manageJobsBody) th:nth-child(1), table:has(#manageJobsBody) td:nth-child(1) { width: 25%; }
+    table:has(#manageJobsBody) th:nth-child(2), table:has(#manageJobsBody) td:nth-child(2) { width: 18%; }
+    table:has(#manageJobsBody) th:nth-child(3), table:has(#manageJobsBody) td:nth-child(3) { width: 9%; }
+    table:has(#manageJobsBody) th:nth-child(4), table:has(#manageJobsBody) td:nth-child(4) { width: 11%; }
     table:has(#manageJobsBody) th:nth-child(5), table:has(#manageJobsBody) td:nth-child(5) { width: 17%; }
     table:has(#manageJobsBody) th:nth-child(6), table:has(#manageJobsBody) td:nth-child(6) { width: 20%; }
+    #manageJobsBody .manage-datetime { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 9px 10px; max-width: 100%; border: 1px solid #E2E8F0; border-radius: 9px; background: #F8FAFC; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    #manageJobsBody .manage-date { color: #334155; font-size: 12px; font-weight: 700; }
+    #manageJobsBody .manage-time { display: inline-flex; align-items: center; gap: 5px; color: #64748B; font-size: 11px; font-weight: 600; }
+    #manageJobsBody .manage-time::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #0D9488; }
     #manageJobsBody td:first-child strong { display: block; color: #0F172A; font-size: 13px; line-height: 1.45; }
     #manageJobsBody td:first-child .muted { margin-top: 4px; font-size: 12px; }
     #manageJobsBody td:first-child .muted:last-child { color: #94A3B8; font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
@@ -2225,10 +2229,13 @@ function checkDuplicate(f, excludeId) {
     if (!iso) return '<span class="muted">Date/time unavailable</span>';
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return '<span class="muted">Date/time unavailable</span>';
-    return esc(new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Asia/Dhaka', day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', hour12: true
-    }).format(date)) + ' (BD)';
+    const dateLabel = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Dhaka', day: '2-digit', month: 'short', year: 'numeric'
+    }).format(date);
+    const timeLabel = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit', hour12: true
+    }).format(date);
+    return '<span class="manage-datetime"><span class="manage-date">' + esc(dateLabel) + '</span><span class="manage-time">' + esc(timeLabel) + ' · BD</span></span>';
   }
 
   function trashDeadline(meta) { return meta && meta.trashedAt ? Date.parse(meta.trashedAt) + 7 * 24 * 60 * 60 * 1000 : 0; }
