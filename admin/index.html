@@ -2301,6 +2301,7 @@ function checkDuplicate(f, excludeId) {
   }
   $('cancelEditBtn').addEventListener('click', function () {
     cancelJobEdit();
+    showTab('jobs', true);
     toast('Changes cancelled. No job details were saved.');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
