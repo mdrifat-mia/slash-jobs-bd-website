@@ -420,6 +420,19 @@
   .modal-head h2 { font-size: 17px; font-weight: 700; }
   .modal-x { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-size: 18px; line-height: 1; }
   .modal-body { padding: 16px 20px 20px; }
+
+  .confirm-backdrop { position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:20px; background:rgba(15,23,42,.58); backdrop-filter:blur(4px); }
+  .confirm-backdrop[hidden] { display:none; }
+  .confirm-card { width:min(100%,420px); background:var(--surface); color:var(--ink); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:0 28px 80px rgba(15,23,42,.28); animation:confirmIn .16s ease-out; }
+  .confirm-mark { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background:#FEF2F2; color:#B91C1C; font-size:20px; font-weight:800; margin-bottom:16px; }
+  .confirm-card h2 { margin:0 0 8px; font-size:19px; letter-spacing:-.02em; }
+  .confirm-card p { margin:0; color:var(--muted); font-size:14px; line-height:1.55; overflow-wrap:anywhere; }
+  .confirm-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
+  .confirm-actions button { min-height:40px; }
+  .confirm-delete-btn { border:1px solid #B91C1C; background:#B91C1C; color:#fff; border-radius:9px; padding:9px 14px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+  .confirm-delete-btn:hover { background:#991B1B; }
+  @keyframes confirmIn { from { opacity:0; transform:translateY(5px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+
   .cmp-verdict { padding: 10px 12px; border-radius: 10px; font-weight: 600; font-size: 13px; background: var(--amber-bg); color: var(--amber); margin-bottom: 14px; overflow-wrap: anywhere; }
   .cmp-verdict.same { background: var(--red-50); color: var(--red-700); }
   .cmp-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr) 22px; gap: 10px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13px; overflow-wrap: anywhere; }
@@ -847,6 +860,14 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<div class="confirm-backdrop" id="permanentDeleteConfirm" hidden role="dialog" aria-modal="true" aria-labelledby="permanentDeleteTitle" aria-describedby="permanentDeleteMessage">
+  <div class="confirm-card">
+    <div class="confirm-mark" aria-hidden="true">!</div>
+    <h2 id="permanentDeleteTitle">Delete permanently?</h2>
+    <p id="permanentDeleteMessage">This job will be permanently deleted and cannot be restored.</p>
+    <div class="confirm-actions"><button type="button" class="btn btn-secondary" id="cancelPermanentDelete">Cancel</button><button type="button" class="confirm-delete-btn" id="confirmPermanentDelete">Delete permanently</button></div>
+  </div>
+</div>
 <div class="modal" id="cmpModal" hidden role="dialog" aria-modal="true" aria-labelledby="cmpTitle">
   <div class="modal-card">
     <div class="modal-head"><h2 id="cmpTitle">Compare jobs</h2><button type="button" class="modal-x" id="cmpClose" aria-label="Close">&times;</button></div>
@@ -2340,6 +2361,34 @@ function checkDuplicate(f, excludeId) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 1000);  });
 
+  function confirmPermanentDelete(title) {
+    return new Promise(resolve => {
+      const modal = $('permanentDeleteConfirm');
+      const message = $('permanentDeleteMessage');
+      const cancel = $('cancelPermanentDelete');
+      const confirm = $('confirmPermanentDelete');
+      message.textContent = '"' + title + '" will be permanently deleted and cannot be restored.';
+      modal.hidden = false;
+      const finish = value => {
+        modal.hidden = true;
+        cancel.removeEventListener('click', onCancel);
+        confirm.removeEventListener('click', onConfirm);
+        modal.removeEventListener('click', onBackdrop);
+        document.removeEventListener('keydown', onKey);
+        resolve(value);
+      };
+      const onCancel = () => finish(false);
+      const onConfirm = () => finish(true);
+      const onBackdrop = event => { if (event.target === modal) finish(false); };
+      const onKey = event => { if (event.key === 'Escape') finish(false); };
+      cancel.addEventListener('click', onCancel);
+      confirm.addEventListener('click', onConfirm);
+      modal.addEventListener('click', onBackdrop);
+      document.addEventListener('keydown', onKey);
+      cancel.focus();
+    });
+  }
+
   const trashJobsBody = $('trashJobsBody');
   if (trashJobsBody) trashJobsBody.addEventListener('click', async function (event) {
     const restoreBtn = event.target.closest('[data-restore-job]');
@@ -2353,14 +2402,14 @@ function checkDuplicate(f, excludeId) {
       const { data, error } = await sb.from('jobs').update(change).eq('id', j.id).eq('status','rejected').select('id');
       if (error || !data || !data.length) { toast(error?.message || 'Could not restore this job.'); restoreBtn.disabled = false; restoreBtn.textContent = 'Restore'; return; }
       await addActivity('published', j.title, `Restored from Trash by ${currentUser.name}.`);
-      toast('Job restored'); await loadJobs(); return;
+      toast('Job restored'); clearTimeout(toastTimer); toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000); await loadJobs(); return;
     }
     const purgeBtn = event.target.closest('[data-purge-job]');
     if (!purgeBtn || !currentUser || !['owner','operations'].includes(currentUser.role)) return;
     const j = jobs.find(x => x.id === purgeBtn.dataset.purgeJob);
     if (!j || !j.isTrashed) return;
     if (Date.now() <= trashDeadline(j.trashMeta)) { toast('Permanent deletion is available only after the 7-day restore period.'); return; }
-    if (!confirm(`Permanently delete "${j.title}"? This cannot be undone.`)) return;
+    if (!(await confirmPermanentDelete(j.title))) return;
     purgeBtn.disabled = true; purgeBtn.textContent = 'Deleting…';
     const { data, error } = await sb.from('jobs').delete().eq('id', j.id).select('id');
     if (error || !data || !data.length) { toast(error?.message || 'Could not permanently delete this job.'); purgeBtn.disabled = false; purgeBtn.textContent = 'Delete permanently'; return; }
