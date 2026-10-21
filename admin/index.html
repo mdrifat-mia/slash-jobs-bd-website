@@ -1024,7 +1024,8 @@
     });
     $('publishBtn').textContent = 'Send for review';
     buildNav(); renderAllJobViews(); loadJobs(); loadTeam();
-    showTab(currentUser.tabs[0], true);   // true = data is already loading above, do not load it twice
+    const requestedTab = new URLSearchParams(location.search).get('tab');
+    showTab(currentUser.tabs.includes(requestedTab) ? requestedTab : currentUser.tabs[0], true);   // Restore the last valid tab after refresh
   }
 
   // Wipes everything this person saw, so the next person on the same device starts clean
@@ -1071,6 +1072,12 @@
   }
 
   function showTab(tab, skipLoad) {
+    if (!currentUser || !currentUser.tabs.includes(tab)) return;
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('tab', tab);
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (e) {}
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     $('view-' + tab).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
