@@ -465,3 +465,31 @@ header[data-astro-cid-3ef6ksr2] .nav-links a:hover,header[data-astro-cid-3ef6ksr
 header[data-astro-cid-3ef6ksr2] .logo{font-size:1.2rem}
 header[data-astro-cid-3ef6ksr2] .logo-mark-image{width:1.7rem;height:1.7rem;max-width:1.7rem}
 }
+
+
+/* FINAL shared footer consistency: deep black-navy background and justified disclaimer. */
+footer[data-astro-cid-sz7xmlte],
+footer {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+}
+footer[data-astro-cid-sz7xmlte] .footer-section h3,
+footer .footer-section h3 { color: #FFFFFF !important; }
+footer[data-astro-cid-sz7xmlte] .footer-section a,
+footer .footer-section a { color: #CBD5E1 !important; }
+footer[data-astro-cid-sz7xmlte] .footer-section a:hover,
+footer .footer-section a:hover { color: #38BDF8 !important; }
+footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer,
+footer .footer-bottom p.footer-disclaimer {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  white-space: normal !important;
+  text-align: justify !important;
+  text-justify: inter-word !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  line-height: 1.65 !important;
+}
