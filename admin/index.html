@@ -615,7 +615,10 @@
 
           <div class="form-actions">
             <p id="submitHint">Fields marked <span class="req">*</span> are required.</p>
-            <button type="submit" class="btn btn-primary" id="publishBtn">Publish job</button>
+            <div class="form-action-buttons" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <button type="button" class="btn btn-secondary" id="cancelEditBtn" hidden>Cancel changes</button>
+              <button type="submit" class="btn btn-primary" id="publishBtn">Publish job</button>
+            </div>
           </div>
         </form>
       </section>
@@ -1719,6 +1722,7 @@ function checkDuplicate(f, excludeId) {
     try { localStorage.removeItem(JOB_DRAFT_KEY); } catch (e) {}
     $('jobForm').reset();
     $('publishBtn').textContent = currentUser.role === 'owner' ? 'Publish job' : 'Send for review';
+    $('cancelEditBtn').hidden = true;
     $('submitHint').textContent = 'Fields marked * are required.';
     $('applyPicker').value = ''; $('postedPicker').value = '';
     applyDate.disabled = false;
@@ -1913,6 +1917,25 @@ function checkDuplicate(f, excludeId) {
     }).join('') : '<tr><td colspan="7" class="muted">No uploaded jobs found.</td></tr>';
   }
 
+  function cancelJobEdit() {
+    editingJobId = null;
+    editingJobStatus = null;
+    $('jobForm').reset();
+    $('applyPicker').value = '';
+    $('postedPicker').value = '';
+    $('applyDate').disabled = false;
+    $('applyPicker').disabled = false;
+    $('calBtn').classList.remove('off');
+    $('publishBtn').textContent = currentUser?.role === 'owner' ? 'Publish job' : 'Send for review';
+    $('cancelEditBtn').hidden = true;
+    $('submitHint').textContent = 'Fields marked * are required.';
+    runDupCheck();
+  }
+  $('cancelEditBtn').addEventListener('click', function () {
+    cancelJobEdit();
+    toast('Changes cancelled. No job details were saved.');
+  });
+
   const manageJobsBody = $('manageJobsBody');
   if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
     const editBtn = event.target.closest('[data-edit-job]');
@@ -1932,7 +1955,7 @@ function checkDuplicate(f, excludeId) {
       $('postedDate').value = job.employer_posted ? formatDate(job.employer_posted) : ''; $('postedPicker').value = job.employer_posted || '';
       $('department').value = job.department || ''; $('jobRef').value = job.job_ref || ''; $('ageLimit').value = job.age_limit || '';
       $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
-      $('publishBtn').textContent = 'Save changes'; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
+      $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
       $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
       showTab('submit'); $('jobTitle').focus(); toast('Job loaded into the form. Make your corrections and save.');
       return;
