@@ -134,19 +134,15 @@
   /* Premium desktop layout for Manage uploaded jobs: controlled column widths and compact content. */
   @media (min-width: 901px) {
     .table-wrap:has(#manageJobsBody) { overflow-x: auto; border-color: #DCE4EC; box-shadow: 0 8px 24px rgba(15, 23, 42, .045); }
-    table:has(#manageJobsBody) { width: 100%; min-width: 1120px; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
-    table:has(#manageJobsBody) .manage-bd-heading { display: inline-block; margin-top: 4px; color: #64748B; font-size: 9px; font-weight: 500; letter-spacing: 0; text-transform: none; }\n    table:has(#manageJobsBody) th { padding: 14px 12px; font-size: 10px; letter-spacing: .025em; text-transform: uppercase; white-space: normal; line-height: 1.4; vertical-align: middle; overflow-wrap: normal; }
-    table:has(#manageJobsBody) td { padding: 15px 12px; vertical-align: top; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
-    table:has(#manageJobsBody) th:nth-child(1), table:has(#manageJobsBody) td:nth-child(1) { width: 24%; }
-    table:has(#manageJobsBody) th:nth-child(2), table:has(#manageJobsBody) td:nth-child(2) { width: 19%; }
-    table:has(#manageJobsBody) th:nth-child(3), table:has(#manageJobsBody) td:nth-child(3) { width: 10%; }
-    table:has(#manageJobsBody) th:nth-child(4), table:has(#manageJobsBody) td:nth-child(4) { width: 12%; }
+    table:has(#manageJobsBody) { width: 100%; min-width: 940px; table-layout: fixed; }
+    table:has(#manageJobsBody) th { padding: 13px 10px; font-size: 10px; letter-spacing: .025em; text-transform: uppercase; white-space: normal; line-height: 1.35; vertical-align: bottom; }
+    table:has(#manageJobsBody) td { padding: 15px 10px; vertical-align: top; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+    table:has(#manageJobsBody) th:nth-child(1), table:has(#manageJobsBody) td:nth-child(1) { width: 25%; }
+    table:has(#manageJobsBody) th:nth-child(2), table:has(#manageJobsBody) td:nth-child(2) { width: 18%; }
+    table:has(#manageJobsBody) th:nth-child(3), table:has(#manageJobsBody) td:nth-child(3) { width: 9%; }
+    table:has(#manageJobsBody) th:nth-child(4), table:has(#manageJobsBody) td:nth-child(4) { width: 11%; }
     table:has(#manageJobsBody) th:nth-child(5), table:has(#manageJobsBody) td:nth-child(5) { width: 17%; }
-    table:has(#manageJobsBody) th:nth-child(6), table:has(#manageJobsBody) td:nth-child(6) { width: 18%; }
-    table:has(#manageJobsBody) th:nth-child(2) { padding-right: 18px; }
-    table:has(#manageJobsBody) th:nth-child(3) { padding-left: 18px; border-left: 1px solid #E2E8F0; }
-    table:has(#manageJobsBody) td:nth-child(3) { padding-left: 18px; border-left: 1px solid #F1F5F9; }
-    table:has(#manageJobsBody) .manage-datetime { white-space: normal; }
+    table:has(#manageJobsBody) th:nth-child(6), table:has(#manageJobsBody) td:nth-child(6) { width: 20%; }
     #manageJobsBody .manage-datetime { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 9px 10px; max-width: 100%; border: 1px solid #E2E8F0; border-radius: 9px; background: #F8FAFC; white-space: nowrap; font-variant-numeric: tabular-nums; }
     #manageJobsBody .manage-date { color: #334155; font-size: 12px; font-weight: 700; }
     #manageJobsBody .manage-time { display: inline-flex; align-items: center; gap: 5px; color: #64748B; font-size: 11px; font-weight: 600; }
@@ -819,7 +815,7 @@
         <div data-roles="owner,operations">
           <h2 class="section-title">Manage uploaded jobs</h2>
           <p class="muted card-lead">Owner and Operations can move a job to Trash. Jobs can be restored within 7 days.</p>
-          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Uploaded date &amp; time<br><span class="manage-bd-heading">(Bangladesh time)</span></th><th>Status</th><th>Uploaded by</th><th>Links</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Job</th><th>Uploaded date &amp; time (BD)</th><th>Status</th><th>Uploaded by</th><th>Links</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
         </div>
         <h2 class="section-title">Recent activity</h2>
         <p class="muted card-lead">Review decisions, team invitations, and removals. Job submissions and duplicate-check alerts are shown in their own sections.</p>
