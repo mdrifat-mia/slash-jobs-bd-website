@@ -60,7 +60,38 @@ footer .footer-content .footer-section:first-child p{
   margin-right:0!important;
 }
 </style>
-</head> <body> <header data-astro-cid-3ef6ksr2> <div class="container" data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <a href="/slash-jobs-bd-website/" class="logo" data-astro-cid-3ef6ksr2><img src="/slash-jobs-bd-website/logo-mark.svg" alt="" class="logo-mark-image" data-astro-cid-3ef6ksr2>Slash <span data-astro-cid-3ef6ksr2>Jobs BD</span></a> <button type="button" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-expanded="false" onclick="var n=this.closest('nav');var o=n.classList.toggle('mobile-menu-open');this.setAttribute('aria-expanded',String(o));this.setAttribute('aria-label',o?'Close navigation menu':'Open navigation menu');this.textContent=o?'×':'☰';" data-astro-cid-3ef6ksr2>☰</button> <ul class="nav-links" data-astro-cid-3ef6ksr2> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/" class="active" data-astro-cid-3ef6ksr2>Home</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/jobs/" data-astro-cid-3ef6ksr2>Jobs</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/categories/" data-astro-cid-3ef6ksr2>Categories</a></li>  <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/locations/" data-astro-cid-3ef6ksr2>Locations</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/about/" data-astro-cid-3ef6ksr2>About</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/contact/" data-astro-cid-3ef6ksr2>Contact</a></li> </ul>  </nav> </div> </header>  <main class="container">   <section class="hero" data-astro-cid-j7pv25f6> <div class="hero-content" data-astro-cid-j7pv25f6> <div class="tagline" data-astro-cid-j7pv25f6>Jobs • Internships • Career Opportunities</div> <h1 data-astro-cid-j7pv25f6>Discover Verified Opportunities</h1> <p data-astro-cid-j7pv25f6>Find legitimate jobs, internships, and career opportunities curated from credible sources.</p> <div class="search-container" data-astro-cid-j7pv25f6> <input type="text" id="searchInput" placeholder="Search by job title, company, or keyword..." aria-label="Search jobs" data-astro-cid-j7pv25f6> <button class="btn btn-primary" aria-label="Search jobs" data-astro-cid-j7pv25f6>Search</button> </div> </div> </section>  <section class="section" data-astro-cid-j7pv25f6> <div class="section-header" data-astro-cid-j7pv25f6> <h2 data-astro-cid-j7pv25f6>Latest Opportunities</h2> <a href="/slash-jobs-bd-website/jobs/" class="view-all" data-astro-cid-j7pv25f6>View All Jobs →</a> </div> <div class="jobs-grid" id="jobsGrid" data-astro-cid-j7pv25f6><div class="jobs-note">Loading opportunities...</div></div> </section>   <!-- Browse by Category and Browse by Location are hidden until the Jobs pages read from the database. The old version is in the GitHub history. -->  <section class="section why-slash" data-astro-cid-j7pv25f6> <h2 data-astro-cid-j7pv25f6>Why Slash Jobs BD</h2> <p class="why-slash-subtitle" data-astro-cid-j7pv25f6>Your next career opportunity, made easier.</p> <div class="features-grid" data-astro-cid-j7pv25f6> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#38BDF8">◆</span> Curated Job Listings</h3> <p data-astro-cid-j7pv25f6>Opportunities gathered from employer career pages and credible job sources.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#D6B46A">✦</span> Clear Job Summaries</h3> <p data-astro-cid-j7pv25f6>Understand job responsibilities, requirements, and salary details when available.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#A78BFA">➤</span> Direct Applications</h3> <p data-astro-cid-j7pv25f6>Apply through the employer’s official application page.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6>⚡ Regularly Updated</h3> <p data-astro-cid-j7pv25f6>Discover new opportunities, with application deadlines displayed whenever available.</p> </div> </div> </section>  </main> <footer data-astro-cid-sz7xmlte style="background-color:#0F172A!important;color:#FFFFFF!important;"> <div class="container" data-astro-cid-sz7xmlte> <div class="footer-content" data-astro-cid-sz7xmlte> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte style="color:#FFFFFF!important;">About Slash Jobs BD</h3> <p data-astro-cid-sz7xmlte style="color:#CBD5E1!important;text-align:justify!important;text-justify:inter-word!important;width:100%;">
+<style id="slash-mobile-menu-fix">
+@media (max-width: 900px) {
+  header nav { position: relative !important; z-index: 1002 !important; }
+  header nav .mobile-menu-toggle {
+    display: inline-flex !important; align-items: center; justify-content: center;
+    position: relative; z-index: 1004 !important; cursor: pointer; touch-action: manipulation;
+  }
+  header nav > .nav-links {
+    display: none !important; visibility: hidden; opacity: 0; pointer-events: none;
+    position: absolute !important; top: calc(100% + 8px) !important;
+    left: 0 !important; right: 0 !important; width: 100% !important;
+    max-height: min(70vh, 420px); overflow-y: auto; box-sizing: border-box;
+    flex-direction: column !important; align-items: stretch !important;
+    gap: .2rem !important; margin: 0 !important; padding: .65rem !important;
+    list-style: none; background: #fff !important; color: #0f172a;
+    border: 1px solid #e2e8f0; border-radius: 12px;
+    box-shadow: 0 16px 38px rgba(15,23,42,.2);
+    z-index: 1003 !important;
+  }
+  header nav.mobile-menu-open > .nav-links {
+    display: flex !important; visibility: visible !important; opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  header nav.mobile-menu-open > .nav-links a {
+    display: block !important; width: 100%; box-sizing: border-box;
+    padding: .75rem .6rem; color: #0f172a; text-decoration: none;
+  }
+  header nav.mobile-menu-open > .nav-links a:focus-visible,
+  header nav.mobile-menu-open > .nav-links a:hover { background: #f1f5f9; }
+}
+</style>
+</head> <body> <header data-astro-cid-3ef6ksr2> <div class="container" data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <a href="/slash-jobs-bd-website/" class="logo" data-astro-cid-3ef6ksr2><img src="/slash-jobs-bd-website/logo-mark.svg" alt="" class="logo-mark-image" data-astro-cid-3ef6ksr2>Slash <span data-astro-cid-3ef6ksr2>Jobs BD</span></a> <button type="button" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-expanded="false" data-astro-cid-3ef6ksr2>☰</button> <ul class="nav-links" data-astro-cid-3ef6ksr2> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/" class="active" data-astro-cid-3ef6ksr2>Home</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/jobs/" data-astro-cid-3ef6ksr2>Jobs</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/categories/" data-astro-cid-3ef6ksr2>Categories</a></li>  <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/locations/" data-astro-cid-3ef6ksr2>Locations</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/about/" data-astro-cid-3ef6ksr2>About</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/contact/" data-astro-cid-3ef6ksr2>Contact</a></li> </ul>  </nav> </div> </header>  <main class="container">   <section class="hero" data-astro-cid-j7pv25f6> <div class="hero-content" data-astro-cid-j7pv25f6> <div class="tagline" data-astro-cid-j7pv25f6>Jobs • Internships • Career Opportunities</div> <h1 data-astro-cid-j7pv25f6>Discover Verified Opportunities</h1> <p data-astro-cid-j7pv25f6>Find legitimate jobs, internships, and career opportunities curated from credible sources.</p> <div class="search-container" data-astro-cid-j7pv25f6> <input type="text" id="searchInput" placeholder="Search by job title, company, or keyword..." aria-label="Search jobs" data-astro-cid-j7pv25f6> <button class="btn btn-primary" aria-label="Search jobs" data-astro-cid-j7pv25f6>Search</button> </div> </div> </section>  <section class="section" data-astro-cid-j7pv25f6> <div class="section-header" data-astro-cid-j7pv25f6> <h2 data-astro-cid-j7pv25f6>Latest Opportunities</h2> <a href="/slash-jobs-bd-website/jobs/" class="view-all" data-astro-cid-j7pv25f6>View All Jobs →</a> </div> <div class="jobs-grid" id="jobsGrid" data-astro-cid-j7pv25f6><div class="jobs-note">Loading opportunities...</div></div> </section>   <!-- Browse by Category and Browse by Location are hidden until the Jobs pages read from the database. The old version is in the GitHub history. -->  <section class="section why-slash" data-astro-cid-j7pv25f6> <h2 data-astro-cid-j7pv25f6>Why Slash Jobs BD</h2> <p class="why-slash-subtitle" data-astro-cid-j7pv25f6>Your next career opportunity, made easier.</p> <div class="features-grid" data-astro-cid-j7pv25f6> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#38BDF8">◆</span> Curated Job Listings</h3> <p data-astro-cid-j7pv25f6>Opportunities gathered from employer career pages and credible job sources.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#D6B46A">✦</span> Clear Job Summaries</h3> <p data-astro-cid-j7pv25f6>Understand job responsibilities, requirements, and salary details when available.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6><span style="color:#A78BFA">➤</span> Direct Applications</h3> <p data-astro-cid-j7pv25f6>Apply through the employer’s official application page.</p> </div> <div class="feature" data-astro-cid-j7pv25f6> <h3 data-astro-cid-j7pv25f6>⚡ Regularly Updated</h3> <p data-astro-cid-j7pv25f6>Discover new opportunities, with application deadlines displayed whenever available.</p> </div> </div> </section>  </main> <footer data-astro-cid-sz7xmlte style="background-color:#0F172A!important;color:#FFFFFF!important;"> <div class="container" data-astro-cid-sz7xmlte> <div class="footer-content" data-astro-cid-sz7xmlte> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte style="color:#FFFFFF!important;">About Slash Jobs BD</h3> <p data-astro-cid-sz7xmlte style="color:#CBD5E1!important;text-align:justify!important;text-justify:inter-word!important;width:100%;">
 Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate legitimate job opportunities from verified sources and help students, graduates, and professionals find their next opportunity.
 </p> </div> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte>Categories</h3> <ul data-astro-cid-sz7xmlte> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/jobs/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">All Jobs</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/categories/engineering/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Engineering</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/categories/marketing/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Marketing</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/categories/engineering/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Finance</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/jobs/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Internships</a></li> </ul> </div> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte>Locations</h3> <ul data-astro-cid-sz7xmlte> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/locations/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">All Locations</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/locations/dhaka/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Dhaka</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/locations/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Chittagong</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/locations/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Remote</a></li> </ul> </div> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte>Legal</h3> <ul data-astro-cid-sz7xmlte> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/privacy-policy/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Privacy Policy</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/terms/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Terms of Service</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/disclaimer/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Disclaimer</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/contact/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Contact Us</a></li> </ul> </div> <div class="footer-section" data-astro-cid-sz7xmlte> <h3 data-astro-cid-sz7xmlte>Connect</h3> <ul data-astro-cid-sz7xmlte> <li data-astro-cid-sz7xmlte><a href="https://www.linkedin.com/company/slashjobsbd/" target="_blank" rel="noopener" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">LinkedIn</a></li> <li data-astro-cid-sz7xmlte><a href="https://www.facebook.com/slashjobsbd" target="_blank" rel="noopener" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Facebook</a></li> <li data-astro-cid-sz7xmlte><a href="https://mail.google.com/mail/?view=cm&fs=1&to=slashjobsbd%40gmail.com" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Email</a></li> <li data-astro-cid-sz7xmlte><a href="/slash-jobs-bd-website/admin/" data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">Team login</a></li> </ul> </div> </div> <div class="footer-bottom" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte style="color:#CBD5E1!important;">&copy; 2026 Slash Jobs BD. All rights reserved.</p> <p data-astro-cid-sz7xmlte class="footer-disclaimer" style="text-align:justify!important;text-justify:inter-word!important;width:100%;max-width:100%;white-space:normal!important;line-height:1.65;"><strong data-astro-cid-sz7xmlte>Disclaimer:</strong> Slash Jobs BD is a job discovery media platform, not an employer or recruitment agency. We do not guarantee employment or verify hiring decisions. Please verify all information with the employer.</p> </div> </div> </footer>
 <script>
@@ -142,35 +173,61 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
     });
 })();
 </script>
-<script id="mobile-menu-toggle-init">
-(function(){
-  document.querySelectorAll("header nav").forEach(function(nav){
-    var button=nav.querySelector(".mobile-menu-toggle");
-    var links=nav.querySelector(".nav-links");
-    if(!button||!links||nav.dataset.mobileMenuReady==="true")return;
-    nav.dataset.mobileMenuReady="true";
-    function setOpen(open){
-      nav.classList.toggle("mobile-menu-open",open);
-      document.body.classList.toggle("mobile-nav-open",open);
-      button.setAttribute("aria-expanded",String(open));
-      button.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
-      button.textContent=open?"×":"☰";
+<script id="slash-mobile-menu-fix-js">
+(function () {
+  if (window.__slashMobileMenuFixInstalled) return;
+  window.__slashMobileMenuFixInstalled = true;
+  function closeMenu(nav) {
+    if (!nav) return;
+    nav.classList.remove("mobile-menu-open");
+    var button = nav.querySelector(".mobile-menu-toggle");
+    if (button) {
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-label", "Open navigation menu");
+      button.textContent = "☰";
     }
-    
-    links.querySelectorAll("a").forEach(function(link){
-      link.addEventListener("click",function(){
-        setOpen(false);
-      });
+  }
+  function openMenu(nav) {
+    if (!nav) return;
+    var opening = !nav.classList.contains("mobile-menu-open");
+    document.querySelectorAll("header nav.mobile-menu-open").forEach(function (other) {
+      if (other !== nav) closeMenu(other);
     });
-    document.addEventListener("click",function(event){
-      if(nav.classList.contains("mobile-menu-open")&&!nav.contains(event.target))setOpen(false);
+    nav.classList.toggle("mobile-menu-open", opening);
+    var button = nav.querySelector(".mobile-menu-toggle");
+    if (button) {
+      button.setAttribute("aria-expanded", String(opening));
+      button.setAttribute("aria-label", opening ? "Close navigation menu" : "Open navigation menu");
+      button.textContent = opening ? "×" : "☰";
+    }
+  }
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest("header .mobile-menu-toggle");
+    if (button) {
+      event.preventDefault();
+      event.stopPropagation();
+      openMenu(button.closest("header nav"));
+      return;
+    }
+    var menuLink = event.target.closest && event.target.closest("header nav.mobile-menu-open .nav-links a");
+    if (menuLink) {
+      closeMenu(menuLink.closest("header nav"));
+      return;
+    }
+    document.querySelectorAll("header nav.mobile-menu-open").forEach(function (nav) {
+      if (!nav.contains(event.target)) closeMenu(nav);
     });
-    document.addEventListener("keydown",function(event){if(event.key==="Escape")setOpen(false);});
-    window.addEventListener("resize",function(){if(window.innerWidth>900)setOpen(false);});
-    window.addEventListener("pagehide",function(){
-      nav.classList.remove("mobile-menu-open");
-      document.body.classList.remove("mobile-nav-open");
-    });
+  }, true);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      document.querySelectorAll("header nav.mobile-menu-open").forEach(closeMenu);
+    }
+  });
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 900) {
+      document.querySelectorAll("header nav.mobile-menu-open").forEach(closeMenu);
+    }
   });
 })();
-</script></body></html>
+</script>
+</body></html>
