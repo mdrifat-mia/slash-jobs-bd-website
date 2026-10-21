@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Browse verified jobs, internships and career opportunities in Bangladesh on Slash Jobs BD."><meta name="robots" content="index, follow"><meta name="theme-color" content="#0066CC"><title>All Jobs – Slash Jobs BD</title><link rel="stylesheet" href="/slash-jobs-bd-website/_astro/_slug_.w5GJ0BjB.css?v=20261017-premium-fix">
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Browse verified jobs, internships and career opportunities in Bangladesh on Slash Jobs BD."><meta name="robots" content="index, follow"><meta name="theme-color" content="#0066CC"><title>All Jobs – Slash Jobs BD</title><link rel="stylesheet" href="/slash-jobs-bd-website/_astro/_slug_.w5GJ0BjB.css?v=20261021-mobile-nav-route-fix-v4">
 <style>
 .jl{margin:2rem 0 4rem}
 .jl h1{margin:0 0 .25rem;color:var(--navy-blue)}
@@ -201,4 +201,27 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
   [fLoc, fStyle, fLevel].forEach(function (s) { s.addEventListener('change', render); });
 })();
 </script>
-<script id="mobile-menu-toggle-init">document.querySelectorAll("header nav").forEach(function(nav){var button=nav.querySelector(".mobile-menu-toggle");var links=nav.querySelector(".nav-links");if(!button||!links)return;button.addEventListener("click",function(){var open=nav.classList.toggle("mobile-menu-open");button.setAttribute("aria-expanded",String(open));button.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");button.textContent=open?"×":"☰";});links.querySelectorAll("a").forEach(function(link){link.addEventListener("click",function(){nav.classList.remove("mobile-menu-open");button.setAttribute("aria-expanded","false");button.setAttribute("aria-label","Open navigation menu");button.textContent="☰";});});});</script></body></html>
+<script id="mobile-menu-toggle-init">
+(function(){
+  document.querySelectorAll("header nav").forEach(function(nav){
+    var button=nav.querySelector(".mobile-menu-toggle");
+    var links=nav.querySelector(".nav-links");
+    if(!button||!links||nav.dataset.mobileMenuReady==="true")return;
+    nav.dataset.mobileMenuReady="true";
+    function setOpen(open){
+      nav.classList.toggle("mobile-menu-open",open);
+      document.body.classList.toggle("mobile-nav-open",open);
+      button.setAttribute("aria-expanded",String(open));
+      button.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
+      button.textContent=open?"×":"☰";
+    }
+    button.addEventListener("click",function(event){event.preventDefault();event.stopPropagation();setOpen(!nav.classList.contains("mobile-menu-open"));});
+    links.querySelectorAll("a").forEach(function(link){link.addEventListener("click",function(event){var href=link.href;if(!href)return;event.preventDefault();setOpen(false);document.body.classList.remove("mobile-nav-open");nav.classList.remove("mobile-menu-open");window.location.assign(href);});});
+    document.addEventListener("click",function(event){if(nav.classList.contains("mobile-menu-open")&&!nav.contains(event.target))setOpen(false);});
+    document.addEventListener("keydown",function(event){if(event.key==="Escape")setOpen(false);});
+    window.addEventListener("resize",function(){if(window.innerWidth>900)setOpen(false);});
+    window.addEventListener("pagehide",function(){nav.classList.remove("mobile-menu-open");document.body.classList.remove("mobile-nav-open");});
+    window.addEventListener("pageshow",function(){setOpen(false);});
+  });
+})();
+</script></body></html>
