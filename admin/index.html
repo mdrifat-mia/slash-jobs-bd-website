@@ -1678,6 +1678,10 @@ function checkDuplicate(f, excludeId) {
 
   async function submitJob(event) {
     event.preventDefault();
+    if (editingJobId && currentUser.role === 'operations') {
+      toast('Operations role cannot edit jobs.');
+      return;
+    }
     const f = formValues();
     if (!isHttpUrl(f.link)) {
       toast('The apply link must start with http:// or https://');
@@ -1708,7 +1712,13 @@ function checkDuplicate(f, excludeId) {
 
     const btn = $('publishBtn'), label = btn.textContent;
     btn.disabled = true; btn.textContent = 'Saving...';
-    const saveQuery = editingJobId ? sb.from('jobs').update(row).eq('id', editingJobId) : sb.from('jobs').insert(row);
+    let saveQuery;
+    if (editingJobId) {
+      saveQuery = sb.from('jobs').update(row).eq('id', editingJobId);
+      if (currentUser.role !== 'owner') saveQuery = saveQuery.eq('created_by', currentUser.id);
+    } else {
+      saveQuery = sb.from('jobs').insert(row);
+    }
     const { error } = await saveQuery;
     btn.textContent = label;
     btn.disabled = false;
