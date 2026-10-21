@@ -644,6 +644,10 @@
           <div class="card" id="dupReport"></div>
         </div>
 
+        <h2 class="section-title">Your submitted jobs</h2>
+        <p class="muted card-lead">Edit only the jobs you submitted. Changes are saved through the same job form.</p>
+        <div id="teamOwnJobsList" class="job-list"></div>
+
         <h2 class="section-title">Workload</h2>
         <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
         <h2 class="section-title">People with access</h2>
@@ -1844,7 +1848,7 @@ function checkDuplicate(f, excludeId) {
     /* ---------- My jobs ---------- */
   function renderJobs() {
     const mine = jobs.filter(j => j.createdBy === currentUser.id);
-    $('jobList').innerHTML = mine.length
+    const markup = mine.length
       ? mine.map(j => {
           const closed = j.status === 'live' && isExpired(j);
           const cls = closed ? 'closed' : j.status === 'live' ? 'published' : j.status;
@@ -1860,6 +1864,9 @@ function checkDuplicate(f, excludeId) {
         </div>`;
         }).join('')
       : '<div class="empty"><strong>No jobs yet</strong>Jobs you submit will show up here.</div>';
+    $('jobList').innerHTML = markup;
+    const teamOwnJobsList = $('teamOwnJobsList');
+    if (teamOwnJobsList) teamOwnJobsList.innerHTML = markup;
   }
 
   function liveCount() {
@@ -1937,8 +1944,8 @@ function checkDuplicate(f, excludeId) {
     toast('Changes cancelled. No job details were saved.');
   });
 
-  const jobList = $('jobList');
-  if (jobList) jobList.addEventListener('click', async function (event) {
+  const ownJobLists = [$('jobList'), $('teamOwnJobsList')].filter(Boolean);
+  ownJobLists.forEach(jobList => jobList.addEventListener('click', async function (event) {
     const editBtn = event.target.closest('[data-edit-own-job]');
     if (!editBtn || !currentUser) return;
     const ownJob = jobs.find(j => String(j.id) === String(editBtn.dataset.editOwnJob));
@@ -1961,7 +1968,7 @@ function checkDuplicate(f, excludeId) {
     $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
     runDupCheck();
     showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
-  });
+  }));
 
   const manageJobsBody = $('manageJobsBody');
   if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
