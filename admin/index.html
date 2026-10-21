@@ -2124,7 +2124,7 @@ function checkDuplicate(f, excludeId) {
 
     $('statWaiting').textContent = pendingCount();
     $('statLive').textContent = liveCount();
-    $('statRejected').textContent = jobs.filter(j => j.status === 'rejected').length;
+    $('statRejected').textContent = jobs.filter(j => !j.isTrashed && j.status === 'rejected').length;
 
     $('workBody').innerHTML = active.map(m => {
       const w = workloadOf(m.id);
