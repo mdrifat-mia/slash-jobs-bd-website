@@ -505,3 +505,40 @@ footer[data-astro-cid-sz7xmlte] .footer-bottom[data-astro-cid-sz7xmlte] { border
 footer[data-astro-cid-sz7xmlte] .footer-bottom p[data-astro-cid-sz7xmlte] { color: #CBD5E1 !important; }
 footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer[data-astro-cid-sz7xmlte] { white-space: normal !important; text-align: justify !important; text-justify: inter-word !important; overflow-wrap: anywhere; max-width: 100%; margin-left: auto; margin-right: auto; }
 @media (max-width: 768px) { footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer[data-astro-cid-sz7xmlte] { text-align: justify !important; text-justify: inter-word !important; line-height: 1.65; } }
+
+
+/* Shared mobile layout repair for every public page. */
+@media (max-width: 640px) {
+  html, body { width:100%; max-width:100%; overflow-x:clip; }
+  header nav[data-astro-cid-3ef6ksr2] { position:relative !important; width:100%; min-width:0; }
+  header nav[data-astro-cid-3ef6ksr2] > .logo[data-astro-cid-3ef6ksr2] { min-width:0; }
+  header nav[data-astro-cid-3ef6ksr2] > .nav-links[data-astro-cid-3ef6ksr2] { box-sizing:border-box; }
+  main.container { width:100%; max-width:100%; min-width:0; padding-left:1rem; padding-right:1rem; }
+  main.container > *, main.container section, main.container article { min-width:0; max-width:100%; }
+  main.container img, main.container svg, main.container iframe { max-width:100%; }
+  main.container h1 { font-size:clamp(1.65rem,6vw,2.1rem); line-height:1.2; letter-spacing:-.025em; overflow-wrap:break-word; }
+  main.container h2 { line-height:1.3; overflow-wrap:break-word; }
+  main.container p, main.container li, main.container a { overflow-wrap:anywhere; }
+  .breadcrumb { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.2rem; font-size:.82rem; }
+  .categories-grid { display:grid; grid-template-columns:minmax(0,1fr) !important; gap:.85rem; margin-bottom:2rem; }
+  .category-card, .location-card, .contact-box, .faq-item {
+    box-sizing:border-box; min-width:0; max-width:100%; border-radius:12px;
+  }
+  .category-card, .location-card {
+    padding:1.05rem 1rem !important; border:1px solid #e2e8f0 !important;
+    background:#fff !important; box-shadow:0 3px 12px rgba(15,23,42,.045);
+  }
+  .category-card, .location-card { gap:.75rem; }
+  .category-card .card-content, .location-card .card-content { min-width:0; }
+  .category-card .card-content h3, .location-card .card-content h3 { font-size:1.05rem; line-height:1.35; }
+  .contact-box, .faq-item { padding:1rem !important; margin-bottom:.85rem; }
+  .content-page section { margin-bottom:1.7rem; }
+  .content-page p, .content-page li { line-height:1.7; }
+  .alternative-browse { text-align:left; padding:1.15rem 1rem; border-radius:12px; }
+  footer .container { min-width:0; }
+}
+@media (max-width: 360px) {
+  main.container { padding-left:.8rem; padding-right:.8rem; }
+  header nav[data-astro-cid-3ef6ksr2] { padding-right:4rem !important; }
+  header nav[data-astro-cid-3ef6ksr2] > .logo[data-astro-cid-3ef6ksr2] { font-size:1.16rem; }
+}
