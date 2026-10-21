@@ -2384,7 +2384,7 @@ function checkDuplicate(f, excludeId) {
       $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
       $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
       runDupCheck();
-      showTab('submit'); $('jobTitle').focus(); toast('Job loaded into the form. Make your corrections and save.');
+      showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
       clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
       return;
