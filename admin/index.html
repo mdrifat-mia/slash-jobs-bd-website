@@ -105,6 +105,29 @@
   .btn-secondary { background: var(--surface); color: var(--ink); border-color: #C9D6D1; }
   .btn-secondary[disabled] { color: #8A9A94; background: #F6F8F7; cursor: not-allowed; }
   .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .btn-edit-job {
+    position: relative; overflow: hidden; gap: 7px;
+    color: #fff; border: 1px solid #006A4E;
+    background: linear-gradient(135deg, #087B5C 0%, #004D3A 100%);
+    box-shadow: 0 2px 4px rgba(0,77,58,.14), inset 0 1px 0 rgba(255,255,255,.16);
+    letter-spacing: -.01em;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .btn-edit-job:hover {
+    background: linear-gradient(135deg, #0B8B67 0%, #006A4E 100%);
+    box-shadow: 0 5px 12px rgba(0,77,58,.20), inset 0 1px 0 rgba(255,255,255,.18);
+    transform: translateY(-1px);
+  }
+  .btn-edit-job:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,77,58,.16); }
+  .btn-edit-job svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .manage-job-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 170px; }
+  .manage-job-actions .btn-outline-red { background: #fff; border-color: #E9C5CA; }
+  .manage-job-actions .btn-outline-red:hover { background: #FDECEE; border-color: #D98A95; }
+  @media (max-width: 640px) {
+    .manage-job-actions { min-width: 0; gap: 6px; }
+    .manage-job-actions .btn { padding: 7px 10px; font-size: 12px; }
+  }
+
 
   /* APP SHELL */
   .app { display: none; min-height: 100vh; flex-direction: column; }
@@ -1881,7 +1904,7 @@ function checkDuplicate(f, excludeId) {
         <td>${esc(j.sentBy)}</td>
         <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div class="muted">Individual post URL not saved</div></td>
         <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">Apply link ↗</a>` : '<span class="muted">No application link saved</span>'}</td>
-        <td><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-secondary btn-sm" data-edit-job="${esc(j.id)}">Edit job</button><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
+        <td><div class="manage-job-actions"><button type="button" class="btn btn-edit-job btn-sm" data-edit-job="${esc(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Edit job</span></button><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
       </tr>`;
     }).join('') : '<tr><td colspan="7" class="muted">No uploaded jobs found.</td></tr>';
   }
