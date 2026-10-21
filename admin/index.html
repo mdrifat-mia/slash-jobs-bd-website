@@ -1404,7 +1404,7 @@ function scoreJobs(f, j) {
 // warn  = likely or possible duplicate (needs a tick).
 function checkDuplicate(f, excludeId) {
   const out = { block: null, warn: [], notes: [] };
-  const reg = jobRegistry().filter(j => !(j.fromReview && j.id === excludeId));
+  const reg = jobRegistry().filter(j => !excludeId || String(j.id) !== String(excludeId));
 
   const link = f.link ? normUrl(f.link) : '';
   const key = f.link ? jobKey(f.link) : '';
