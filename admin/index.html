@@ -1030,7 +1030,7 @@
     const { data, error } = await sb.from('activity').select('type,actor,title,note,created_at').gte('created_at', ACTIVITY_CLEAN_START).order('created_at', { ascending: false }).limit(30);
     if (error) { console.error(error); return; }
     dbActivity = (data || []).filter(a => ACTIVITY_META[a.type]).map(a => ({
-      type: a.type, who: nameOf(a.actor), title: a.title || '', note: a.note || '', ts: Date.parse(a.created_at)
+      type: a.type, actor: a.actor, who: nameOf(a.actor), title: a.title || '', note: a.note || '', ts: Date.parse(a.created_at)
     }));
   }
 
@@ -2219,7 +2219,7 @@ function checkDuplicate(f, excludeId) {
 
   function workloadOf(id) {
     const sent = jobs.filter(j => j.createdBy === id);
-    return { sent: sent.length, edited: dbActivity.filter(a => a.type === 'edited' && a.who === (members.find(m => m.id === id)?.name || '')).length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
+    return { sent: sent.length, edited: dbActivity.filter(a => a.type === 'edited' && a.actor === id).length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
     /* ---------- Team (live from the database) ---------- */
