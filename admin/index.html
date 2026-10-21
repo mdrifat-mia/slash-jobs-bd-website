@@ -1603,7 +1603,7 @@ function checkDuplicate(f, excludeId) {
   let dupSig = '';
   function runDupCheck() {
     const f0 = formValues();
-    const r = checkDuplicate(f0);
+    const r = checkDuplicate(f0, editingJobId || undefined);
     cmpForm = f0; cmpWarn = r.warn.slice(0, 3);
     if (currentUser && r.block) {
       const key = currentUser.name + '|' + normUrl(f0.link);
@@ -1957,6 +1957,7 @@ function checkDuplicate(f, excludeId) {
       $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
       $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
       $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
+      runDupCheck();
       showTab('submit'); $('jobTitle').focus(); toast('Job loaded into the form. Make your corrections and save.');
       return;
     }
