@@ -1928,7 +1928,7 @@ function checkDuplicate(f, excludeId) {
         <td>${manageJobDateTime(j.createdAt)}</td>
         <td>${esc(statusLabel(j.status))}</td>
         <td>${esc(j.sentBy)}</td>
-        <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div class="muted">Individual post URL not saved</div></td>
+        <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div>${['live','published','approved'].includes(String(j.status || '').toLowerCase()) && /^[0-9a-fA-F-]{36}$/.test(String(j.id || '')) ? `<a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/job/?id=${encodeURIComponent(j.id)}" target="_blank" rel="noopener noreferrer">Open individual post ↗</a>` : '<span class="muted">Individual post link available after approval</span>'}</div></td>
         <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">Apply link ↗</a>` : '<span class="muted">No application link saved</span>'}</td>
         <td><div class="manage-job-actions">${currentUser.role === 'owner' ? `<button type="button" class="btn btn-edit-job btn-sm" data-edit-job="${esc(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Edit job</span></button>` : ''}<button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
       </tr>`;
