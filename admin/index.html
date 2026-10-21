@@ -2497,7 +2497,7 @@ function checkDuplicate(f, excludeId) {
 
   /* ---------- Toast ---------- */
   var toastTimer;
-  let toastActionHandler = null;
+  var toastActionHandler = null;
   function toast(msg, actionLabel = '', actionHandler = null) {
     const t = $('toast');
     t.replaceChildren();
