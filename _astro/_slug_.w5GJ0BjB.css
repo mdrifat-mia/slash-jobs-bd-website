@@ -546,16 +546,7 @@ footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer[data-astro-ci
 
 /* Mobile navigation: opaque dropdown, page backdrop, stable spacing and safe header clearance. */
 @media (max-width: 900px) {
-  body.mobile-nav-open::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 998;
-    background: rgba(15, 23, 42, .48);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-  }
-  header[data-astro-cid-3ef6ksr2] {
+header[data-astro-cid-3ef6ksr2] {
     position: relative;
     z-index: 999;
     isolation: isolate;
