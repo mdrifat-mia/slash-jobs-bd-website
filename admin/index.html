@@ -990,8 +990,21 @@
       }
     });
 
+    // Keep the feed focused on the current outcome: if a Trash removal was later
+    // undone, hide that paired removal event while preserving unrelated audit events.
+    const visibleActivity = dbActivity.filter(a => {
+      if (a.type !== 'removed' || !/Moved to Trash by /i.test(a.note || '')) return true;
+      const removedBy = (a.note.match(/Moved to Trash by (.*?)(?: ·|\. Restorable|$)/i) || [])[1];
+      return !dbActivity.some(later =>
+        later.type === 'published' &&
+        later.title === a.title &&
+        later.ts > a.ts &&
+        /Undo Delete used by /i.test(later.note || '') &&
+        ((later.note.match(/Undo Delete used by (.*?)(?: ·|\.$|$)/i) || [])[1] === removedBy)
+      );
+    });
     // Explicit saved events such as team invitations and job removals remain here.
-    dbActivity.forEach(a => ev.push(a));
+    visibleActivity.forEach(a => ev.push(a));
     return ev.sort((a, b) => b.ts - a.ts).slice(0, 30);
   }
 
