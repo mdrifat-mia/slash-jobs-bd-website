@@ -2298,6 +2298,7 @@ function checkDuplicate(f, excludeId) {
   $('cancelEditBtn').addEventListener('click', function () {
     cancelJobEdit();
     toast('Changes cancelled. No job details were saved.');
+    setTimeout(() => { const t = $('toast'); if (t) t.classList.remove('show'); }, 2200);
   });
 
   const jobList = $('jobList');
@@ -2325,6 +2326,7 @@ function checkDuplicate(f, excludeId) {
     $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
     runDupCheck();
     showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
+    setTimeout(() => { const t = $('toast'); if (t) t.classList.remove('show'); }, 2200);
   });
 
   const trashJobsBody = $('trashJobsBody');
@@ -2378,6 +2380,7 @@ function checkDuplicate(f, excludeId) {
       $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
       runDupCheck();
       showTab('submit'); $('jobTitle').focus(); toast('Job loaded into the form. Make your corrections and save.');
+      setTimeout(() => { const t = $('toast'); if (t) t.classList.remove('show'); }, 2200);
       return;
     }
     const btn = event.target.closest('[data-delete-job]');
