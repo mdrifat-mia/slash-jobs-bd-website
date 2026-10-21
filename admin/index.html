@@ -189,6 +189,20 @@
   .profile-password-section { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
   .profile-password-section h3 { margin:0 0 5px; font-size:15px; }
   .profile-password-section .btn { margin-top:12px; }
+  .password-modal { width:min(100%,480px); }
+  .password-security-mark { display:grid; place-items:center; width:44px; height:44px; margin-bottom:12px; border:1px solid #DCE7E3; border-radius:13px; background:#F0F7F4; color:#16634F; }
+  .password-security-mark svg { width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .password-form-fields { display:grid; gap:14px; }
+  .password-form-fields input { width:100%; min-width:0; }
+  .password-hint { margin:-5px 0 0; padding:11px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#F8FAFC; color:#64748B; font-size:12px; line-height:1.6; }
+  .password-rules { display:grid; grid-template-columns:1fr 1fr; gap:7px 10px; margin-top:10px; }
+  .password-rule { display:flex; align-items:center; gap:7px; color:#64748B; font-size:11px; }
+  .password-rule::before { content:'•'; color:#94A3B8; font-size:16px; line-height:1; }
+  .password-rule.valid { color:#16724F; }
+  .password-rule.valid::before { content:'✓'; color:#16724F; font-weight:800; }
+  .password-feedback { margin-top:12px; padding:10px 12px; border:1px solid #F5C7CB; border-radius:9px; background:#FFF5F5; color:#B42332; font-size:12px; line-height:1.5; }
+  .password-feedback[hidden] { display:none; }
+  @media(max-width:520px) { .password-rules { grid-template-columns:1fr; } }
   @media(max-width:520px) { .profile-modal { padding:18px; } .profile-settings-grid { grid-template-columns:1fr; } .profile-settings-grid .field:first-child { grid-column:auto; } .profile-photo-row { align-items:flex-start; } }
   @media (max-width:480px) { .profile-trigger-label { display:none; } .profile-menu-trigger { padding:5px; } }
   .who-info { text-align: right; line-height: 1.25; }
@@ -631,6 +645,23 @@
             <div class="profile-modal-actions"><button type="button" class="btn btn-secondary" onclick="closeProfileSettings()">Cancel</button><button type="submit" class="btn btn-primary" id="saveProfileSettingsBtn">Save changes</button></div>
           </form>
           <div class="profile-password-section"><h3>Account security</h3><p>Change your account password.</p><button type="button" class="btn btn-secondary" onclick="changeProfilePassword()">Change password</button></div>
+        </div>
+      </div>
+
+      <div id="changePasswordModal" class="profile-modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="changePasswordTitle">
+        <div class="profile-modal password-modal">
+          <div class="password-security-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3M12 14v3"/></svg></div>
+          <div class="profile-modal-head"><div><p class="profile-menu-heading">ACCOUNT SECURITY</p><h2 id="changePasswordTitle">Change password</h2><p>Verify your current password before choosing a new one.</p></div><button type="button" class="profile-modal-close" aria-label="Close" onclick="closeChangePassword()">×</button></div>
+          <form id="changePasswordForm" onsubmit="submitProfilePassword(event)">
+            <div class="password-form-fields">
+              <div class="field"><label for="currentProfilePassword">Current password</label><input id="currentProfilePassword" type="password" autocomplete="current-password" placeholder="Enter your current password" required></div>
+              <div class="field"><label for="newProfilePassword">New password</label><input id="newProfilePassword" type="password" autocomplete="new-password" placeholder="Create a strong password" minlength="8" required><div class="password-rules"><span class="password-rule" id="pwRuleLength">At least 8 characters</span><span class="password-rule" id="pwRuleUpper">One capital letter (A–Z)</span><span class="password-rule" id="pwRuleLower">One small letter (a–z)</span><span class="password-rule" id="pwRuleNumber">One number (0–9)</span><span class="password-rule" id="pwRuleSpecial">One special character (!@#$…)</span></div></div>
+              <div class="field"><label for="confirmProfilePassword">Confirm new password</label><input id="confirmProfilePassword" type="password" autocomplete="new-password" placeholder="Re-enter your new password" minlength="8" required></div>
+            </div>
+            <p class="password-hint">For your security, your current password is checked first. Your new password must meet all five requirements.</p>
+            <div id="changePasswordError" class="password-feedback" hidden role="alert"></div>
+            <div class="profile-modal-actions"><button type="button" class="btn btn-secondary" onclick="closeChangePassword()">Cancel</button><button type="submit" class="btn btn-primary" id="changePasswordSubmit">Update password</button></div>
+          </form>
         </div>
       </div>
 
@@ -1227,18 +1258,64 @@
     btn.disabled = false; btn.textContent = 'Save changes';
     toast('Profile settings saved');
   }
-  async function changeProfilePassword() {
+  function changeProfilePassword() {
     closeProfileSettings();
-    const next = prompt('Enter a new password (at least 8 characters):');
-    if (next === null) return;
-    if (next.length < 8) { toast('Password must be at least 8 characters.'); return; }
-    const confirm = prompt('Re-enter the new password:');
-    if (confirm === null) return;
-    if (next !== confirm) { toast('Passwords do not match.'); return; }
-    const { error } = await sb.auth.updateUser({ password: next });
-    if (error) { toast('Could not change password: ' + error.message); return; }
-    toast('Password changed successfully');
+    $('changePasswordForm').reset();
+    $('changePasswordError').hidden = true;
+    updatePasswordRules();
+    $('changePasswordModal').hidden = false;
+    setTimeout(() => $('currentProfilePassword').focus(), 30);
   }
+
+  function closeChangePassword() {
+    $('changePasswordModal').hidden = true;
+    $('changePasswordForm').reset();
+    $('changePasswordError').hidden = true;
+  }
+
+  function updatePasswordRules() {
+    const p = $('newProfilePassword').value || '';
+    const rules = {
+      pwRuleLength: p.length >= 8,
+      pwRuleUpper: /[A-Z]/.test(p),
+      pwRuleLower: /[a-z]/.test(p),
+      pwRuleNumber: /[0-9]/.test(p),
+      pwRuleSpecial: /[^A-Za-z0-9]/.test(p)
+    };
+    Object.entries(rules).forEach(([id, valid]) => $(id).classList.toggle('valid', valid));
+  }
+
+  async function submitProfilePassword(event) {
+    event.preventDefault();
+    const btn = $('changePasswordSubmit');
+    const email = currentUser && currentUser.email;
+    const current = $('currentProfilePassword').value;
+    const next = $('newProfilePassword').value;
+    const confirm = $('confirmProfilePassword').value;
+    const err = $('changePasswordError');
+    const showError = message => { err.textContent = message; err.hidden = false; };
+    err.hidden = true;
+    if (!email) { showError('Your account email could not be identified. Please sign in again.'); return; }
+    if (next.length < 8 || !/[A-Z]/.test(next) || !/[a-z]/.test(next) || !/[0-9]/.test(next) || !/[^A-Za-z0-9]/.test(next)) {
+      showError('Your new password must contain at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character.'); return;
+    }
+    if (next !== confirm) { showError('The new passwords do not match.'); return; }
+    if (current === next) { showError('Choose a new password different from your current password.'); return; }
+    btn.disabled = true; btn.textContent = 'Verifying…';
+    const verified = await sb.auth.signInWithPassword({ email, password: current });
+    if (verified.error) {
+      showError(/invalid login credentials/i.test(verified.error.message) ? 'Your current password is incorrect. Please try again.' : verified.error.message);
+      btn.disabled = false; btn.textContent = 'Update password'; return;
+    }
+    btn.textContent = 'Updating…';
+    const { error } = await sb.auth.updateUser({ password: next });
+    btn.disabled = false; btn.textContent = 'Update password';
+    if (error) { showError('Could not update password: ' + error.message); return; }
+    closeChangePassword();
+    toast('Password updated successfully');
+  }
+
+  $('newProfilePassword')?.addEventListener('input', updatePasswordRules);
 
   function toggleProfileMenu() {
     const menu = $('profileMenu');
