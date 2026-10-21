@@ -2070,6 +2070,10 @@ function checkDuplicate(f, excludeId) {
     $('calBtn').classList.remove('off');
     await loadJobs();
     runDupCheck();
+    if (wasEditing) {
+      showTab('jobs', true);
+      await loadJobs();
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
