@@ -1856,6 +1856,7 @@ function checkDuplicate(f, excludeId) {
           <div><h3>${esc(j.title)}</h3><p>${esc(j.company)}, ${esc(j.location)}. Apply by ${esc(j.by)}</p></div>
           <span class="badge badge-${cls}">${text}</span>
           ${why}
+          <div class="job-row-actions"><button type="button" class="btn btn-edit-job btn-sm" data-edit-own-job="${esc(j.id)}">Edit job</button></div>
         </div>`;
         }).join('')
       : '<div class="empty"><strong>No jobs yet</strong>Jobs you submit will show up here.</div>';
@@ -1934,6 +1935,32 @@ function checkDuplicate(f, excludeId) {
   $('cancelEditBtn').addEventListener('click', function () {
     cancelJobEdit();
     toast('Changes cancelled. No job details were saved.');
+  });
+
+  const jobList = $('jobList');
+  if (jobList) jobList.addEventListener('click', async function (event) {
+    const editBtn = event.target.closest('[data-edit-own-job]');
+    if (!editBtn || !currentUser) return;
+    const ownJob = jobs.find(j => String(j.id) === String(editBtn.dataset.editOwnJob));
+    if (!ownJob || ownJob.createdBy !== currentUser.id) { toast('You can only edit jobs you submitted.'); return; }
+    editBtn.disabled = true; editBtn.textContent = 'Loading…';
+    const { data: job, error } = await sb.from('jobs').select('*').eq('id', editBtn.dataset.editOwnJob).eq('created_by', currentUser.id).single();
+    editBtn.disabled = false; editBtn.textContent = 'Edit job';
+    if (error || !job) { toast(error?.message || 'Could not load your job to edit.'); return; }
+    editingJobId = job.id; editingJobStatus = job.status;
+    $('applyLink').value = job.apply_link || '';
+    $('jobTitle').value = job.title || ''; $('company').value = job.company || ''; $('location').value = job.location || '';
+    $('workStyle').value = job.work_style || ''; $('level').value = job.level || ''; $('pay').value = job.pay || '';
+    $('applyDate').value = job.apply_by ? formatDate(job.apply_by) : '';
+    $('noDeadline').checked = !!job.no_deadline; $('applyDate').disabled = !!job.no_deadline;
+    $('applyPicker').disabled = !!job.no_deadline; $('calBtn').classList.toggle('off', !!job.no_deadline); $('applyPicker').value = job.apply_by || '';
+    $('postedDate').value = job.employer_posted ? formatDate(job.employer_posted) : ''; $('postedPicker').value = job.employer_posted || '';
+    $('department').value = job.department || ''; $('jobRef').value = job.job_ref || ''; $('ageLimit').value = job.age_limit || '';
+    $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
+    $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing your job. Save changes to update the posted details.';
+    $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
+    runDupCheck();
+    showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
   });
 
   const manageJobsBody = $('manageJobsBody');
