@@ -939,13 +939,10 @@
   function nowLabel() { return timeLabel(Date.now()); }
 
   function timeLabel(ts) {
-    const d = new Date(ts), now = new Date();
-    const t = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
-    const diff = Math.round((day(now) - day(d)) / 864e5);
-    if (diff === 0) return 'Today, ' + t;
-    if (diff === 1) return 'Yesterday, ' + t;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + t;
+    const d = new Date(ts);
+    const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return date + ', ' + time;
   }
 
   // Turns a user id into a name (uses the team list, or the signed-in person)
