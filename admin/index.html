@@ -1072,7 +1072,10 @@
     });
     // Explicit saved events such as team invitations and job removals remain here.
     visibleActivity.forEach(a => ev.push(a));
-    return ev.sort((a, b) => b.ts - a.ts).slice(0, 30);
+    // Fresh activity feed baseline: hide pre-launch/test events from 21 Oct 2026, 1:00 PM Bangladesh time.
+    // The underlying audit records remain preserved; only the feed starts fresh from this point.
+    const activityBaseline = Date.parse('2026-10-21T07:00:00Z');
+    return ev.filter(a => a.ts >= activityBaseline).sort((a, b) => b.ts - a.ts).slice(0, 30);
   }
 
   function renderActivity() {
