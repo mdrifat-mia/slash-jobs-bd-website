@@ -136,7 +136,7 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
     var n = daysLeft(iso);
     var status = n < 0 ? 'Deadline passed' : n === 0 ? 'Closes today' : 'Closes in ' + n + ' day' + (n === 1 ? '' : 's');
     var cls = n < 0 ? 'deadline-past' : n <= 3 ? 'deadline-soon' : 'deadline-normal';
-    return '<span class="meta-item deadline-meta ' + cls + '"' + C + '><span class="meta-label"' + C + '>📥 Apply by</span><span class="meta-value deadline-date"' + C + '>' + exact + '</span><span class="deadline-status"' + C + '><span class="deadline-dot"' + C + '></span>' + status + '</span></span>';
+    return '<span class="meta-item deadline-meta ' + cls + '"' + C + '><span class="meta-label"' + C + '>Apply by</span><span class="meta-value deadline-date"' + C + '>' + exact + '</span><span class="deadline-status"' + C + '><span class="deadline-dot"' + C + '></span>' + status + '</span></span>';
   }
   function summary(j) {
     var s = (j.about || '').trim() || (j.duties || '').split('\n')[0].trim();
