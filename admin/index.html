@@ -2477,6 +2477,11 @@ function checkDuplicate(f, excludeId) {
       toast('Undo successful. Job restored.');
       await loadJobs();
     });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      const t = $('toast');
+      if (t) { t.classList.remove('show'); toastActionHandler = null; }
+    }, 3000);
     await loadJobs();
   });
 
