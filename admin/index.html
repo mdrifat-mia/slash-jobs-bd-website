@@ -342,8 +342,10 @@
   .cmp-foot { margin-top: 12px; color: var(--muted); font-size: 12.5px; }
 
   /* TOAST */
-  .toast { position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green-950); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 70; max-width: calc(100vw - 32px); text-align: center; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast { position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green-950); color: #fff; padding: 12px 16px; border-radius: 10px; font-weight: 600; box-shadow: 0 12px 30px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 70; max-width: calc(100vw - 32px); text-align: center; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast-action { border: 1px solid rgba(255,255,255,.65); background: #fff; color: var(--green-950); border-radius: 7px; padding: 6px 11px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .toast-action:disabled { opacity: .7; cursor: wait; }
 
   @media (hover: hover) {
     .login-row a:hover, .open-link:hover { text-decoration: underline; }
@@ -2111,7 +2113,24 @@ function checkDuplicate(f, excludeId) {
       console.error(error); toast(error?.message || 'Could not move this job to Trash.'); btn.disabled = false; btn.textContent = 'Remove job'; return;
     }
     await addActivity('removed', title, `Moved to Trash by ${currentUser.name}${company ? ' · ' + company : ''}. Restorable for 7 days.`);
-    toast('Job moved to Trash. You can restore it within 7 days.');
+    toast('Job moved to Trash.', 'Undo Delete', async () => {
+      const restorePatch = {
+        status: meta.previousStatus || 'pending',
+        reject_reason: meta.previousReason || null,
+        reviewed_at: meta.previousReviewedAt || null,
+        published_at: meta.previousPublishedAt || null
+      };
+      const { data: restored, error: restoreError } = await sb.from('jobs').update(restorePatch).eq('id', jobId).select('id');
+      if (restoreError || !restored || !restored.length) {
+        console.error(restoreError);
+        toast(restoreError?.message || 'Undo failed. You can restore this job from Trash.');
+        await loadJobs();
+        return;
+      }
+      await addActivity('published', title, `Undo Delete used by ${currentUser.name}${company ? ' · ' + company : ''}.`);
+      toast('Undo successful. Job restored.');
+      await loadJobs();
+    });
     await loadJobs();
   });
 
@@ -2200,12 +2219,31 @@ function checkDuplicate(f, excludeId) {
 
   /* ---------- Toast ---------- */
   var toastTimer;
-  function toast(msg) {
+  let toastActionHandler = null;
+  function toast(msg, actionLabel = '', actionHandler = null) {
     const t = $('toast');
-    t.textContent = msg;
+    t.replaceChildren();
+    const message = document.createElement('span');
+    message.textContent = msg;
+    t.appendChild(message);
+    toastActionHandler = typeof actionHandler === 'function' ? actionHandler : null;
+    if (actionLabel && toastActionHandler) {
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'toast-action';
+      action.textContent = actionLabel;
+      action.addEventListener('click', async () => {
+        const run = toastActionHandler;
+        toastActionHandler = null;
+        action.disabled = true;
+        action.textContent = 'Undoing…';
+        try { await run(); } finally { t.classList.remove('show'); }
+      });
+      t.appendChild(action);
+    }
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    toastTimer = setTimeout(() => { t.classList.remove('show'); toastActionHandler = null; }, 7000);
   }
 
   /* ---------- Start ---------- */
