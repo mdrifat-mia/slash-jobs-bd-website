@@ -2222,7 +2222,8 @@ function checkDuplicate(f, excludeId) {
 
   function workloadOf(id) {
     const sent = jobs.filter(j => j.createdBy === id);
-    return { sent: sent.length, edited: dbActivity.filter(a => a.type === 'edited' && a.actor === id).length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
+    const activityBaseline = Date.parse('2026-10-21T07:00:00Z');
+    return { sent: sent.length, edited: dbActivity.filter(a => a.type === 'edited' && a.actor === id && Date.parse(a.ts || 0) >= activityBaseline).length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
     /* ---------- Team (live from the database) ---------- */
