@@ -2304,8 +2304,7 @@ function checkDuplicate(f, excludeId) {
     showTab('jobs', true);
     toast('Changes cancelled. No job details were saved.');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
-  });
+    toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 1000);  });
 
   const jobList = $('jobList');
   jobList.addEventListener('click', async function (event) {
@@ -2333,8 +2332,7 @@ function checkDuplicate(f, excludeId) {
     runDupCheck();
     showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
-  });
+    toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 1000);  });
 
   const trashJobsBody = $('trashJobsBody');
   if (trashJobsBody) trashJobsBody.addEventListener('click', async function (event) {
