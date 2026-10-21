@@ -810,7 +810,7 @@
       <!-- Trash -->
       <section id="view-trash" class="view">
         <h2 class="section-title">Trash</h2>
-        <p class="muted card-lead">Jobs stay here for 7 days. Restore them before the deadline; expired items can only be permanently removed.</p>
+        <p class="muted card-lead">Restore jobs within 7 days, or delete them permanently at any time after confirmation.</p>
         <div class="table-wrap"><table><thead><tr><th>Job</th><th>Moved to Trash (BD)</th><th>Uploaded by</th><th>Restore deadline</th><th>Action</th></tr></thead><tbody id="trashJobsBody"></tbody></table></div>
       </section>
 
@@ -2408,7 +2408,6 @@ function checkDuplicate(f, excludeId) {
     if (!purgeBtn || !currentUser || !['owner','operations'].includes(currentUser.role)) return;
     const j = jobs.find(x => x.id === purgeBtn.dataset.purgeJob);
     if (!j || !j.isTrashed) return;
-    if (Date.now() <= trashDeadline(j.trashMeta)) { toast('Permanent deletion is available only after the 7-day restore period.'); return; }
     if (!(await confirmPermanentDelete(j.title))) return;
     purgeBtn.disabled = true; purgeBtn.textContent = 'Deleting…';
     const { data, error } = await sb.from('jobs').delete().eq('id', j.id).select('id');
