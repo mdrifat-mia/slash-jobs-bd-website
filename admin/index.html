@@ -645,6 +645,13 @@
       <!-- My jobs -->
       <section id="view-jobs" class="view"><div id="jobList" class="job-list"></div></section>
 
+      <!-- Trash -->
+      <section id="view-trash" class="view">
+        <h2 class="section-title">Trash</h2>
+        <p class="muted card-lead">Jobs stay here for 7 days. Restore them before the deadline; expired items can only be permanently removed.</p>
+        <div class="table-wrap"><table><thead><tr><th>Job</th><th>Moved to Trash (BD)</th><th>Uploaded by</th><th>Restore deadline</th><th>Action</th></tr></thead><tbody id="trashJobsBody"></tbody></table></div>
+      </section>
+
       <!-- Team -->
       <section id="view-team" class="view">
         <div class="stats">
@@ -663,7 +670,7 @@
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th><th id="teamActionTh"></th></tr></thead><tbody id="teamBody"></tbody></table></div>
         <div data-roles="owner,operations">
           <h2 class="section-title">Manage uploaded jobs</h2>
-          <p class="muted card-lead">Owner and Operations can permanently remove an uploaded job. Each removal is recorded in Recent activity.</p>
+          <p class="muted card-lead">Owner and Operations can move a job to Trash. Jobs can be restored within 7 days.</p>
           <div class="table-wrap"><table><thead><tr><th>Job</th><th>Uploaded date &amp; time (BD)</th><th>Status</th><th>Uploaded by</th><th>Links</th><th>Action</th></tr></thead><tbody id="manageJobsBody"></tbody></table></div>
         </div>
         <h2 class="section-title">Recent activity</h2>
@@ -770,8 +777,8 @@
 
   /* ---------- Roles ---------- */
   const ROLE_META = {
-    owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'team'] },
-    operations: { label: 'Operations', tabs: ['review', 'team'] },
+    owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'trash', 'team'] },
+    operations: { label: 'Operations', tabs: ['review', 'trash', 'team'] },
     admin:      { label: 'Admin',      tabs: ['submit', 'jobs'] }
   };
   const ROLE_LABEL = { owner: 'Owner', operations: 'Operations Manager', admin: 'Admin' };
@@ -780,6 +787,7 @@
     submit: { label: 'Submit a job',      title: 'Submit a job',      sub: 'Paste the apply link, add the details and send the job for review.', short: 'Submit', icon: '<path d="M12 5v14M5 12h14"/>' },
     review: { label: 'Review queue',      title: 'Review queue',      sub: 'Check each job against its apply link before it goes live.', short: 'Review', icon: '<path d="M4 13l2-7h12l2 7M4 13v5h16v-5M4 13h5l1 2h4l1-2h5"/>' },
     jobs:   { label: 'My jobs',           title: 'My jobs',           sub: 'Everything you have submitted and where it stands.', short: 'Jobs', icon: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>' },
+    trash: { label: 'Trash', title: 'Trash', sub: 'Removed jobs can be restored for 7 days.', short: 'Trash', icon: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"/>' },
     team:   { label: 'Team and activity', title: 'Team and activity', sub: 'People with access to this portal.', short: 'Team', icon: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6M16 4.8a3.5 3.5 0 010 6.4M18 14.3c2.2.7 3.5 2.6 3.5 5.7"/>' }
   };
 
@@ -789,6 +797,13 @@
   const drafts = {};          // rejection reasons being typed, kept while the list redraws
   let dbActivity = [];        // invitations and removals, saved in the activity table
 
+  const TRASH_PREFIX = '__SJBD_TRASH_V1__';
+  function readTrashMeta(reason) {
+    if (!String(reason || '').startsWith(TRASH_PREFIX)) return null;
+    try { return JSON.parse(String(reason).slice(TRASH_PREFIX.length)); } catch (e) { return null; }
+  }
+  function makeTrashReason(meta) { return TRASH_PREFIX + JSON.stringify(meta); }
+
   function mapJob(r) {
     return {
       id: r.id, link: r.apply_link, title: r.title, company: r.company, location: r.location,
@@ -796,6 +811,7 @@
       applyISO: r.apply_by || '', by: r.apply_by ? formatDate(r.apply_by) : 'No deadline',
       text: [r.duties, r.requirements, r.about].filter(Boolean).join(' '),
       status: r.status, reason: r.reject_reason || '',
+      trashMeta: readTrashMeta(r.reject_reason), isTrashed: !!readTrashMeta(r.reject_reason),
       department: r.department || '', jobRef: r.job_ref || '', ageLimit: r.age_limit || '',
       createdBy: r.created_by, sentBy: r.created_by_name || 'A team member',
       reviewedBy: r.reviewed_by, decidedBy: r.reviewed_by_name || '',
@@ -807,9 +823,10 @@
   function applyJobs(rows) {
     jobs = rows.map(mapJob);
     const time = x => (x ? Date.parse(x) : 0);
-    const pending = jobs.filter(j => j.status === 'pending').sort((a, b) => time(a.createdAt) - time(b.createdAt));
+    const visibleJobs = jobs.filter(j => !j.isTrashed);
+    const pending = visibleJobs.filter(j => j.status === 'pending').sort((a, b) => time(a.createdAt) - time(b.createdAt));
     // jobs the owner publishes straight away are not reviews, so they stay out of the queue
-    const decided = jobs
+    const decided = visibleJobs
       .filter(j => j.status !== 'pending' && j.reviewedBy && !(j.status === 'live' && j.reviewedBy === j.createdBy))
       .sort((a, b) => time(b.reviewedAt) - time(a.reviewedAt))
       .slice(0, 10);
@@ -826,7 +843,7 @@
 
   function renderAllJobViews() {
     if (!currentUser) return;
-    renderReview(); renderJobs(); renderTeam(); renderActivity(); runDupCheck();
+    renderReview(); renderJobs(); renderTeam(); renderTrash(); renderActivity(); runDupCheck();
   }
 
   /* ---------- Activity (jobs make their own events; invitations and removals are saved in the activity table) ---------- */
@@ -1208,7 +1225,7 @@
 
   // Every job the portal knows about: live jobs plus everything in the review queue
   function jobRegistry() {
-    return jobs.map(j => ({
+    return jobs.filter(j => !j.isTrashed).map(j => ({
       id: j.id, fromReview: true, by: j.sentBy, status: j.status,
       title: j.title, company: j.company, location: j.location || '',
       link: j.link || '', applyISO: j.applyISO || '', source: j.source || '', text: j.text || '', pay: j.pay || ''
@@ -1889,7 +1906,7 @@ function checkDuplicate(f, excludeId) {
 
     /* ---------- My jobs ---------- */
   function renderJobs() {
-    const mine = jobs.filter(j => j.createdBy === currentUser.id);
+    const mine = jobs.filter(j => !j.isTrashed && j.createdBy === currentUser.id);
     const markup = mine.length
       ? mine.map(j => {
           const closed = j.status === 'live' && isExpired(j);
@@ -1946,10 +1963,26 @@ function checkDuplicate(f, excludeId) {
     }).format(date)) + ' (BD)';
   }
 
+  function trashDeadline(meta) { return meta && meta.trashedAt ? Date.parse(meta.trashedAt) + 7 * 24 * 60 * 60 * 1000 : 0; }
+  function renderTrash() {
+    const body = $('trashJobsBody');
+    if (!body || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
+    const trashed = jobs.filter(j => j.isTrashed).sort((a,b) => Date.parse(b.trashMeta.trashedAt || 0) - Date.parse(a.trashMeta.trashedAt || 0));
+    body.innerHTML = trashed.length ? trashed.map(j => {
+      const meta = j.trashMeta;
+      const deadline = trashDeadline(meta);
+      const canRestore = Date.now() <= deadline;
+      const dateLabel = meta.trashedAt ? manageJobDateTime(meta.trashedAt) : 'Unavailable';
+      const dueLabel = deadline ? new Date(deadline).toLocaleString('en-GB', { timeZone:'Asia/Dhaka', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + ' (BD)' : 'Unavailable';
+      return `<tr><td><strong>${esc(j.title)}</strong><div class="muted">${esc(j.company)}</div></td><td>${dateLabel}</td><td>${esc(j.sentBy)}</td><td>${dueLabel}</td><td><div class="manage-job-actions">${canRestore ? `<button type="button" class="btn btn-secondary btn-sm" data-restore-job="${esc(j.id)}">Restore</button>` : '<span class="muted">7-day restore period ended</span>'}<button type="button" class="btn btn-outline-red btn-sm" data-purge-job="${esc(j.id)}" data-job-title="${esc(j.title)}">Delete permanently</button></div></td></tr>`;
+    }).join('') : '<tr><td colspan="5" class="muted">Trash is empty.</td></tr>';
+  }
+
   function renderManageJobs() {
     const body = $('manageJobsBody');
     if (!body || !currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
-    body.innerHTML = jobs.length ? jobs.map(j => {
+    const activeJobs = jobs.filter(j => !j.isTrashed);
+    body.innerHTML = activeJobs.length ? activeJobs.map(j => {
       const jobUrl = /^https?:\/\//i.test(String(j.link || '').trim()) ? String(j.link).trim() : '';
       // The database currently stores the application URL, not an individual Slash Jobs BD post URL.
       // Do not label the application URL as the website post.
@@ -2010,6 +2043,34 @@ function checkDuplicate(f, excludeId) {
     showTab('submit'); $('jobTitle').focus(); toast('Your job is ready to edit.');
   });
 
+  const trashJobsBody = $('trashJobsBody');
+  if (trashJobsBody) trashJobsBody.addEventListener('click', async function (event) {
+    const restoreBtn = event.target.closest('[data-restore-job]');
+    if (restoreBtn) {
+      if (!currentUser || !['owner','operations'].includes(currentUser.role)) return;
+      const j = jobs.find(x => x.id === restoreBtn.dataset.restoreJob);
+      const meta = j && j.trashMeta;
+      if (!j || !meta || Date.now() > trashDeadline(meta)) { toast('The 7-day restore period has ended.'); await loadJobs(); return; }
+      restoreBtn.disabled = true; restoreBtn.textContent = 'Restoring…';
+      const change = { status: meta.previousStatus || 'rejected', reject_reason: meta.previousReason || null };
+      const { data, error } = await sb.from('jobs').update(change).eq('id', j.id).eq('status','rejected').select('id');
+      if (error || !data || !data.length) { toast(error?.message || 'Could not restore this job.'); restoreBtn.disabled = false; restoreBtn.textContent = 'Restore'; return; }
+      await addActivity('published', j.title, `Restored from Trash by ${currentUser.name}.`);
+      toast('Job restored'); await loadJobs(); return;
+    }
+    const purgeBtn = event.target.closest('[data-purge-job]');
+    if (!purgeBtn || !currentUser || !['owner','operations'].includes(currentUser.role)) return;
+    const j = jobs.find(x => x.id === purgeBtn.dataset.purgeJob);
+    if (!j || !j.isTrashed) return;
+    if (Date.now() <= trashDeadline(j.trashMeta)) { toast('Permanent deletion is available only after the 7-day restore period.'); return; }
+    if (!confirm(`Permanently delete "${j.title}"? This cannot be undone.`)) return;
+    purgeBtn.disabled = true; purgeBtn.textContent = 'Deleting…';
+    const { data, error } = await sb.from('jobs').delete().eq('id', j.id).select('id');
+    if (error || !data || !data.length) { toast(error?.message || 'Could not permanently delete this job.'); purgeBtn.disabled = false; purgeBtn.textContent = 'Delete permanently'; return; }
+    await addActivity('removed', j.title, `Permanently deleted from Trash by ${currentUser.name}.`);
+    toast('Job permanently deleted'); await loadJobs();
+  });
+
   const manageJobsBody = $('manageJobsBody');
   if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
     const editBtn = event.target.closest('[data-edit-job]');
@@ -2040,24 +2101,17 @@ function checkDuplicate(f, excludeId) {
     const jobId = btn.dataset.deleteJob;
     const title = btn.dataset.jobTitle || 'this job';
     const company = btn.dataset.jobCompany || '';
-    if (!confirm(`Permanently remove "${title}"${company ? ' at ' + company : ''} from the portal? This cannot be undone.`)) return;
-    btn.disabled = true;
-    btn.textContent = 'Removing…';
-    const { data, error } = await sb.from('jobs').delete().eq('id', jobId).select('id');
-    if (error) {
-      console.error(error);
-      toast(error.message || 'Could not remove this job. Check database permissions.');
-      btn.disabled = false;
-      btn.textContent = 'Remove job';
-      return;
+    if (!confirm(`Move "${title}"${company ? ' at ' + company : ''} to Trash? You can restore it within 7 days.`)) return;
+    const target = jobs.find(j => j.id === jobId);
+    if (!target || target.isTrashed) { toast('This job is no longer available here.'); await loadJobs(); return; }
+    btn.disabled = true; btn.textContent = 'Moving…';
+    const meta = { trashedAt: new Date().toISOString(), previousStatus: target.status, previousReason: target.reason || '', previousReviewedAt: target.reviewedAt || null, previousPublishedAt: target.publishedAt || null };
+    const { data, error } = await sb.from('jobs').update({ status: 'rejected', reject_reason: makeTrashReason(meta) }).eq('id', jobId).select('id');
+    if (error || !data || !data.length) {
+      console.error(error); toast(error?.message || 'Could not move this job to Trash.'); btn.disabled = false; btn.textContent = 'Remove job'; return;
     }
-    if (!data || !data.length) {
-      toast('Job was not removed. Your role may not have delete permission.');
-      await loadJobs();
-      return;
-    }
-    await addActivity('removed', title, `Job deleted from portal${company ? ' · ' + company : ''} by ${currentUser.name}.`);
-    toast('Job removed and activity recorded');
+    await addActivity('removed', title, `Moved to Trash by ${currentUser.name}${company ? ' · ' + company : ''}. Restorable for 7 days.`);
+    toast('Job moved to Trash. You can restore it within 7 days.');
     await loadJobs();
   });
 
