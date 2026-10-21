@@ -2113,7 +2113,7 @@ function checkDuplicate(f, excludeId) {
       console.error(error); toast(error?.message || 'Could not move this job to Trash.'); btn.disabled = false; btn.textContent = 'Remove job'; return;
     }
     await addActivity('removed', title, `Moved to Trash by ${currentUser.name}${company ? ' · ' + company : ''}. Restorable for 7 days.`);
-    toast('Job moved to Trash.', 'Undo Delete', async () => {
+    toast('Job moved to Trash.', 'Undo', async () => {
       const restorePatch = {
         status: meta.previousStatus || 'pending',
         reject_reason: meta.previousReason || null,
