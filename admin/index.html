@@ -1860,7 +1860,7 @@ function checkDuplicate(f, excludeId) {
           <div><h3>${esc(j.title)}</h3><p>${esc(j.company)}, ${esc(j.location)}. Apply by ${esc(j.by)}</p></div>
           <span class="badge badge-${cls}">${text}</span>
           ${why}
-          <div class="job-row-actions"><button type="button" class="btn btn-edit-job btn-sm" data-edit-own-job="${esc(j.id)}">Edit job</button></div>
+          <div class="job-row-actions">${currentUser.role === 'operations' ? '' : `<button type="button" class="btn btn-edit-job btn-sm" data-edit-own-job="${esc(j.id)}">Edit job</button>`}</div>
         </div>`;
         }).join('')
       : '<div class="empty"><strong>No jobs yet</strong>Jobs you submit will show up here.</div>';
@@ -1920,7 +1920,7 @@ function checkDuplicate(f, excludeId) {
         <td>${esc(j.sentBy)}</td>
         <td><a href="https://mdrifat-mia.github.io/slash-jobs-bd-website/jobs/" target="_blank" rel="noopener noreferrer">Open jobs page ↗</a><div class="muted">Individual post URL not saved</div></td>
         <td>${jobUrl ? `<a href="${esc(jobUrl)}" target="_blank" rel="noopener noreferrer">Apply link ↗</a>` : '<span class="muted">No application link saved</span>'}</td>
-        <td><div class="manage-job-actions"><button type="button" class="btn btn-edit-job btn-sm" data-edit-job="${esc(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Edit job</span></button><button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
+        <td><div class="manage-job-actions">${currentUser.role === 'owner' ? `<button type="button" class="btn btn-edit-job btn-sm" data-edit-job="${esc(j.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Edit job</span></button>` : ''}<button type="button" class="btn btn-outline-red btn-sm" data-delete-job="${esc(j.id)}" data-job-title="${esc(j.title)}" data-job-company="${esc(j.company)}">Remove job</button></div></td>
       </tr>`;
     }).join('') : '<tr><td colspan="7" class="muted">No uploaded jobs found.</td></tr>';
   }
@@ -1949,6 +1949,7 @@ function checkDuplicate(f, excludeId) {
     const editBtn = event.target.closest('[data-edit-own-job]');
     if (!editBtn || !currentUser) return;
     const ownJob = jobs.find(j => String(j.id) === String(editBtn.dataset.editOwnJob));
+    if (currentUser.role === 'operations') { toast('Operations role cannot edit jobs.'); return; }
     if (!ownJob || ownJob.createdBy !== currentUser.id) { toast('You can only edit jobs you submitted.'); return; }
     editBtn.disabled = true; editBtn.textContent = 'Loading…';
     const { data: job, error } = await sb.from('jobs').select('*').eq('id', editBtn.dataset.editOwnJob).eq('created_by', currentUser.id).single();
@@ -1974,7 +1975,7 @@ function checkDuplicate(f, excludeId) {
   if (manageJobsBody) manageJobsBody.addEventListener('click', async function (event) {
     const editBtn = event.target.closest('[data-edit-job]');
     if (editBtn) {
-      if (!currentUser || !['owner', 'operations'].includes(currentUser.role)) return;
+      if (!currentUser || currentUser.role !== 'owner') { toast('Only the Owner can edit uploaded jobs.'); return; }
       editBtn.disabled = true; editBtn.textContent = 'Loading…';
       const { data: job, error } = await sb.from('jobs').select('*').eq('id', editBtn.dataset.editJob).single();
       editBtn.disabled = false; editBtn.textContent = 'Edit job';
