@@ -1064,7 +1064,7 @@
       showPage('setup');
       return;
     }
-    loginAs(prof);
+    loginAs(prof, session.user.user_metadata?.avatar_url || '');
   }
 
   async function submitSetup(event) {
@@ -1111,13 +1111,20 @@
 
   function cleanUrl() { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
 
-  function loginAs(prof) {
+  function loginAs(prof, avatarUrl = '') {
     const meta = ROLE_META[prof.role];
     if (!meta) { showPage('login'); setMsg('loginMsg', 'This account has no role. Contact the owner.'); return; }
     currentUser = { id: prof.id, role: prof.role, name: prof.name, email: prof.email || '', label: meta.label, tabs: meta.tabs };
-    profilePhotoUrl = '';
+    profilePhotoUrl = avatarUrl || '';
     showPage('app');
     $('displayRole').textContent = currentUser.label;
+    const profileAvatar = document.querySelector('.profile-avatar');
+    if (profileAvatar) {
+      profileAvatar.innerHTML = profilePhotoUrl ? '' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg>';
+      if (profilePhotoUrl) { const img=document.createElement('img'); img.src=profilePhotoUrl; img.alt=''; img.style.cssText='width:30px;height:30px;border-radius:50%;object-fit:cover'; profileAvatar.appendChild(img); }
+    }
+    const profileLabel = document.querySelector('.profile-trigger-label');
+    if (profileLabel) profileLabel.textContent = currentUser.name || 'Profile / Settings';
     $('displayRole').dataset.role = currentUser.role;
     document.querySelectorAll('[data-roles]').forEach(node => {
       node.style.display = node.dataset.roles.split(',').includes(currentUser.role) ? '' : 'none';
