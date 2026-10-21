@@ -493,3 +493,15 @@ footer .footer-bottom p.footer-disclaimer {
   word-break: normal !important;
   line-height: 1.65 !important;
 }
+
+
+/* Slash Jobs BD shared footer: consistent premium dark styling on every public page. */
+footer[data-astro-cid-sz7xmlte] { background-color: #0F172A !important; color: #FFFFFF !important; }
+footer[data-astro-cid-sz7xmlte] .footer-section h3[data-astro-cid-sz7xmlte] { color: #FFFFFF !important; }
+footer[data-astro-cid-sz7xmlte] .footer-section p[data-astro-cid-sz7xmlte] { color: #CBD5E1 !important; text-align: justify !important; text-justify: inter-word !important; width: 100%; }
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte] { color: #CBD5E1 !important; }
+footer[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover { color: #38BDF8 !important; }
+footer[data-astro-cid-sz7xmlte] .footer-bottom[data-astro-cid-sz7xmlte] { border-top-color: rgba(203, 213, 225, .2) !important; }
+footer[data-astro-cid-sz7xmlte] .footer-bottom p[data-astro-cid-sz7xmlte] { color: #CBD5E1 !important; }
+footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer[data-astro-cid-sz7xmlte] { white-space: normal !important; text-align: justify !important; text-justify: inter-word !important; overflow-wrap: anywhere; max-width: 100%; margin-left: auto; margin-right: auto; }
+@media (max-width: 768px) { footer[data-astro-cid-sz7xmlte] .footer-bottom p.footer-disclaimer[data-astro-cid-sz7xmlte] { text-align: justify !important; text-justify: inter-word !important; line-height: 1.65; } }
