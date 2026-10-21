@@ -153,6 +153,18 @@
   .topbar .wordmark { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
   .topbar .wordmark small { font-weight: 600; font-size: 12px; opacity: .8; padding-left: 12px; border-left: 1px solid rgba(255,255,255,.35); }
   .who { display: flex; align-items: center; gap: 14px; }
+  .profile-menu-wrap { position:relative; }
+  .profile-menu-trigger { display:flex; align-items:center; gap:9px; padding:7px 10px; border:1px solid rgba(255,255,255,.22); border-radius:10px; background:rgba(255,255,255,.06); color:#fff; font-weight:600; cursor:pointer; }
+  .profile-avatar { display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.14); }
+  .profile-avatar svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .profile-chevron { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; }
+  .profile-menu { display:none; position:absolute; right:0; top:calc(100% + 9px); z-index:50; width:210px; padding:6px; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(15,23,42,.18); }
+  .profile-menu.open { display:block; }
+  .profile-menu-heading { padding:8px 10px 7px; color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .profile-menu-item { display:flex; align-items:center; gap:10px; width:100%; padding:10px; border:0; border-radius:8px; background:transparent; color:var(--ink); text-align:left; font-weight:600; cursor:pointer; }
+  .profile-menu-item:hover { background:#f1f5f9; }
+  .profile-menu-item svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  @media (max-width:480px) { .profile-trigger-label { display:none; } .profile-menu-trigger { padding:5px; } }
   .who-info { text-align: right; line-height: 1.25; }
   .who-info strong { display: block; font-size: 14px; }
   .who-info span { font-size: 12px; opacity: .8; }
@@ -548,7 +560,22 @@
   <header class="topbar">
     <div class="wordmark"><svg class="flag" aria-hidden="true"><use href="#flag"/></svg>Slash Jobs BD <small>Admin portal</small></div>
     <div class="who">
-      <button class="btn btn-ghost" onclick="logout()">Sign out</button>
+      <div class="profile-menu-wrap">
+        <button class="profile-menu-trigger" id="profileMenuTrigger" type="button" aria-expanded="false" onclick="toggleProfileMenu()">
+          <span class="profile-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.5-4 3.2-6 7.5-6s7 2 7.5 6"/></svg></span>
+          <span class="profile-trigger-label">Profile / Settings</span>
+          <svg class="profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+        </button>
+        <div class="profile-menu" id="profileMenu" role="menu">
+          <div class="profile-menu-heading">Account</div>
+          <button type="button" class="profile-menu-item" data-tab="trash" role="menuitem" onclick="showTab('trash'); closeProfileMenu()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"/></svg><span>Trash</span>
+          </button>
+          <button type="button" class="profile-menu-item" role="menuitem" onclick="closeProfileMenu(); logout()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/></svg><span>Sign out</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -785,8 +812,8 @@
 
   /* ---------- Roles ---------- */
   const ROLE_META = {
-    owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'team'] },
-    operations: { label: 'Operations', tabs: ['review', 'team'] },
+    owner:      { label: 'Owner',      tabs: ['submit', 'review', 'jobs', 'trash', 'team'] },
+    operations: { label: 'Operations', tabs: ['review', 'trash', 'team'] },
     admin:      { label: 'Admin',      tabs: ['submit', 'jobs'] }
   };
   const ROLE_LABEL = { owner: 'Owner', operations: 'Operations Manager', admin: 'Admin' };
@@ -1089,41 +1116,30 @@
   function pendingCount() { return jobs.filter(j => j.status === 'pending').length; }
 
   function buildNav() {
-    const tabs = currentUser.tabs.filter(t => t !== 'trash');
-    const mainNav = tabs.map(t => {
+    $('nav').innerHTML = currentUser.tabs.filter(t => t !== 'trash').map(t => {
       const count = t === 'review' ? `<span class="nav-count" id="navCount">${pendingCount()}</span>` : '';
       return `<button class="nav-item" data-tab="${t}" onclick="showTab('${t}')">
         <svg viewBox="0 0 24 24" aria-hidden="true">${TABS[t].icon}</svg><span class="nav-full">${TABS[t].label}</span><span class="nav-short">${TABS[t].short}</span>${count}</button>`;
     }).join('');
-    const canSeeTrash = ['owner', 'operations'].includes(currentUser.role);
-    const more = canSeeTrash ? `<div class="nav-more-wrap">
-      <button class="nav-more-btn" type="button" aria-expanded="false" onclick="toggleMoreMenu()">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-        <span>More</span>
-      </button>
-      <div class="nav-more-menu" id="navMoreMenu">
-        <button class="nav-item" data-tab="trash" onclick="showTab('trash'); closeMoreMenu()">
-          <svg viewBox="0 0 24 24" aria-hidden="true">${TABS.trash.icon}</svg><span class="nav-full">Trash</span><span class="nav-short">Trash</span>
-        </button>
-      </div>
-    </div>` : '';
-    $('nav').innerHTML = mainNav + more;
+    const trashItem = document.querySelector('.profile-menu-item[data-tab="trash"]');
+    if (trashItem) trashItem.style.display = ['owner', 'operations'].includes(currentUser.role) ? '' : 'none';
   }
-  function toggleMoreMenu() {
-    const menu = $('navMoreMenu');
-    const button = document.querySelector('.nav-more-btn');
+
+  function toggleProfileMenu() {
+    const menu = $('profileMenu');
+    const button = $('profileMenuTrigger');
     if (!menu || !button) return;
     const open = menu.classList.toggle('open');
     button.setAttribute('aria-expanded', String(open));
   }
-  function closeMoreMenu() {
-    const menu = $('navMoreMenu');
-    const button = document.querySelector('.nav-more-btn');
+  function closeProfileMenu() {
+    const menu = $('profileMenu');
+    const button = $('profileMenuTrigger');
     if (menu) menu.classList.remove('open');
     if (button) button.setAttribute('aria-expanded', 'false');
   }
 
-  function showTab(tab, skipLoad) {
+    function showTab(tab, skipLoad) {
     if (!currentUser || !currentUser.tabs.includes(tab)) return;
     try {
       const url = new URL(location.href);
