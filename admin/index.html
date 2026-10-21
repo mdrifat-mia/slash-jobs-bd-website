@@ -845,9 +845,12 @@
     return m ? m.name : 'A team member';
   }
 
+  // Start a clean audit feed after testing; older test events remain stored but are not shown.
+  const ACTIVITY_CLEAN_START = '2026-10-21T09:20:00+06:00';
+
   async function loadActivity() {
     if (!sb || !currentUser) return;
-    const { data, error } = await sb.from('activity').select('type,actor,title,note,created_at').order('created_at', { ascending: false }).limit(30);
+    const { data, error } = await sb.from('activity').select('type,actor,title,note,created_at').gte('created_at', ACTIVITY_CLEAN_START).order('created_at', { ascending: false }).limit(30);
     if (error) { console.error(error); return; }
     dbActivity = (data || []).filter(a => ACTIVITY_META[a.type]).map(a => ({
       type: a.type, who: nameOf(a.actor), title: a.title || '', note: a.note || '', ts: Date.parse(a.created_at)
@@ -1455,11 +1458,14 @@ function checkDuplicate(f, excludeId) {
     if (currentUser && currentUser.role === 'owner') { await loadDupLog(); renderDupReport(); }
   }
 
+  // Ignore duplicate-check events created during testing; count only events from the clean-start time onward.
+  const DUPLICATE_CLEAN_START = '2026-10-21T09:20:00+06:00';
+
   async function loadDupLog() {
     if (!sb || !currentUser || currentUser.role !== 'owner') return;
     const { data, error } = await sb.from('duplicate_log')
       .select('kind,actor,title,match_title,match_company,created_at')
-      .order('created_at', { ascending: false }).limit(200);
+      .gte('created_at', DUPLICATE_CLEAN_START).order('created_at', { ascending: false }).limit(200);
     if (error) { console.error(error); return; }
     dupLog = (data || []).map(d => ({
       kind: d.kind, who: nameOf(d.actor), title: d.title || '',
