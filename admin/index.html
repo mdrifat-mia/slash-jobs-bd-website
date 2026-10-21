@@ -120,16 +120,18 @@
   }
   .btn-edit-job:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,77,58,.16); }
   .btn-edit-job svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  .manage-post-links { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 14px; min-width: 340px; white-space: nowrap; line-height: 1.5; }
+  .manage-post-links { display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; align-items: center; justify-content: flex-start; gap: 16px; width: max-content; min-width: max-content; white-space: nowrap; line-height: 1.5; }
   .manage-post-links a { display: inline-flex; align-items: center; gap: 5px; padding: 2px 0; color: #334155; font-size: 12px; font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; }
   .manage-post-links a:hover { color: #0F172A; border-bottom-color: #94A3B8; }
-  .manage-post-links > a:first-child { color: #0F766E; }
-  .manage-post-links > a:first-child:hover { color: #115E59; border-bottom-color: #99F6E4; }
+  .manage-post-links .apply-post-link { color: #0F766E; }
+  .manage-post-links .apply-post-link:hover { color: #115E59; border-bottom-color: #99F6E4; }
+  .manage-post-links > a:not(.apply-post-link):not(.individual-post-link) { color: #64748B; }
+  .manage-post-links > a:not(.apply-post-link):not(.individual-post-link):hover { color: #334155; border-bottom-color: #CBD5E1; }
   .manage-post-links .individual-post-link { color: #1D4ED8; }
   .manage-post-links .individual-post-link:hover { color: #1E3A8A; border-bottom-color: #93C5FD; }
   .manage-post-links a span { color: #64748B; font-size: 11px; }
   .manage-post-links .individual-post-pending { color: #94A3B8; font-size: 11px; }
-  @media (max-width: 900px) { .manage-post-links { min-width: 340px; gap: 14px; flex-wrap: nowrap; } }
+  @media (max-width: 900px) { .manage-post-links { display: inline-flex !important; flex-wrap: nowrap !important; min-width: max-content; gap: 16px; } }
   .individual-post-pending { color: #64748B; font-size: 11px; line-height: 1.45; }
   .manage-job-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 170px; }
   .manage-job-actions .btn-outline-red { background: #fff; border-color: #E9C5CA; }
