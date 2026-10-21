@@ -1478,8 +1478,9 @@ function checkDuplicate(f, excludeId) {
     if (currentUser && currentUser.role === 'owner') { await loadDupLog(); renderDupReport(); }
   }
 
-  // Ignore duplicate-check events created during testing; count only events from the clean-start time onward.
-  const DUPLICATE_CLEAN_START = '2026-10-21T09:20:00+06:00';
+  // Fresh start: ignore all duplicate-check test events recorded before this time.
+  // New duplicate events after the reset cutoff will be counted normally.
+  const DUPLICATE_CLEAN_START = '2026-10-21T10:03:00+06:00';
 
   async function loadDupLog() {
     if (!sb || !currentUser || currentUser.role !== 'owner') return;
