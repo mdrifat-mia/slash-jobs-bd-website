@@ -1870,7 +1870,7 @@ function checkDuplicate(f, excludeId) {
           <div><h3>${esc(j.title)}</h3><p>${esc(j.company)}, ${esc(j.location)}. Apply by ${esc(j.by)}</p></div>
           <span class="badge badge-${cls}">${text}</span>
           ${why}
-          <div class="job-row-actions">${currentUser.role === 'operations' ? '' : `<button type="button" class="btn btn-edit-job btn-sm" data-edit-own-job="${esc(j.id)}">Edit job</button>`}</div>
+          <div class="job-row-actions">${j.createdBy === currentUser.id && currentUser.role !== 'operations' ? `<button type="button" class="btn btn-edit-job btn-sm" data-edit-own-job="${esc(j.id)}">Edit job</button>` : ''}</div>
         </div>`;
         }).join('')
       : '<div class="empty"><strong>No jobs yet</strong>Jobs you submit will show up here.</div>';
