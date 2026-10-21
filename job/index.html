@@ -120,7 +120,7 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
 
       box.innerHTML =
         '<div class="jd-head"><h1>' + esc(j.title) + '</h1><p class="jd-company">' + esc(j.company) + '</p>' +
-        '<div class="jd-meta">' + meta('Location', j.location) + meta('Work style', j.work_style) + meta('Level', j.level) + meta('Pay', j.pay || 'Not specified by the employer') + '</div>' +
+        '<div class="jd-meta">' + meta('Location', j.location) + meta('Work style', j.work_style) + meta('Level', j.level) + meta('PAY', j.pay || 'Not specified') + '</div>' +
         '<div class="jd-apply">' + action + '</div></div>' +
         para('About the role', j.about) + list('What you will do', j.duties) + list('What you need', j.requirements) +
         para('Who it suits', j.suits) + para('Before you apply', j.before_apply);
