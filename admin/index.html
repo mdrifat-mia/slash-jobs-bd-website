@@ -1631,9 +1631,18 @@ function checkDuplicate(f, excludeId) {
     const f0 = formValues();
     const r = checkDuplicate(f0, editingJobId || undefined);
     cmpForm = f0; cmpWarn = r.warn.slice(0, 3);
-    if (currentUser && r.block) {
-      const key = currentUser.name + '|' + normUrl(f0.link);
-      if (!loggedBlocks.has(key)) { loggedBlocks.add(key); logDup('blocked', f0, r.block); }
+    // A duplicate warning is not a submission attempt. Do not add audit rows
+    // merely because the form is restored, refreshed, or rechecked.
+    // If a saved draft points to a job already in the portal, discard that stale
+    // draft so it will not reappear every time the owner opens Submit.
+    if (r.block && !editingJobId && f0.link) {
+      try {
+        const savedDraft = JSON.parse(localStorage.getItem(JOB_DRAFT_KEY) || 'null');
+        if (savedDraft && savedDraft.applyLink &&
+            normUrl(savedDraft.applyLink) === normUrl(f0.link)) {
+          localStorage.removeItem(JOB_DRAFT_KEY);
+        }
+      } catch (e) {}
     }
     cmpNotes = r.notes.slice(0, 2);
     el('dupNote').hidden = !cmpNotes.length;
