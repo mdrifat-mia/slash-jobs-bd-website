@@ -814,7 +814,7 @@
         </div>
 
         <h2 class="section-title">Workload</h2>
-        <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Person</th><th>Role</th><th>Sent</th><th>Edited</th><th>Reviewed</th><th>Waiting</th></tr></thead><tbody id="workBody"></tbody></table></div>
         <h2 class="section-title">People with access</h2>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Joined</th><th id="teamActionTh"></th></tr></thead><tbody id="teamBody"></tbody></table></div>
         <div data-roles="owner,operations">
@@ -997,6 +997,7 @@
 
   /* ---------- Activity (jobs make their own events; invitations and removals are saved in the activity table) ---------- */
   const ACTIVITY_META = {
+    edited:    { verb: 'edited',     icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4Z"/>' },
     submitted: { verb: 'submitted',  icon: '<path d="M12 5v14M5 12h14"/>' },
     approved:  { verb: 'approved',   icon: '<path d="M5 13l4 4L19 7"/>' },
     rejected:  { verb: 'rejected',   icon: '<path d="M6 6l12 12M18 6L6 18"/>' },
@@ -2056,6 +2057,7 @@ function checkDuplicate(f, excludeId) {
     }
 
     const wasEditing = !!editingJobId;
+    if (wasEditing) await addActivity('edited', f.title, `Job edited by ${currentUser.name}.`);
     if (!wasEditing && dup.warn.length) logDup('marked', f, dup.warn[0]);
     editingJobId = null; editingJobStatus = null;
     toast(wasEditing ? 'Job updated successfully' : 'Job sent for review');
@@ -2217,7 +2219,7 @@ function checkDuplicate(f, excludeId) {
 
   function workloadOf(id) {
     const sent = jobs.filter(j => j.createdBy === id);
-    return { sent: sent.length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
+    return { sent: sent.length, edited: dbActivity.filter(a => a.type === 'edited' && a.who === (members.find(m => m.id === id)?.name || '')).length, reviewed: jobs.filter(j => j.reviewedBy === id && j.createdBy !== id).length, waiting: sent.filter(j => j.status === 'pending').length };
   }
 
     /* ---------- Team (live from the database) ---------- */
@@ -2443,6 +2445,7 @@ function checkDuplicate(f, excludeId) {
         <td><div class="person"><span class="avatar">${esc(m.name.charAt(0).toUpperCase())}</span>${esc(m.name)}</div></td>
         <td><span class="role-tag">${esc(ROLE_LABEL[m.role] || m.role)}</span></td>
         <td data-label="Sent">${w.sent}</td>
+        <td data-label="Edited">${w.edited}</td>
         <td data-label="Reviewed">${w.reviewed}</td>
         <td data-label="Waiting">${w.waiting}</td>
       </tr>`;
