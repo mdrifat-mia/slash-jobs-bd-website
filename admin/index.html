@@ -2059,6 +2059,10 @@ function checkDuplicate(f, excludeId) {
     if (!wasEditing && dup.warn.length) logDup('marked', f, dup.warn[0]);
     editingJobId = null; editingJobStatus = null;
     toast(wasEditing ? 'Job updated successfully' : 'Job sent for review');
+    if (wasEditing) {
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
+    }
     try { localStorage.removeItem(JOB_DRAFT_KEY); } catch (e) {}
     $('jobForm').reset();
     $('publishBtn').textContent = 'Send for review';
