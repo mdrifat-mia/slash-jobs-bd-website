@@ -2175,10 +2175,18 @@ function checkDuplicate(f, excludeId) {
       .filter(x => x[1]).map(x => `<div><dt>${x[0]}</dt><dd>${esc(x[1])}</dd></div>`).join('');
     function detailBlock(title, value) {
       if (!String(value || '').trim()) return '';
-      const rows = String(value).split(/\\r?\\n/).map(s => s.trim()).filter(Boolean);
-      return `<section class="review-detail"><h4>${title}</h4>${rows.length > 1
-        ? '<ul>' + rows.map(s => '<li>' + esc(s.replace(/^[-•*]\\s*/, '')) + '</li>').join('') + '</ul>'
-        : '<p>' + esc(rows[0] || '') + '</p>'}</section>`;
+      // Some imported job descriptions contain already-escaped entities such as &amp;.
+      const clean = String(value).replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+      const isPointSection = title === 'What you will do' || title === 'What you need';
+      let rows = clean.split(/\\r?\\n/).map(s => s.trim().replace(/^[-•*]\\s*/, '')).filter(Boolean);
+      // Match the public job page: display duties and requirements as readable bullets, even when pasted as one paragraph.
+      if (isPointSection && rows.length === 1) {
+        rows = rows[0].split(/(?<=[.!?])\\s+(?=[A-Z0-9])/).map(s => s.trim()).filter(Boolean);
+      }
+      const body = isPointSection
+        ? '<ul>' + rows.map(s => '<li>' + esc(s) + '</li>').join('') + '</ul>'
+        : '<p>' + esc(clean.trim()) + '</p>';
+      return `<section class="review-detail"><h4>${title}</h4>${body}</section>`;
     }
     const fullDescription = `<div class="review-description">
       ${detailBlock('About the role', j.about)}
