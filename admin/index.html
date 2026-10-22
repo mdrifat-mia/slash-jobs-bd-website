@@ -2205,7 +2205,7 @@ function checkDuplicate(f, excludeId) {
     const row = {
       apply_link: f.link, link_norm: normUrl(f.link),
       title: f.title, company: f.company, location: f.location,
-      work_style: el('workStyle').value, level: el('level').value || null,
+      work_style: el('workStyle').value, level: el('level').value || '',
       pay: f.pay || null, department: val('department') || null, job_ref: val('jobRef') || null, age_limit: val('ageLimit') || null,
       apply_by: f.applyISO || null, no_deadline: noDeadline.checked,
       employer_posted: parseDMY(el('postedDate').value) || null,
