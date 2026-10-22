@@ -103,7 +103,11 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
     return '<section class="jd-section"><h2>' + title + '</h2>' + body + '</section>';
   }
   function para(title, text) {
-    return text && text.trim() ? '<section class="jd-section"><h2>' + title + '</h2><p>' + esc(text.trim()) + '</p></section>' : '';
+    if (!text || !text.trim()) return '';
+    // Render only the simple bold markup used by the Admin About editor, after escaping all source text.
+    var content = esc(text.trim());
+    if (title === 'About the role') content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return '<section class="jd-section"><h2>' + title + '</h2><p>' + content + '</p></section>';
   }
   function meta(label, value) {
     return value ? '<div><span>' + label + '</span><strong>' + esc(value) + '</strong></div>' : '';
