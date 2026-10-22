@@ -2075,7 +2075,8 @@ function checkDuplicate(f, excludeId) {
       employer_posted: parseDMY(el('postedDate').value) || null,
       about: val('about') || null, duties: val('doList'), requirements: val('needList'),
       suits: val('suits') || null,
-      status: editingJobId ? editingJobStatus : 'pending'
+      status: editingJobId ? (editingJobStatus === 'rejected' ? 'pending' : editingJobStatus) : 'pending',
+      ...(editingJobId && editingJobStatus === 'rejected' ? { reject_reason: null, reviewed_by: null, reviewed_by_name: null, reviewed_at: null } : {})
     };
 
     const btn = $('publishBtn'), label = btn.textContent;
@@ -2101,7 +2102,7 @@ function checkDuplicate(f, excludeId) {
     if (wasEditing) await addActivity('edited', f.title, `Job edited by ${currentUser.name}.`);
     if (!wasEditing && dup.warn.length) logDup('marked', f, dup.warn[0]);
     editingJobId = null; editingJobStatus = null;
-    toast(wasEditing ? 'Job updated successfully' : 'Job sent for review');
+    toast(wasEditing ? (editingJobStatus === 'rejected' ? 'Job updated and sent for review' : 'Job updated successfully') : 'Job sent for review');
     if (wasEditing) {
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
