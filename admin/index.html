@@ -86,6 +86,11 @@
     background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
   }
   textarea { resize: vertical; min-height: 92px; line-height: 1.5; }
+  .format-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 7px; }
+  .format-btn { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:6px 11px; border:1px solid #C9D6D1; border-radius:7px; background:#fff; color:var(--ink); font-size:13px; font-weight:600; }
+  .format-btn:hover { background:var(--green-50); border-color:var(--green-700); }
+  .format-btn strong { font-size:15px; }
+  .format-help { color:var(--muted); font-size:12px; }
   input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--green-700); flex-shrink: 0; }
   .check, .field label.check { display: flex; align-items: flex-start; gap: 10px; font-weight: 500; font-size: 14px; line-height: 1.45; margin: 0; cursor: pointer; }
   .check input[type=checkbox] { margin-top: 2px; }
@@ -808,7 +813,7 @@
           <div class="panel">
             <div class="panel-head"><div class="step-dot">3</div><div><h2>Write it in your own words</h2><p>Describe the job in plain language. Do not copy text from the employer's page.</p></div></div>
             <div class="panel-body">
-              <div class="field"><label for="about">About the role <span class="opt">(optional)</span></label><textarea id="about" placeholder="Describe the role..."></textarea></div>
+              <div class="field"><label for="about">About the role <span class="opt">(optional)</span></label><div class="format-toolbar" role="toolbar" aria-label="About text formatting"><button type="button" class="format-btn" data-about-format="bold" title="Bold selected text (Ctrl+B)" aria-label="Bold selected text"><strong>B</strong><span>Bold</span></button><span class="format-help">Select text, then click Bold</span></div><textarea id="about" placeholder="Describe the role..."></textarea></div>
               <div class="grid-2">
                 <div class="field"><label for="doList">What you will do <span class="req">*</span> <span class="opt">One per line</span></label><textarea id="doList" placeholder="Responsibility 1&#10;Responsibility 2&#10;Responsibility 3" required></textarea></div>
                 <div class="field"><label for="needList">What you need <span class="req">*</span> <span class="opt">One per line</span></label><textarea id="needList" placeholder="Requirement 1&#10;Requirement 2&#10;Requirement 3" required></textarea></div>
@@ -2311,9 +2316,10 @@ function checkDuplicate(f, excludeId) {
       if (isPointSection && rows.length === 1) {
         rows = rows[0].split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(s => s.trim()).filter(Boolean);
       }
+      const formattedAbout = esc(clean.trim()).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       const body = isPointSection
         ? '<ul>' + rows.map(s => '<li>' + esc(s) + '</li>').join('') + '</ul>'
-        : '<p>' + esc(clean.trim()) + '</p>';
+        : '<p>' + (title === 'About the role' ? formattedAbout : esc(clean.trim())) + '</p>';
       return `<section class="review-detail"><h4>${title}</h4>${body}</section>`;
     }
     const fullDescription = `<div class="review-description">
@@ -2796,6 +2802,44 @@ function checkDuplicate(f, excludeId) {
     if (session) { await enterApp(session); return; }
     showPage('login');
   })();
+</script>
+
+<script id="about-bold-formatting">
+(function () {
+  var field = document.getElementById('about');
+  if (!field) return;
+  function toggleBold() {
+    var start = field.selectionStart, end = field.selectionEnd;
+    var value = field.value;
+    if (start === end) {
+      var insert = '**bold text**';
+      field.setRangeText(insert, start, end, 'select');
+      field.setSelectionRange(start + 2, start + 11);
+    } else {
+      var selected = value.slice(start, end);
+      var before = value.slice(Math.max(0, start - 2), start);
+      var after = value.slice(end, end + 2);
+      if (before === '**' && after === '**') {
+        field.setRangeText(selected, start - 2, end + 2, 'select');
+        field.setSelectionRange(start - 2, start - 2 + selected.length);
+      } else {
+        field.setRangeText('**' + selected + '**', start, end, 'select');
+        field.setSelectionRange(start + 2, start + 2 + selected.length);
+      }
+    }
+    field.focus();
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-about-format="bold"]');
+    if (button) { event.preventDefault(); toggleBold(); }
+  });
+  field.addEventListener('keydown', function (event) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+      event.preventDefault(); toggleBold();
+    }
+  });
+})();
 </script>
 </body>
 </html>
