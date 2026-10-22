@@ -2178,10 +2178,10 @@ function checkDuplicate(f, excludeId) {
       // Some imported job descriptions contain already-escaped entities such as &amp;.
       const clean = String(value).replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
       const isPointSection = title === 'What you will do' || title === 'What you need';
-      let rows = clean.split(/\\r?\\n/).map(s => s.trim().replace(/^[-•*]\\s*/, '')).filter(Boolean);
+      let rows = clean.split(/\r?\n/).map(s => s.trim().replace(/^[-•*]\s*/, '')).filter(Boolean);
       // Match the public job page: display duties and requirements as readable bullets, even when pasted as one paragraph.
       if (isPointSection && rows.length === 1) {
-        rows = rows[0].split(/(?<=[.!?])\\s+(?=[A-Z0-9])/).map(s => s.trim()).filter(Boolean);
+        rows = rows[0].split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(s => s.trim()).filter(Boolean);
       }
       const body = isPointSection
         ? '<ul>' + rows.map(s => '<li>' + esc(s) + '</li>').join('') + '</ul>'
