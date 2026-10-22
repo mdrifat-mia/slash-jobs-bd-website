@@ -2099,10 +2099,11 @@ function checkDuplicate(f, excludeId) {
     }
 
     const wasEditing = !!editingJobId;
+    const wasRejected = wasEditing && editingJobStatus === 'rejected';
     if (wasEditing) await addActivity('edited', f.title, `Job edited by ${currentUser.name}.`);
     if (!wasEditing && dup.warn.length) logDup('marked', f, dup.warn[0]);
     editingJobId = null; editingJobStatus = null;
-    toast(wasEditing ? (editingJobStatus === 'rejected' ? 'Job updated and sent for review' : 'Job updated successfully') : 'Job sent for review');
+    toast(wasEditing ? (wasRejected ? 'Job updated and sent for review' : 'Job updated successfully') : 'Job sent for review');
     if (wasEditing) {
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { const t = $('toast'); if (t) { t.classList.remove('show'); toastActionHandler = null; } }, 2000);
