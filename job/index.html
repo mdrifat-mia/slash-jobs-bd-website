@@ -40,6 +40,7 @@
 @media(max-width:760px){.jd{margin:1.4rem auto 3rem}.jd-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.jd-meta div{padding:.8rem}.jd-section{padding:1.3rem 1.2rem}}
 @media(max-width:480px){.jd{padding:0}.jd-head{border-radius:14px;padding:1.3rem 1rem 1.15rem}.jd-head h1{font-size:1.55rem;line-height:1.25}.jd-company{font-size:1rem;margin-bottom:1.15rem}.jd-meta{gap:.55rem}.jd-meta div{padding:.75rem .7rem}.jd-meta span{font-size:.65rem}.jd-meta strong{font-size:.88rem}.jd-apply{align-items:stretch;gap:.75rem}.jd-apply .btn{width:100%;min-height:50px;padding:.85rem 1rem}.jd-deadline{font-size:.85rem}.jd-section{border-radius:12px;padding:1.15rem 1rem}.jd-section h2{font-size:1.08rem;margin-bottom:.8rem}.jd-section p,.jd-section ul{font-size:.95rem;line-height:1.75}.jd-note{font-size:.82rem;padding:.9rem}}
 @media(prefers-reduced-motion:reduce){.jd-back,.jd-apply .btn{transition:none}}
+  .jd-subheading { margin: 18px 0 8px; font-size: 1rem; font-weight: 700; color: var(--ink, #18231F); }
 </style><style id="slash-mobile-menu-fix">@media(max-width:900px){header nav{position:relative!important;z-index:1002!important}header nav .mobile-menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;position:relative;z-index:1004!important;cursor:pointer;touch-action:manipulation}header nav>.nav-links{display:none!important;visibility:hidden;opacity:0;pointer-events:none;position:absolute!important;top:calc(100% + 8px)!important;left:0!important;right:0!important;width:100%!important;max-height:min(70vh,420px);overflow-y:auto;box-sizing:border-box;flex-direction:column!important;align-items:stretch!important;gap:.2rem!important;margin:0!important;padding:.65rem!important;list-style:none;background:#fff!important;color:#0f172a;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 16px 38px rgba(15,23,42,.2);z-index:1003!important}header nav.mobile-menu-open>.nav-links{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}header nav.mobile-menu-open>.nav-links a{display:block!important;width:100%;box-sizing:border-box;padding:.75rem .6rem;color:#0f172a;text-decoration:none}header nav.mobile-menu-open>.nav-links a:focus-visible,header nav.mobile-menu-open>.nav-links a:hover{background:#f1f5f9}}</style>
 </head> <body> <header data-astro-cid-3ef6ksr2> <div class="container" data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <a href="/slash-jobs-bd-website/" class="logo" data-astro-cid-3ef6ksr2>Slash <span data-astro-cid-3ef6ksr2>Jobs BD</span></a> <button type="button" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-expanded="false" data-astro-cid-3ef6ksr2>☰</button> <ul class="nav-links" data-astro-cid-3ef6ksr2> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/" data-astro-cid-3ef6ksr2>Home</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/jobs/" class="active" data-astro-cid-3ef6ksr2>Jobs</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/categories/" data-astro-cid-3ef6ksr2>Categories</a></li>  <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/about/" data-astro-cid-3ef6ksr2>About</a></li> <li data-astro-cid-3ef6ksr2><a href="/slash-jobs-bd-website/contact/" data-astro-cid-3ef6ksr2>Contact</a></li> </ul> </nav> </div> </header>
 
@@ -84,7 +85,22 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
   function list(title, text) {
     var items = lines(text);
     if (!items.length) return '';
-    return '<section class="jd-section"><h2>' + title + '</h2><ul>' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></section>';
+    var body = '', inList = false;
+    function closeList() { if (inList) { body += '</ul>'; inList = false; } }
+    items.forEach(function (item) {
+      // Standalone section labels (for example Education: and Experience:) are headings, not bullet points.
+      var heading = /^(education|experience|knowledge\s*,?\s*skills\s*&\s*abilities)\s*:?$/i.test(item) ||
+        (/^[^.!?]{2,65}:$/.test(item) && !/^https?:/i.test(item));
+      if (heading) {
+        closeList();
+        body += '<h3 class="jd-subheading">' + esc(item.replace(/:\s*$/, '')) + '</h3>';
+      } else {
+        if (!inList) { body += '<ul>'; inList = true; }
+        body += '<li>' + esc(item) + '</li>';
+      }
+    });
+    closeList();
+    return '<section class="jd-section"><h2>' + title + '</h2>' + body + '</section>';
   }
   function para(title, text) {
     return text && text.trim() ? '<section class="jd-section"><h2>' + title + '</h2><p>' + esc(text.trim()) + '</p></section>' : '';
