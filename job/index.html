@@ -117,7 +117,7 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
   if (!id || !/^[0-9a-fA-F-]{36}$/.test(id)) { msg('This job link is not valid.'); return; }
 
   var url = API + '?id=eq.' + id + '&status=eq.live' +
-    '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,duties,requirements,suits,before_apply,apply_link';
+    '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,benefits,duties,requirements,suits,before_apply,apply_link';
   fetch(url, { headers: { apikey: KEY } })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
     .then(function (rows) {
@@ -143,7 +143,7 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
         '<div class="jd-head"><h1>' + esc(j.title) + '</h1><p class="jd-company">' + esc(j.company) + '</p>' +
         '<div class="jd-meta">' + meta('Location', j.location) + meta('Work style', j.work_style) + meta('Level', j.level) + meta('PAY', j.pay || 'Not specified') + '</div>' +
         '<div class="jd-apply">' + action + '</div></div>' +
-        para('About the role', j.about) + list('What you will do', j.duties) + list('What you need', j.requirements) +
+        para('About the role', j.about) + list('Benefits & perks', j.benefits) + list('What you will do', j.duties) + list('What you need', j.requirements) +
         para('Who it suits', j.suits) + para('Before you apply', j.before_apply);
     })
     .catch(function () { msg('Could not load this job. Please refresh the page.'); });
