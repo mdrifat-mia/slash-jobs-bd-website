@@ -2131,6 +2131,24 @@ function checkDuplicate(f, excludeId) {
       return;
     }
     const pick = (...keys) => { for (const key of keys) if (Object.prototype.hasOwnProperty.call(data, key)) return data[key]; return undefined; };
+    // Preserve important employment conditions in the existing About field, so no details are lost
+    // even though the submission form does not have separate fields for each condition.
+    const extraSections = [
+      ['Employment type', ['employment_type','employmentType','job_type']],
+      ['Working hours', ['working_hours','workingHours','work_hours']],
+      ['Working days', ['working_days','workingDays','work_days']],
+      ['Probation period', ['probation_period','probationPeriod']],
+      ['Benefits & perks', ['benefits','perks','benefits_and_perks']],
+      ['Other employment conditions', ['other_conditions','otherConditions','additional_conditions']]
+    ];
+    const extraText = extraSections.map(([label, keys]) => {
+      const value = copyReadyText(pick(...keys));
+      return value ? label + ':\\n' + value : '';
+    }).filter(Boolean).join('\\n\\n');
+    if (extraText) {
+      const currentAbout = copyReadyText(pick('about','about_role','job_context','summary'));
+      data.about = [currentAbout, extraText].filter(Boolean).join('\\n\\n');
+    }
     const fieldMap = [
       ['applyLink', ['apply_link','applyLink','link','application_link']],
       ['jobTitle', ['title','job_title','jobTitle']],
