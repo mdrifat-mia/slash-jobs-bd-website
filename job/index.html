@@ -136,7 +136,7 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
       // core fields used by the working Jobs listing so the page can still render.
       console.warn('Full job details query failed; retrying core fields:', error);
       var fallbackUrl = API + '?id=eq.' + id + '&status=eq.live' +
-        '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,duties';
+        '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,duties,requirements,suits';
       return fetchRows(fallbackUrl);
     })
     .then(function (rows) {
