@@ -117,9 +117,16 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
   if (!id || !/^[0-9a-fA-F-]{36}$/.test(id)) { msg('This job link is not valid.'); return; }
 
   var url = API + '?id=eq.' + id + '&status=eq.live' +
-    '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,benefits,duties,requirements,suits,before_apply,apply_link';
+    '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,benefits,duties,requirements,suits,apply_link';
   fetch(url, { headers: { apikey: KEY } })
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (r) {
+      if (r.ok) return r.json();
+      return r.text().then(function (body) {
+        var error = new Error('Supabase request failed (' + r.status + '): ' + body);
+        error.status = r.status;
+        throw error;
+      });
+    })
     .then(function (rows) {
       var j = rows[0];
       if (!j) { msg('This job is not available. It may have been removed.'); return; }
@@ -146,7 +153,10 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
         para('About the role', j.about) + list('Benefits & perks', j.benefits) + list('What you will do', j.duties) + list('What you need', j.requirements) +
         para('Who it suits', j.suits) + para('Before you apply', j.before_apply);
     })
-    .catch(function () { msg('Could not load this job. Please refresh the page.'); });
+    .catch(function (error) {
+      console.error('Slash Jobs BD job details failed to load:', error);
+      msg('Could not load this job. Please refresh the page.');
+    });
 })();
 </script>
 <script id="slash-mobile-menu-fix-js">(function(){if(window.__slashMobileMenuFixInstalled)return;window.__slashMobileMenuFixInstalled=true;function closeMenu(nav){if(!nav)return;nav.classList.remove("mobile-menu-open");var b=nav.querySelector(".mobile-menu-toggle");if(b){b.setAttribute("aria-expanded","false");b.setAttribute("aria-label","Open navigation menu");b.textContent="☰"}}function toggleMenu(nav){if(!nav)return;var opening=!nav.classList.contains("mobile-menu-open");document.querySelectorAll("header nav.mobile-menu-open").forEach(function(n){if(n!==nav)closeMenu(n)});nav.classList.toggle("mobile-menu-open",opening);var b=nav.querySelector(".mobile-menu-toggle");if(b){b.setAttribute("aria-expanded",String(opening));b.setAttribute("aria-label",opening?"Close navigation menu":"Open navigation menu");b.textContent=opening?"×":"☰"}}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("header .mobile-menu-toggle");if(b){e.preventDefault();e.stopPropagation();toggleMenu(b.closest("header nav"));return}var a=e.target.closest&&e.target.closest("header nav.mobile-menu-open .nav-links a");if(a){closeMenu(a.closest("header nav"));return}document.querySelectorAll("header nav.mobile-menu-open").forEach(function(n){if(!n.contains(e.target))closeMenu(n)})},true);document.addEventListener("keydown",function(e){if(e.key==="Escape")document.querySelectorAll("header nav.mobile-menu-open").forEach(closeMenu)});window.addEventListener("resize",function(){if(window.innerWidth>900)document.querySelectorAll("header nav.mobile-menu-open").forEach(closeMenu)})})();</script>
