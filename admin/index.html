@@ -819,6 +819,7 @@
                 <div class="field"><label for="needList">What you need <span class="req">*</span> <span class="opt">One per line</span></label><textarea id="needList" placeholder="Requirement 1&#10;Requirement 2&#10;Requirement 3" required></textarea></div>
               </div>
               <div class="field"><label for="suits">Who it suits <span class="opt">(optional)</span></label><textarea id="suits" placeholder="Ideal candidate profile..."></textarea></div>
+              <div class="field"><label for="benefitsList">17. Benefits &amp; Perks <span class="opt">(optional · one per line)</span></label><textarea id="benefitsList" placeholder="Two festival bonuses in a year&#10;Performance-based bonus&#10;Healthcare package"></textarea><p class="format-help">Add each benefit on a separate line. These will appear as bullet points on the job details page.</p></div>
             </div>
           </div>
 
@@ -2138,7 +2139,6 @@ function checkDuplicate(f, excludeId) {
       ['Working hours', ['working_hours','workingHours','work_hours']],
       ['Working days', ['working_days','workingDays','work_days']],
       ['Probation period', ['probation_period','probationPeriod']],
-      ['Benefits & perks', ['benefits','perks','benefits_and_perks']],
       ['Other employment conditions', ['other_conditions','otherConditions','additional_conditions']]
     ];
     const extraText = extraSections.map(([label, keys]) => {
@@ -2163,6 +2163,7 @@ function checkDuplicate(f, excludeId) {
       ['jobRef', ['job_ref','job_id','reference_id','job_reference']],
       ['ageLimit', ['age_limit','ageLimit','age']],
       ['about', ['about','about_role','job_context','summary']],
+      ['benefitsList', ['benefits','perks','benefits_and_perks']],
       ['doList', ['duties','responsibilities','what_you_will_do']],
       ['needList', ['requirements','what_you_need','qualifications']],
       ['suits', ['suits','who_it_suits','ideal_candidate']]
@@ -2174,7 +2175,7 @@ function checkDuplicate(f, excludeId) {
       if (id === 'applyDate' || id === 'postedDate') {
         const dateValue = copyReadyDate(value);
         if (dateValue) { setCopyReadyField(id, dateValue); filled++; }
-      } else if (id === 'applyLink' || id === 'jobTitle' || id === 'company' || id === 'location' || id === 'workStyle' || id === 'level' || id === 'pay' || id === 'department' || id === 'jobRef' || id === 'ageLimit' || id === 'about' || id === 'doList' || id === 'needList' || id === 'suits') {
+      } else if (id === 'applyLink' || id === 'jobTitle' || id === 'company' || id === 'location' || id === 'workStyle' || id === 'level' || id === 'pay' || id === 'department' || id === 'jobRef' || id === 'ageLimit' || id === 'about' || id === 'benefitsList' || id === 'doList' || id === 'needList' || id === 'suits') {
         const ok = setCopyReadyField(id, value);
         if (ok) filled++;
         else if (id === 'workStyle' || id === 'level') unknown.push(id === 'workStyle' ? 'work style' : 'level');
@@ -2232,7 +2233,7 @@ function checkDuplicate(f, excludeId) {
       pay: f.pay || null, department: val('department') || null, job_ref: val('jobRef') || null, age_limit: val('ageLimit') || null,
       apply_by: f.applyISO || null, no_deadline: noDeadline.checked,
       employer_posted: parseDMY(el('postedDate').value) || null,
-      about: val('about') || null, duties: val('doList'), requirements: val('needList'),
+      about: val('about') || null, benefits: val('benefitsList') || null, duties: val('doList'), requirements: val('needList'),
       suits: val('suits') || null,
       status: editingJobId ? (editingJobStatus === 'rejected' ? 'pending' : editingJobStatus) : 'pending',
       ...(editingJobId && editingJobStatus === 'rejected' ? { reject_reason: null, reviewed_by: null, reviewed_by_name: null, reviewed_at: null } : {})
@@ -2556,7 +2557,7 @@ function checkDuplicate(f, excludeId) {
     $('applyPicker').disabled = !!job.no_deadline; $('calBtn').classList.toggle('off', !!job.no_deadline); $('applyPicker').value = job.apply_by || '';
     $('postedDate').value = job.employer_posted ? (() => { const [y, m, d] = String(job.employer_posted).slice(0, 10).split('-'); return `${d}/${m}/${y}`; })() : ''; $('postedPicker').value = job.employer_posted || '';
     $('department').value = job.department || ''; $('jobRef').value = job.job_ref || ''; $('ageLimit').value = job.age_limit || '';
-    $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
+    $('about').value = job.about || ''; $('benefitsList').value = job.benefits || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
     $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing your job. Save changes to update the posted details.';
     $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
     runDupCheck();
@@ -2637,7 +2638,7 @@ function checkDuplicate(f, excludeId) {
       $('applyPicker').disabled = !!job.no_deadline; $('calBtn').classList.toggle('off', !!job.no_deadline); $('applyPicker').value = job.apply_by || '';
       $('postedDate').value = job.employer_posted ? (() => { const [y, m, d] = String(job.employer_posted).slice(0, 10).split('-'); return `${d}/${m}/${y}`; })() : ''; $('postedPicker').value = job.employer_posted || '';
       $('department').value = job.department || ''; $('jobRef').value = job.job_ref || ''; $('ageLimit').value = job.age_limit || '';
-      $('about').value = job.about || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
+      $('about').value = job.about || ''; $('benefitsList').value = job.benefits || ''; $('doList').value = job.duties || ''; $('needList').value = job.requirements || ''; $('suits').value = job.suits || '';
       $('publishBtn').textContent = 'Save changes'; $('cancelEditBtn').hidden = false; $('submitHint').textContent = 'Editing an existing job. Save changes to update the posted details.';
       $('jobForm').querySelectorAll('input[type="checkbox"][required]').forEach(input => { input.checked = true; });
       runDupCheck();
