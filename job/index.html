@@ -118,14 +118,26 @@ Slash Jobs BD is a Bangladesh-focused job discovery media platform. We curate le
 
   var url = API + '?id=eq.' + id + '&status=eq.live' +
     '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,benefits,duties,requirements,suits,apply_link';
-  fetch(url, { headers: { apikey: KEY } })
-    .then(function (r) {
-      if (r.ok) return r.json();
-      return r.text().then(function (body) {
-        var error = new Error('Supabase request failed (' + r.status + '): ' + body);
-        error.status = r.status;
-        throw error;
+  function fetchRows(requestUrl) {
+    return fetch(requestUrl, { headers: { apikey: KEY } })
+      .then(function (r) {
+        if (r.ok) return r.json();
+        return r.text().then(function (body) {
+          var error = new Error('Supabase request failed (' + r.status + '): ' + body);
+          error.status = r.status;
+          throw error;
+        });
       });
+  }
+
+  fetchRows(url)
+    .catch(function (error) {
+      // If an optional details column is missing or unavailable, retry with the same
+      // core fields used by the working Jobs listing so the page can still render.
+      console.warn('Full job details query failed; retrying core fields:', error);
+      var fallbackUrl = API + '?id=eq.' + id + '&status=eq.live' +
+        '&select=id,title,company,location,work_style,level,pay,apply_by,no_deadline,about,duties';
+      return fetchRows(fallbackUrl);
     })
     .then(function (rows) {
       var j = rows[0];
