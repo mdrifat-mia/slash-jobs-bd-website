@@ -2143,11 +2143,11 @@ function checkDuplicate(f, excludeId) {
     ];
     const extraText = extraSections.map(([label, keys]) => {
       const value = copyReadyText(pick(...keys));
-      return value ? label + ':\\n' + value : '';
-    }).filter(Boolean).join('\\n\\n');
+      return value ? label + ':\n' + value : '';
+    }).filter(Boolean).join('\n\n');
     if (extraText) {
       const currentAbout = copyReadyText(pick('about','about_role','job_context','summary'));
-      data.about = [currentAbout, extraText].filter(Boolean).join('\\n\\n');
+      data.about = [currentAbout, extraText].filter(Boolean).join('\n\n');
     }
     const fieldMap = [
       ['applyLink', ['apply_link','applyLink','link','application_link']],
